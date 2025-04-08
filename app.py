@@ -162,7 +162,8 @@ if export_data:
 # ------------------- Footer -------------------
 st.markdown("---")
 st.caption("📊 Data Source: Central Pollution Control Board (India)")
-st.caption("👨‍🎓 Developed by **Kapil**, PhD Scholar, Indian Institute of Technology Kharagpur")
+st.markdown("👨‍🎓 Developed by [Kapil](https://sites.google.com/view/kapil-lab/home), PhD Scholar, Indian Institute of Technology Kharagpur")
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
 
 # ------------------- Mobile Friendly Styles -------------------
 st.markdown("""
