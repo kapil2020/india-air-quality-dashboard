@@ -5,9 +5,6 @@ import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 import matplotlib
-import scipy.interpolate as interp
-import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 
 # Set page config
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
@@ -60,38 +57,16 @@ category_colors = {
 }
 
 # ------------------- Spatial Map -------------------
-city_coords = {
-    "Agra": [27.1767, 78.0081],
-    "Bengaluru": [12.9716, 77.5946],
-    "Chennai": [13.0827, 80.2707],
-    "Delhi": [28.7041, 77.1025],
-    "Faridabad": [28.4089, 77.3178],
-    "Gaya": [24.7955, 85.0119],
-    "Haldia": [22.0257, 88.0583],
-    "Hyderabad": [17.3850, 78.4867],
-    "Jodhpur": [26.2389, 73.0243],
-    "Kanpur": [26.4499, 80.3319],
-    "Lucknow": [26.8467, 80.9462],
-    "Mumbai": [19.0760, 72.8777],
-    "Muzaffarpur": [26.1209, 85.3647],
-    "Navi Mumbai": [19.0330, 73.0297],
-    "Panchkula": [30.6942, 76.8606],
-    "Patna": [25.5941, 85.1376],
-    "Pune": [18.5204, 73.8567],
-    "Varanasi": [25.3176, 82.9739],
-    "Chandrapur": [19.9615, 79.2961],
-    "Jaipur": [26.9124, 75.7873]
-}
+import scipy.interpolate as interp
 
-# Display an IDW interpolated heatmap for the selected year over India's map
 st.markdown(f"### 🗺️ India AQI Heatmap – {year}")
 map_data = []
-for city in city_coords.keys():
+for city in city_coords:
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
     if not city_data.empty:
         lat, lon = city_coords[city]
         avg_aqi = city_data['index'].mean()
-        map_data.append([lon, lat, avg_aqi])  # [x, y, value] for interpolation
+        map_data.append([lon, lat, avg_aqi])  # [x, y, AQI]
 
 if map_data:
     map_array = np.array(map_data)
@@ -99,28 +74,23 @@ if map_data:
     y = map_array[:, 1]  # Latitudes
     z = map_array[:, 2]  # AQI values
 
-    # Create a grid over India
-    grid_x, grid_y = np.mgrid[68:98:100j, 8:38:100j]  # India bounds: lon 68-98, lat 8-38
-    # Perform IDW interpolation
+    # Create grid over India
+    grid_x, grid_y = np.mgrid[68:98:100j, 8:38:100j]
     grid_z = interp.griddata((x, y), z, (grid_x, grid_y), method='cubic')
 
-    # Plot the heatmap on a map of India
-    fig = plt.figure(figsize=(10, 8))
-    ax = plt.axes(projection=ccrs.PlateCarree())
-    ax.set_extent([68, 98, 8, 38], crs=ccrs.PlateCarree())  # India bounds
-    ax.add_feature(cfeature.BORDERS, linestyle='-', alpha=0.5)
-    ax.add_feature(cfeature.COASTLINE, alpha=0.5)
-    ax.add_feature(cfeature.STATES, linestyle=':', alpha=0.5)  # State boundaries
-
-    # Plot the heatmap
-    heatmap = ax.imshow(grid_z.T, extent=[68, 98, 8, 38], cmap='RdYlGn_r', origin='lower', alpha=0.7, transform=ccrs.PlateCarree())
-    ax.scatter(x, y, c='black', s=20, label='Cities', transform=ccrs.PlateCarree())  # Overlay city points
+    fig, ax = plt.subplots(figsize=(10, 8))
+    heatmap = ax.imshow(grid_z.T, extent=[68, 98, 8, 38], cmap='RdYlGn_r', origin='lower', alpha=0.7)
+    ax.scatter(x, y, c='black', s=20, label='Cities')
     ax.set_title(f"AQI Heatmap Across India – {year}")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_xlim(68, 98)
+    ax.set_ylim(8, 38)
     plt.colorbar(heatmap, ax=ax, label='AQI')
     ax.legend()
     st.pyplot(fig)
 else:
-    st.warning(f"No data available for any cities in {year}. Please check your data file.")
+    st.warning(f"No data available for {year}.")
 
 # ------------------- Dashboard Body -------------------
 export_data = []
@@ -240,16 +210,4 @@ Associate Professor, Chairperson
 RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
-st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
 
-# ------------------- Mobile Friendly Styles -------------------
-st.markdown("""
-<style>
-@media screen and (max-width: 768px) {
-    .element-container {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
