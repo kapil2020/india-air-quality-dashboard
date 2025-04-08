@@ -9,7 +9,12 @@ from io import StringIO
 st.set_page_config(layout="wide")
 
 # 🌙 Theme toggle + rerun trigger
-mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
+mode = st.sidebar.radio(
+    "Choose Theme",
+    ["🌞 Light Mode", "🌙 Dark Mode"],
+    index=0 if st.session_state.theme == "🌞 Light Mode" else 1,
+    key="theme_toggle"
+)
 if "theme" not in st.session_state:
     st.session_state.theme = mode
 elif mode != st.session_state.theme:
