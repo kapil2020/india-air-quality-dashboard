@@ -8,49 +8,6 @@ from io import StringIO
 # Set page config
 st.set_page_config(layout="wide")
 
-# ------------------- Theme Toggle -------------------
-default_theme = "🌞 Light Mode"
-theme = st.session_state.get("theme", default_theme)
-
-# Sidebar toggle with key to avoid duplicate errors
-selected_theme = st.sidebar.radio(
-    "Choose Theme",
-    ["🌞 Light Mode", "🌙 Dark Mode"],
-    index=0 if theme == "🌞 Light Mode" else 1,
-    key="theme_toggle"
-)
-
-# If changed, update theme and rerun
-if selected_theme != theme:
-    st.session_state.theme = selected_theme
-    st.experimental_rerun()
-
-# Inject CSS
-if selected_theme == "🌙 Dark Mode":
-    st.markdown("""
-        <style>
-        html, body, [class*="css"] {
-            background-color: #0e1117 !important;
-            color: #FAFAFA !important;
-        }
-        .stApp { background-color: #0e1117; }
-        .markdown-text-container { color: white !important; }
-        .css-1v0mbdj, .st-bx, .st-b3 {
-            background-color: #1c1f26 !important;
-        }
-        .css-1q8dd3e, .css-ffhzg2 { color: white !important; }
-        </style>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown("""
-        <style>
-        html, body, [class*="css"] {
-            background-color: white !important;
-            color: black !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
 # ------------------- Title -------------------
 st.title("🇮🇳 India Air Quality Dashboard")
 
