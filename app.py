@@ -47,7 +47,7 @@ Welcome to the **India Air Quality Dashboard** 🇮🇳
 
 
 # ------------------- Load Data -------------------
-data_path = r"C:\Users\kapil-pc\Downloads\Air quality dashboard\combined_air_quality.txt"
+data_path = r"combined_air_quality.txt"
 
 @st.cache_data(ttl=600)
 def load_data():
