@@ -80,21 +80,7 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-for y in years[::-1]:
-    st.markdown(f"### 🗺️ Average AQI by City – {y}")
-    map_data = []
-    for city in selected_cities:
-        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
-        if not city_data.empty and city in city_coords:
-            lat, lon = city_coords[city]
-            avg_aqi = city_data['index'].mean()
-            map_data.append({"city": city, "latitude": lat, "longitude": lon, "AQI": avg_aqi})
-
-    if map_data:
-        map_df = pd.DataFrame(map_data)
-        st.map(map_df, zoom=4, use_container_width=True)
-    else:
-        st.warning(f"No data available for {y}")
+# Single loop instead of duplicate blocks
 for y in years[::-1]:
     st.markdown(f"### 🗺️ Average AQI by City – {y}")
     map_data = []
@@ -107,7 +93,9 @@ for y in years[::-1]:
 
     if map_data:
         map_df = pd.DataFrame(map_data)
-        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"})))
+        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"}))
+    else:
+        st.warning(f"No data available for {y}")
 
 
 # ------------------- Dashboard Body -------------------
