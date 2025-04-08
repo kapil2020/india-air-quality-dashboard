@@ -176,6 +176,8 @@ Indian Institute of Technology Kharagpur
 st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
 
 # ------------------- Mobile Friendly Styles -------------------
+st.markdown("""
+<style>
 @media screen and (max-width: 768px) {
     .element-container {
         padding-left: 1rem !important;
@@ -184,4 +186,5 @@ st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-qualit
 }
 </style>
 """, unsafe_allow_html=True)
+
 
