@@ -163,17 +163,19 @@ if export_data:
 st.markdown("---")
 st.caption("📊 Data Source: Central Pollution Control Board (India)")
 st.markdown("""
-**Mr. [Kapil Meena](https://sites.google.com/view/kapil-lab/home)**  
+**Developed by:**  
+Mr. [Kapil Meena](https://sites.google.com/view/kapil-lab/home)  
 Doctoral Scholar, IIT Kharagpur  
 📧 kapil.meena@kgpian.iitkgp.ac.in  
 
-**[Prof. Arkopal K. Goswami, PhD](https://www.mustlab.in/faculty)**  
-Associate Professor  
-Chairperson, RCGSIDM  
-Indian Institute of Technology Kharagpur  
+**With guidance from:**  
+[Prof. Arkopal K. Goswami, PhD](https://www.mustlab.in/faculty)  
+Associate Professor, Chairperson  
+RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
-st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")")
+
 
 # ------------------- Mobile Friendly Styles -------------------
 st.markdown("""
