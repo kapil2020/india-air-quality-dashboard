@@ -6,6 +6,8 @@ import numpy as np
 from io import StringIO
 import matplotlib
 import scipy.interpolate as interp
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 # Set page config
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
@@ -81,7 +83,7 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-# Display an IDW interpolated heatmap for the selected year
+# Display an IDW interpolated heatmap for the selected year over India's map
 st.markdown(f"### 🗺️ India AQI Heatmap – {year}")
 map_data = []
 for city in city_coords.keys():
@@ -102,15 +104,18 @@ if map_data:
     # Perform IDW interpolation
     grid_z = interp.griddata((x, y), z, (grid_x, grid_y), method='cubic')
 
+    # Plot the heatmap on a map of India
+    fig = plt.figure(figsize=(10, 8))
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    ax.set_extent([68, 98, 8, 38], crs=ccrs.PlateCarree())  # India bounds
+    ax.add_feature(cfeature.BORDERS, linestyle='-', alpha=0.5)
+    ax.add_feature(cfeature.COASTLINE, alpha=0.5)
+    ax.add_feature(cfeature.STATES, linestyle=':', alpha=0.5)  # State boundaries
+
     # Plot the heatmap
-    fig, ax = plt.subplots(figsize=(10, 8))
-    heatmap = ax.imshow(grid_z.T, extent=[68, 98, 8, 38], cmap='RdYlGn_r', origin='lower', alpha=0.7)
-    ax.scatter(x, y, c='black', s=20, label='Cities')  # Overlay city points
+    heatmap = ax.imshow(grid_z.T, extent=[68, 98, 8, 38], cmap='RdYlGn_r', origin='lower', alpha=0.7, transform=ccrs.PlateCarree())
+    ax.scatter(x, y, c='black', s=20, label='Cities', transform=ccrs.PlateCarree())  # Overlay city points
     ax.set_title(f"AQI Heatmap Across India – {year}")
-    ax.set_xlabel("Longitude")
-    ax.set_ylabel("Latitude")
-    ax.set_xlim(68, 98)  # India longitude bounds
-    ax.set_ylim(8, 38)   # India latitude bounds
     plt.colorbar(heatmap, ax=ax, label='AQI')
     ax.legend()
     st.pyplot(fig)
