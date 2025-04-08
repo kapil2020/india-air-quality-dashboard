@@ -1,45 +1,51 @@
-# India Air Quality Dashboard 🌬️
+# 🇮🇳 India Air Quality Dashboard
 
-A Streamlit-powered interactive dashboard for visualizing air quality trends across Indian cities. Features calendar heatmaps, time series trends, and air quality category breakdowns.
+An interactive web-based dashboard built with **Streamlit** to visualize and explore air quality trends across major Indian cities.
+
+## 🔍 Features
+
+- **City & Year Selector** via sidebar
+- **Calendar-style AQI heatmap**
+- **Daily AQI trend line**
+- **7-day rolling average plot**
+- **AQI category distribution (bar + pie)**
+- **Monthly boxplot of AQI**
+- **Month × Day heatmap**
+- **Export filtered data as CSV**
+
+## 📦 Dataset
+
+The app uses a combined `.txt` file generated from daily AQI bulletins published by the **Central Pollution Control Board (CPCB), India**.  
+You can place your file at the root level as:
+
+
 
 ![image](https://github.com/user-attachments/assets/d7de1e4a-f3b5-4589-b565-509d6bd84ab0)
 
 
-An interactive visualization platform for analyzing air quality index (AQI) trends across Indian cities. Built with Streamlit for real-time data exploration.
+## 📦 Dataset
 
-## ✨ Features
+The app uses a combined `.txt` file generated from daily AQI bulletins published by the **Central Pollution Control Board (CPCB), India**.  
+You can place your file at the root level as:
 
-- **Multi-City Analysis**: Compare AQI trends between multiple cities
-- **Temporal Visualization**:
-  - Annual calendar heatmap (daily AQI levels)
-  - Interactive time series charts
-  - Monthly/weekly aggregation
-- **AQI Category Insights**:
-  - Color-coded category breakdown
-  - CPCB-standard classification (Good to Severe)
-- **User-Centric Design**:
-  - Dark/Light theme toggle
-  - Responsive mobile-friendly layout
-  - One-click data export (CSV)
-- **Data Management**:
-  - Real-time filtering
-  - Year-over-year comparison
-  - Raw data inspection
 
-## 🚀 Getting Started
+The file should be tab-delimited (`.tsv`) and must include at least the following columns:
+- `city`
+- `date`
+- `index` (AQI value)
+- `level` (AQI category)
 
-### Prerequisites
-- Python 3.8+
-- pip package manager
+## 🚀 Running the App Locally
 
-### Installation
-1. Clone repository:
+1. **Clone the repository**
+
 ```bash
 git clone https://github.com/yourusername/india-air-quality-dashboard.git
 cd india-air-quality-dashboard
 
+2. **Install dependencies**
 
-Run the app:
+pip install -r requirements.txt
 
-bash
+3. Run the dashboard
 streamlit run app.py
