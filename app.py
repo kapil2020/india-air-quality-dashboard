@@ -80,40 +80,26 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-# ------------------- Spatial Map -------------------
-st.markdown("## 🗺️ National Air Quality Overview")
-
-# Calculate average AQI for all cities in selected year
+# Display a single map for the selected year, focused on India
+st.markdown(f"### 🗺️ India AQI Map – {year}")
 map_data = []
-for city, coords in city_coords.items():
+for city in city_coords.keys():
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
     if not city_data.empty:
+        lat, lon = city_coords[city]
         avg_aqi = city_data['index'].mean()
-        map_data.append({
-            "latitude": coords[0],
-            "longitude": coords[1],
-            "AQI": avg_aqi,
-            "city": city
-        })
+        map_data.append({"latitude": lat, "longitude": lon, "AQI": avg_aqi, "city": city})
 
 if map_data:
-    # Create DataFrame with map data
     map_df = pd.DataFrame(map_data)
-    
-    # Set India's approximate geographic center coordinates
-    india_center = {"latitude": 20.5937, "longitude": 78.9629}
-    
-    # Display map with adjusted parameters
-    st.map(map_df,
-           zoom=4,
-           use_container_width=True,
-           size="AQI",  # Size of markers based on AQI value
-           color="AQI",  # Color based on AQI value
-           latitude=india_center["latitude"],
-           longitude=india_center["longitude"])
+    # Debug: Show the data being passed to the map
+    st.write("Map Data:", map_df)
+    # Set size based on AQI for visibility (optional)
+    map_df['size'] = map_df['AQI'] / 50  # Adjust divisor as needed
+    # Center the map on India with appropriate zoom
+    st.map(map_df, latitude=20.5937, longitude=78.9629, zoom=5, use_container_width=True)
 else:
-    st.warning(f"No data available for {year}")
-
+    st.warning(f"No data available for any cities in {year}. Please check your data file.")
 
 # ------------------- Dashboard Body -------------------
 export_data = []
@@ -233,6 +219,16 @@ Associate Professor, Chairperson
 RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
 
-
-
+# ------------------- Mobile Friendly Styles -------------------
+st.markdown("""
+<style>
+@media screen and (max-width: 768px) {
+    .element-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
