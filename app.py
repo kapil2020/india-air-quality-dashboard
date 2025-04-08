@@ -68,7 +68,7 @@ city_coords = {
     "Hyderabad": [17.3850, 78.4867],
     "Jodhpur": [26.2389, 73.0243],
     "Kanpur": [26.4499, 80.3319],
-    "Lucknow": [26.8467, 80. дра9462],
+    "Lucknow": [26.8467, 80.9462],  # Fixed typo: removed "дра9462", corrected to 80.9462
     "Mumbai": [19.0760, 72.8777],
     "Muzaffarpur": [26.1209, 85.3647],
     "Navi Mumbai": [19.0330, 73.0297],
