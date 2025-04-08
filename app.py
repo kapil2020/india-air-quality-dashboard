@@ -68,7 +68,7 @@ city_coords = {
     "Hyderabad": [17.3850, 78.4867],
     "Jodhpur": [26.2389, 73.0243],
     "Kanpur": [26.4499, 80.3319],
-    "Lucknow": [26.8467, 80.9462],  # Fixed typo: removed "дра9462", corrected to 80.9462
+    "Lucknow": [26.8467, 80.9462],
     "Mumbai": [19.0760, 72.8777],
     "Muzaffarpur": [26.1209, 85.3647],
     "Navi Mumbai": [19.0330, 73.0297],
@@ -80,27 +80,25 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-# Display map for each year
-for y in years[::-1]:
-    st.markdown(f"### 🗺️ Average AQI by City – {y}")
-    map_data = []
-    for city in selected_cities:
-        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
-        if not city_data.empty and city in city_coords:
-            lat, lon = city_coords[city]
-            avg_aqi = city_data['index'].mean()
-            map_data.append({"lat": lat, "lon": lon, "AQI": avg_aqi, "city": city})
+# Display a single map for the selected year
+st.markdown(f"### 🗺️ Average AQI Across India – {year}")
+map_data = []
+for city in city_coords.keys():
+    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
+    if not city_data.empty:
+        lat, lon = city_coords[city]
+        avg_aqi = city_data['index'].mean()
+        map_data.append({"latitude": lat, "longitude": lon, "AQI": avg_aqi, "city": city})
 
-    if map_data:
-        map_df = pd.DataFrame(map_data)
-        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"}), zoom=4, use_container_width=True)
-    else:
-        st.warning(f"No data available for {y}")
+if map_data:
+    map_df = pd.DataFrame(map_data)
+    map_df['size'] = map_df['AQI'] / 50  # Scale size by AQI for visibility
+    st.map(map_df, zoom=4, use_container_width=True)
+else:
+    st.warning(f"No data available for any cities in {year}")
 
 # ------------------- Dashboard Body -------------------
 export_data = []
-
-
 
 for city in selected_cities:
     st.markdown(f"## {city} – {year}")
@@ -109,6 +107,7 @@ for city in selected_cities:
     city_data['month'] = city_data['date'].dt.month
     city_data['day'] = city_data['date'].dt.day
     export_data.append(city_data)
+
     # Set responsive figure width
     fig_width = 20 if st.session_state.get("device", "desktop") == "desktop" else 10
 
