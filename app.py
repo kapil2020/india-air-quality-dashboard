@@ -12,9 +12,9 @@ st.set_page_config(layout="wide")
 mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
 if "theme" not in st.session_state:
     st.session_state.theme = mode
-if mode != st.session_state.theme:
+elif mode != st.session_state.theme:
     st.session_state.theme = mode
-    st.experimental_rerun()
+    st.stop()  # safer than st.experimental_rerun() for Streamlit Cloud
 
 # Inject CSS based on theme
 if mode == "🌙 Dark Mode":
