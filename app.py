@@ -235,12 +235,4 @@ RCGSIDM, IIT Kharagpur
 """)
 
 
-# ------------------- Mobile Friendly Styles -------------------
-@media screen and (max-width: 768px) {
-    .element-container {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-}
-</style>
-""", unsafe_allow_html=True)
+
