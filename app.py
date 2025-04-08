@@ -80,22 +80,35 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-# Display a single map for the selected year
-st.markdown(f"### 🗺️ Average AQI Across India – {year}")
-map_data = []
-for city in city_coords.keys():
-    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
-    if not city_data.empty:
-        lat, lon = city_coords[city]
-        avg_aqi = city_data['index'].mean()
-        map_data.append({"latitude": lat, "longitude": lon, "AQI": avg_aqi, "city": city})
+for y in years[::-1]:
+    st.markdown(f"### 🗺️ Average AQI by City – {y}")
+    map_data = []
+    for city in selected_cities:
+        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
+        if not city_data.empty and city in city_coords:
+            lat, lon = city_coords[city]
+            avg_aqi = city_data['index'].mean()
+            map_data.append({"city": city, "latitude": lat, "longitude": lon, "AQI": avg_aqi})
 
-if map_data:
-    map_df = pd.DataFrame(map_data)
-    map_df['size'] = map_df['AQI'] / 50  # Scale size by AQI for visibility
-    st.map(map_df, zoom=4, use_container_width=True)
-else:
-    st.warning(f"No data available for any cities in {year}")
+    if map_data:
+        map_df = pd.DataFrame(map_data)
+        st.map(map_df, zoom=4, use_container_width=True)
+    else:
+        st.warning(f"No data available for {y}")
+for y in years[::-1]:
+    st.markdown(f"### 🗺️ Average AQI by City – {y}")
+    map_data = []
+    for city in selected_cities:
+        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
+        if not city_data.empty and city in city_coords:
+            lat, lon = city_coords[city]
+            avg_aqi = city_data['index'].mean()
+            map_data.append({"lat": lat, "lon": lon, "AQI": avg_aqi, "city": city})
+
+    if map_data:
+        map_df = pd.DataFrame(map_data)
+        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"})))
+
 
 # ------------------- Dashboard Body -------------------
 export_data = []
@@ -215,11 +228,9 @@ Associate Professor, Chairperson
 RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
-st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")")
 
 # ------------------- Mobile Friendly Styles -------------------
-st.markdown("""
-<style>
 @media screen and (max-width: 768px) {
     .element-container {
         padding-left: 1rem !important;
