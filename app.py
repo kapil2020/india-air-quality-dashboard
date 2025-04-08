@@ -4,13 +4,30 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
+import time
+
+# Dark mode toggle
+mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
+if mode == "🌙 Dark Mode":
+    st.markdown("""
+        <style>
+            body, .css-18e3th9, .css-1d391kg, .css-1kyxreq, .st-bx, .st-b3 {
+                background-color: #111 !important;
+                color: #f0f0f0 !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
 st.set_page_config(layout="wide")
 st.title("🇮🇳 India Air Quality Dashboard")
 
 # Load combined data from .txt file
 data_path = "combined_air_quality.txt"
-df = pd.read_csv(data_path, sep='\t', parse_dates=['date'])
+@st.cache_data(ttl=600)
+def load_data():
+    return pd.read_csv(data_path, sep='\t', parse_dates=['date'])
+
+df = load_data()
 
 # Sidebar filters
 selected_cities = st.sidebar.multiselect("Select Cities", sorted(df['city'].unique()), default=["Delhi"])
@@ -94,4 +111,15 @@ if export_data:
 
 st.markdown("---")
 st.caption("Data Source: Central Pollution Control Board (India)")
-st.caption("🎓 Developed for educational purposes by Kapil, IIT Kharagpur, India. ")
+
+# Auto-refresh every 10 minutes (600 seconds)
+st.markdown("<script>setTimeout(() => location.reload(), 600000);</script>", unsafe_allow_html=True)
+
+# Mobile layout tip
+st.markdown("""
+<style>
+    @media screen and (max-width: 768px) {
+        .element-container { padding-left: 1rem !important; padding-right: 1rem !important; }
+    }
+</style>
+""", unsafe_allow_html=True)
