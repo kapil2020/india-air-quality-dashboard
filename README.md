@@ -16,7 +16,7 @@ An interactive visualization platform for analyzing air quality index (AQI) tren
   - Monthly/weekly aggregation
 - **AQI Category Insights**:
   - Color-coded category breakdown
-  - EPA-standard classification (Good to Severe)
+  - CPCB-standard classification (Good to Severe)
 - **User-Centric Design**:
   - Dark/Light theme toggle
   - Responsive mobile-friendly layout
