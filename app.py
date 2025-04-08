@@ -100,14 +100,15 @@ for y in years[::-1]:
 # ------------------- Dashboard Body -------------------
 export_data = []
 
+
+
 for city in selected_cities:
     st.markdown(f"## {city} – {year}")
-    city_data = df[(df['city'] == city) & (df['date dt.year == year)].copy()
+    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
     city_data['day_of_year'] = city_data['date'].dt.dayofyear
     city_data['month'] = city_data['date'].dt.month
     city_data['day'] = city_data['date'].dt.day
     export_data.append(city_data)
-
     # Set responsive figure width
     fig_width = 20 if st.session_state.get("device", "desktop") == "desktop" else 10
 
