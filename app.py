@@ -60,8 +60,7 @@ category_colors = {
 
 # City coordinates (latitude, longitude)
 city_coords = {
-    {
-    "Agra": [27.1767, 78.0081],
+        "Agra": [27.1767, 78.0081],
     "Bengaluru": [12.9716, 77.5946],
     "Chennai": [13.0827, 80.2707],
     "Delhi": [28.7041, 77.1025],
