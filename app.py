@@ -57,6 +57,44 @@ category_colors = {
 }
 
 # ------------------- Spatial Map -------------------
+city_coords = {
+    "Agra": [27.1767, 78.0081],
+    "Bengaluru": [12.9716, 77.5946],
+    "Chennai": [13.0827, 80.2707],
+    "Delhi": [28.7041, 77.1025],
+    "Faridabad": [28.4089, 77.3178],
+    "Gaya": [24.7955, 85.0119],
+    "Haldia": [22.0257, 88.0583],
+    "Hyderabad": [17.3850, 78.4867],
+    "Jodhpur": [26.2389, 73.0243],
+    "Kanpur": [26.4499, 80.3319],
+    "Lucknow": [26.8467, 80.9462],
+    "Mumbai": [19.0760, 72.8777],
+    "Muzaffarpur": [26.1209, 85.3647],
+    "Navi Mumbai": [19.0330, 73.0297],
+    "Panchkula": [30.6942, 76.8606],
+    "Patna": [25.5941, 85.1376],
+    "Pune": [18.5204, 73.8567],
+    "Varanasi": [25.3176, 82.9739],
+    "Chandrapur": [19.9615, 79.2961],
+    "Jaipur": [26.9124, 75.7873]
+}
+
+for y in years[::-1]:
+    st.markdown(f"### 🗺️ Average AQI by City – {y}")
+    map_data = []
+    for city in selected_cities:
+        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
+        if not city_data.empty and city in city_coords:
+            lat, lon = city_coords[city]
+            avg_aqi = city_data['index'].mean()
+            map_data.append({"city": city, "latitude": lat, "longitude": lon, "AQI": avg_aqi})
+
+    if map_data:
+        map_df = pd.DataFrame(map_data)
+        st.map(map_df, zoom=4, use_container_width=True)
+    else:
+        st.warning(f"No data available for {y}")
 for y in years[::-1]:
     st.markdown(f"### 🗺️ Average AQI by City – {y}")
     map_data = []
