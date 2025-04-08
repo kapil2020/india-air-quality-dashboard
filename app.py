@@ -5,6 +5,9 @@ import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 
+# Set page config as the first Streamlit command
+st.set_page_config(layout="wide")
+
 # Dark mode toggle
 mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
 if mode == "🌙 Dark Mode":
@@ -17,11 +20,11 @@ if mode == "🌙 Dark Mode":
         </style>
     """, unsafe_allow_html=True)
 
-st.set_page_config(layout="wide")
 st.title("🇮🇳 India Air Quality Dashboard")
 
 # Load combined data from .txt file
 data_path = "combined_air_quality.txt"
+
 @st.cache_data(ttl=600)
 def load_data():
     return pd.read_csv(data_path, sep='\t', parse_dates=['date'])
