@@ -1,6 +1,11 @@
 streamlit
 pandas
-matplotlib
 numpy
-scipy
+matplotlib
+plotly
+scikit-learn
+osmnx
+geopandas
+shapely
 cartopy
+scipy
