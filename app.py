@@ -320,7 +320,7 @@ else:
     st.warning("Not enough data for forecast. Select a different city or time range.")
 
 # ------------------- Load City Coordinates -------------------
-with open(r"lat_long.txt", "r") as f:
+with open(r"C:\Users\kapil-pc\Downloads\Air quality dashboard\lat_long.txt", "r") as f:
     lines = f.readlines()
     dict_text = ''.join(lines[1:])  # Skip the first line (e.g., 'city_coords = {')
     city_coords = eval("{" + dict_text)  # Add the opening brace back
