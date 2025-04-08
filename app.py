@@ -68,7 +68,7 @@ city_coords = {
     "Hyderabad": [17.3850, 78.4867],
     "Jodhpur": [26.2389, 73.0243],
     "Kanpur": [26.4499, 80.3319],
-    "Lucknow": [26.8467, 80.9462],
+    "Lucknow": [26.8467, 80. дра9462],
     "Mumbai": [19.0760, 72.8777],
     "Muzaffarpur": [26.1209, 85.3647],
     "Navi Mumbai": [19.0330, 73.0297],
@@ -80,7 +80,7 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-# Single loop instead of duplicate blocks
+# Display map for each year
 for y in years[::-1]:
     st.markdown(f"### 🗺️ Average AQI by City – {y}")
     map_data = []
@@ -93,17 +93,16 @@ for y in years[::-1]:
 
     if map_data:
         map_df = pd.DataFrame(map_data)
-        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"}))
+        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"}), zoom=4, use_container_width=True)
     else:
         st.warning(f"No data available for {y}")
-
 
 # ------------------- Dashboard Body -------------------
 export_data = []
 
 for city in selected_cities:
     st.markdown(f"## {city} – {year}")
-    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
+    city_data = df[(df['city'] == city) & (df['date dt.year == year)].copy()
     city_data['day_of_year'] = city_data['date'].dt.dayofyear
     city_data['month'] = city_data['date'].dt.month
     city_data['day'] = city_data['date'].dt.day
@@ -216,9 +215,11 @@ Associate Professor, Chairperson
 RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
-
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
 
 # ------------------- Mobile Friendly Styles -------------------
+st.markdown("""
+<style>
 @media screen and (max-width: 768px) {
     .element-container {
         padding-left: 1rem !important;
