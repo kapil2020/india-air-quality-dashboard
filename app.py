@@ -17,36 +17,43 @@ elif mode != st.session_state.theme:
     st.stop()  # safer than st.experimental_rerun() for Streamlit Cloud
 
 # Inject CSS based on theme
-if mode == "🌙 Dark Mode":
+# 🌙 Dark/Light Mode Toggle with Session Persistence
+default_mode = "🌞 Light Mode"
+if "theme" not in st.session_state:
+    st.session_state.theme = default_mode
+
+mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"], index=0 if st.session_state.theme == "🌞 Light Mode" else 1)
+
+if mode != st.session_state.theme:
+    st.session_state.theme = mode
+    st.experimental_rerun()
+
+# Inject styles
+if st.session_state.theme == "🌙 Dark Mode":
     st.markdown("""
         <style>
-        html, body, [class*="css"]  {
+        html, body, [class*="css"] {
             background-color: #0e1117 !important;
             color: #FAFAFA !important;
         }
-        .stApp {
-            background-color: #0e1117;
-        }
-        .markdown-text-container {
-            color: white !important;
-        }
+        .stApp { background-color: #0e1117; }
+        .markdown-text-container { color: white !important; }
         .css-1v0mbdj, .st-bx, .st-b3 {
             background-color: #1c1f26 !important;
         }
-        .css-1q8dd3e {
-            color: white !important;
-        }
+        .css-1q8dd3e, .css-ffhzg2 { color: white !important; }
         </style>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
         <style>
-        html, body, [class*="css"]  {
+        html, body, [class*="css"] {
             background-color: white !important;
             color: black !important;
         }
         </style>
     """, unsafe_allow_html=True)
+
 
 # Dashboard Title
 st.title("🇮🇳 India Air Quality Dashboard")
