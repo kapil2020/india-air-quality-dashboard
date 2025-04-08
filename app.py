@@ -30,13 +30,37 @@ category_colors = {
 # Data to collect for export
 export_data = []
 
-for city in selected_cities:
-    st.markdown(f"## {city} – {year}")
+# Side-by-side comparison layout
+cols = st.columns(len(selected_cities)) if selected_cities else []
+
+for idx, city in enumerate(selected_cities):
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
     city_data['day_of_year'] = city_data['date'].dt.dayofyear
-
-    # Append to export list
     export_data.append(city_data)
+
+    with cols[idx]:
+        st.markdown(f"### {city}")
+
+        # Category distribution chart
+        category_counts = city_data['level'].value_counts().reindex(category_colors.keys(), fill_value=0)
+        fig, ax = plt.subplots(figsize=(4, 3))
+        ax.bar(category_counts.index, category_counts.values,
+               color=[category_colors[k] for k in category_counts.index])
+        ax.set_title("Category Breakdown")
+        ax.set_xticklabels(category_counts.index, rotation=45)
+        st.pyplot(fig)
+
+# Ranking table
+st.markdown("## 🏆 City AQI Rankings")
+ranking_data = df[df['date'].dt.year == year].groupby('city')['index'].mean().sort_values()
+rank_df = ranking_data.reset_index().rename(columns={'index': 'Average AQI'})
+st.dataframe(rank_df.style.background_gradient(cmap='RdYlGn_r'), use_container_width=True)
+
+# Per-city detailed plots
+for city in selected_cities:
+    st.markdown(f"## 📊 Detailed View – {city} – {year}")
+    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
+    city_data['day_of_year'] = city_data['date'].dt.dayofyear
 
     # Calendar heatmap
     st.markdown("#### Calendar Heatmap")
@@ -71,15 +95,6 @@ for city in selected_cities:
     ax2.grid(True)
     st.pyplot(fig2)
 
-    # Category distribution
-    st.markdown("#### AQI Category Distribution")
-    category_counts = city_data['level'].value_counts().reindex(category_colors.keys(), fill_value=0)
-    fig3, ax3 = plt.subplots()
-    ax3.bar(category_counts.index, category_counts.values, color=[category_colors[k] for k in category_counts.index])
-    ax3.set_ylabel("Number of Days")
-    ax3.set_title(f"AQI Category Breakdown - {city} ({year})")
-    st.pyplot(fig3)
-
 # Export button
 if export_data:
     combined_export = pd.concat(export_data)
@@ -94,4 +109,3 @@ if export_data:
 
 st.markdown("---")
 st.caption("Data Source: Central Pollution Control Board (India)")
-st.caption("Developed by MUST LAB, IIT Kharagpur")
