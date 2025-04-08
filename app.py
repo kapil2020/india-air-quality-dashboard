@@ -80,34 +80,39 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-for y in years[::-1]:
-    st.markdown(f"### 🗺️ Average AQI by City – {y}")
-    map_data = []
-    for city in selected_cities:
-        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
-        if not city_data.empty and city in city_coords:
-            lat, lon = city_coords[city]
-            avg_aqi = city_data['index'].mean()
-            map_data.append({"city": city, "latitude": lat, "longitude": lon, "AQI": avg_aqi})
+# ------------------- Spatial Map -------------------
+st.markdown("## 🗺️ National Air Quality Overview")
 
-    if map_data:
-        map_df = pd.DataFrame(map_data)
-        st.map(map_df, zoom=4, use_container_width=True)
-    else:
-        st.warning(f"No data available for {y}")
-for y in years[::-1]:
-    st.markdown(f"### 🗺️ Average AQI by City – {y}")
-    map_data = []
-    for city in selected_cities:
-        city_data = df[(df['city'] == city) & (df['date'].dt.year == y)]
-        if not city_data.empty and city in city_coords:
-            lat, lon = city_coords[city]
-            avg_aqi = city_data['index'].mean()
-            map_data.append({"lat": lat, "lon": lon, "AQI": avg_aqi, "city": city})
+# Calculate average AQI for all cities in selected year
+map_data = []
+for city, coords in city_coords.items():
+    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
+    if not city_data.empty:
+        avg_aqi = city_data['index'].mean()
+        map_data.append({
+            "latitude": coords[0],
+            "longitude": coords[1],
+            "AQI": avg_aqi,
+            "city": city
+        })
 
-    if map_data:
-        map_df = pd.DataFrame(map_data)
-        st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"})))
+if map_data:
+    # Create DataFrame with map data
+    map_df = pd.DataFrame(map_data)
+    
+    # Set India's approximate geographic center coordinates
+    india_center = {"latitude": 20.5937, "longitude": 78.9629}
+    
+    # Display map with adjusted parameters
+    st.map(map_df,
+           zoom=4,
+           use_container_width=True,
+           size="AQI",  # Size of markers based on AQI value
+           color="AQI",  # Color based on AQI value
+           latitude=india_center["latitude"],
+           longitude=india_center["longitude"])
+else:
+    st.warning(f"No data available for {year}")
 
 
 # ------------------- Dashboard Body -------------------
