@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
-import time
 
 # Dark mode toggle
 mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
@@ -111,9 +110,6 @@ if export_data:
 
 st.markdown("---")
 st.caption("Data Source: Central Pollution Control Board (India)")
-
-# Auto-refresh every 10 minutes (600 seconds)
-st.markdown("<script>setTimeout(() => location.reload(), 600000);</script>", unsafe_allow_html=True)
 
 # Mobile layout tip
 st.markdown("""
