@@ -10,13 +10,35 @@ st.set_page_config(layout="wide")
 
 # Dark mode toggle
 mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"])
+
 if mode == "🌙 Dark Mode":
     st.markdown("""
         <style>
-            body, .css-18e3th9, .css-1d391kg, .css-1kyxreq, .st-bx, .st-b3 {
-                background-color: #111 !important;
-                color: #f0f0f0 !important;
-            }
+        html, body, [class*="css"]  {
+            background-color: #0e1117 !important;
+            color: #FAFAFA !important;
+        }
+        .stApp {
+            background-color: #0e1117;
+        }
+        .markdown-text-container {
+            color: white !important;
+        }
+        .css-1v0mbdj, .st-bx, .st-b3 {
+            background-color: #1c1f26 !important;
+        }
+        .css-1q8dd3e {
+            color: white !important;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        html, body, [class*="css"]  {
+            background-color: white !important;
+            color: black !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
