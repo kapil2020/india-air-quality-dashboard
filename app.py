@@ -5,6 +5,7 @@ import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 import matplotlib
+import scipy.interpolate as interp
 
 # Set page config
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
@@ -80,24 +81,39 @@ city_coords = {
     "Jaipur": [26.9124, 75.7873]
 }
 
-# Display a single map for the selected year, focused on India
-st.markdown(f"### 🗺️ India AQI Map – {year}")
+# Display an IDW interpolated heatmap for the selected year
+st.markdown(f"### 🗺️ India AQI Heatmap – {year}")
 map_data = []
 for city in city_coords.keys():
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
     if not city_data.empty:
         lat, lon = city_coords[city]
         avg_aqi = city_data['index'].mean()
-        map_data.append({"latitude": lat, "longitude": lon, "AQI": avg_aqi, "city": city})
+        map_data.append([lon, lat, avg_aqi])  # [x, y, value] for interpolation
 
 if map_data:
-    map_df = pd.DataFrame(map_data)
-    # Debug: Show the data being passed to the map
-    st.write("Map Data:", map_df)
-    # Set size based on AQI for visibility (optional)
-    map_df['size'] = map_df['AQI'] / 50  # Adjust divisor as needed
-    # Center the map on India with appropriate zoom
-    st.map(map_df, latitude=20.5937, longitude=78.9629, zoom=5, use_container_width=True)
+    map_array = np.array(map_data)
+    x = map_array[:, 0]  # Longitudes
+    y = map_array[:, 1]  # Latitudes
+    z = map_array[:, 2]  # AQI values
+
+    # Create a grid over India
+    grid_x, grid_y = np.mgrid[68:98:100j, 8:38:100j]  # India bounds: lon 68-98, lat 8-38
+    # Perform IDW interpolation
+    grid_z = interp.griddata((x, y), z, (grid_x, grid_y), method='cubic')
+
+    # Plot the heatmap
+    fig, ax = plt.subplots(figsize=(10, 8))
+    heatmap = ax.imshow(grid_z.T, extent=[68, 98, 8, 38], cmap='RdYlGn_r', origin='lower', alpha=0.7)
+    ax.scatter(x, y, c='black', s=20, label='Cities')  # Overlay city points
+    ax.set_title(f"AQI Heatmap Across India – {year}")
+    ax.set_xlabel("Longitude")
+    ax.set_ylabel("Latitude")
+    ax.set_xlim(68, 98)  # India longitude bounds
+    ax.set_ylim(8, 38)   # India latitude bounds
+    plt.colorbar(heatmap, ax=ax, label='AQI')
+    ax.legend()
+    st.pyplot(fig)
 else:
     st.warning(f"No data available for any cities in {year}. Please check your data file.")
 
