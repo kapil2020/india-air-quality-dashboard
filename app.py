@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
+from io import StringIO
 
 st.set_page_config(layout="wide")
 st.title("🇮🇳 India Air Quality Dashboard")
@@ -26,10 +27,16 @@ category_colors = {
     'Good': '#007E00'
 }
 
+# Data to collect for export
+export_data = []
+
 for city in selected_cities:
     st.markdown(f"## {city} – {year}")
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
     city_data['day_of_year'] = city_data['date'].dt.dayofyear
+
+    # Append to export list
+    export_data.append(city_data)
 
     # Calendar heatmap
     st.markdown("#### Calendar Heatmap")
@@ -73,5 +80,18 @@ for city in selected_cities:
     ax3.set_title(f"AQI Category Breakdown - {city} ({year})")
     st.pyplot(fig3)
 
+# Export button
+if export_data:
+    combined_export = pd.concat(export_data)
+    csv_buffer = StringIO()
+    combined_export.to_csv(csv_buffer, index=False)
+    st.download_button(
+        label="📤 Download Filtered Data as CSV",
+        data=csv_buffer.getvalue(),
+        file_name="filtered_air_quality_data.csv",
+        mime="text/csv"
+    )
+
 st.markdown("---")
 st.caption("Data Source: Central Pollution Control Board (India)")
+st.caption("Developed by MUST LAB, IIT Kharagpur")
