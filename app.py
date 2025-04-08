@@ -184,3 +184,4 @@ st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-qualit
 }
 </style>
 """, unsafe_allow_html=True)
+
