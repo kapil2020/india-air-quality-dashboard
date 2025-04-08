@@ -56,6 +56,34 @@ category_colors = {
     'Good': '#007E00'
 }
 
+# ------------------- Spatial Map -------------------
+st.markdown("## 🗺️ Average AQI by City (Spatial Map)")
+city_coords = {
+    "Delhi": [28.6139, 77.2090],
+    "Kolkata": [22.5726, 88.3639],
+    "Mumbai": [19.0760, 72.8777],
+    "Chennai": [13.0827, 80.2707],
+    "Bengaluru": [12.9716, 77.5946],
+    "Hyderabad": [17.3850, 78.4867],
+    "Ahmedabad": [23.0225, 72.5714],
+    "Pune": [18.5204, 73.8567],
+    "Jaipur": [26.9124, 75.7873],
+    "Lucknow": [26.8467, 80.9462]
+}
+
+map_data = []
+for city in selected_cities:
+    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
+    if not city_data.empty and city in city_coords:
+        lat, lon = city_coords[city]
+        avg_aqi = city_data['index'].mean()
+        map_data.append({"lat": lat, "lon": lon, "AQI": avg_aqi, "city": city})
+
+if map_data:
+    map_df = pd.DataFrame(map_data)
+    st.map(map_df.rename(columns={"lat": "latitude", "lon": "longitude"}))
+
+
 # ------------------- Dashboard Body -------------------
 export_data = []
 
@@ -174,13 +202,9 @@ Associate Professor, Chairperson
 RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
-st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
-
-
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")")
 
 # ------------------- Mobile Friendly Styles -------------------
-st.markdown("""
-<style>
 @media screen and (max-width: 768px) {
     .element-container {
         padding-left: 1rem !important;
@@ -189,5 +213,3 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
-
-
