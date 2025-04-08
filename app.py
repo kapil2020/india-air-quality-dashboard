@@ -5,36 +5,28 @@ import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 
-# Set page config at the very top
+# Set page config
 st.set_page_config(layout="wide")
 
-# 🌙 Theme toggle + rerun trigger
-mode = st.sidebar.radio(
+# ------------------- Theme Toggle -------------------
+default_theme = "🌞 Light Mode"
+theme = st.session_state.get("theme", default_theme)
+
+# Sidebar toggle with key to avoid duplicate errors
+selected_theme = st.sidebar.radio(
     "Choose Theme",
     ["🌞 Light Mode", "🌙 Dark Mode"],
-    index=0 if st.session_state.theme == "🌞 Light Mode" else 1,
+    index=0 if theme == "🌞 Light Mode" else 1,
     key="theme_toggle"
 )
-if "theme" not in st.session_state:
-    st.session_state.theme = mode
-elif mode != st.session_state.theme:
-    st.session_state.theme = mode
-    st.stop()  # safer than st.experimental_rerun() for Streamlit Cloud
 
-# Inject CSS based on theme
-# 🌙 Dark/Light Mode Toggle with Session Persistence
-default_mode = "🌞 Light Mode"
-if "theme" not in st.session_state:
-    st.session_state.theme = default_mode
-
-mode = st.sidebar.radio("Choose Theme", ["🌞 Light Mode", "🌙 Dark Mode"], index=0 if st.session_state.theme == "🌞 Light Mode" else 1)
-
-if mode != st.session_state.theme:
-    st.session_state.theme = mode
+# If changed, update theme and rerun
+if selected_theme != theme:
+    st.session_state.theme = selected_theme
     st.experimental_rerun()
 
-# Inject styles
-if st.session_state.theme == "🌙 Dark Mode":
+# Inject CSS
+if selected_theme == "🌙 Dark Mode":
     st.markdown("""
         <style>
         html, body, [class*="css"] {
@@ -59,11 +51,10 @@ else:
         </style>
     """, unsafe_allow_html=True)
 
-
-# Dashboard Title
+# ------------------- Title -------------------
 st.title("🇮🇳 India Air Quality Dashboard")
 
-# Load data
+# ------------------- Load Data -------------------
 data_path = "combined_air_quality.txt"
 
 @st.cache_data(ttl=600)
@@ -72,7 +63,7 @@ def load_data():
 
 df = load_data()
 
-# Sidebar: Filters
+# ------------------- Sidebar Filters -------------------
 selected_cities = st.sidebar.multiselect("Select Cities", sorted(df['city'].unique()), default=["Delhi"])
 years = sorted(df['date'].dt.year.unique())
 year = st.sidebar.selectbox("Select a Year", years, index=years.index(2024) if 2024 in years else 0)
@@ -87,7 +78,7 @@ category_colors = {
     'Good': '#007E00'
 }
 
-# Collect data for export
+# ------------------- Dashboard Body -------------------
 export_data = []
 
 for city in selected_cities:
@@ -107,9 +98,9 @@ for city in selected_cities:
     ax.set_xlim(1, 367)
     ax.set_ylim(0, 1)
     ax.axis('off')
-    for month_day, label in zip([1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335],
-                                 ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']):
-        ax.text(month_day, 1.05, label, ha='center', fontsize=10)
+    for day, label in zip([1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335],
+                          ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']):
+        ax.text(day, 1.05, label, ha='center', fontsize=10)
 
     legend_elements = [patches.Patch(facecolor=color, label=label) for label, color in category_colors.items()]
     ax.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1, 0.5), title="AQI Category")
@@ -134,7 +125,7 @@ for city in selected_cities:
     ax3.set_title(f"AQI Category Breakdown - {city} ({year})")
     st.pyplot(fig3)
 
-# 📤 Export Button
+# ------------------- Download Filtered Data -------------------
 if export_data:
     combined_export = pd.concat(export_data)
     csv_buffer = StringIO()
@@ -146,19 +137,19 @@ if export_data:
         mime="text/csv"
     )
 
-# Footer
+# ------------------- Footer -------------------
 st.markdown("---")
 st.caption("📊 Data Source: Central Pollution Control Board (India)")
 st.caption("👨‍🎓 Developed by **Kapil**, PhD Scholar, Indian Institute of Technology Kharagpur")
 
-# Mobile layout adjustments
+# ------------------- Mobile Friendly Styles -------------------
 st.markdown("""
 <style>
-    @media screen and (max-width: 768px) {
-        .element-container {
-            padding-left: 1rem !important;
-            padding-right: 1rem !important;
-        }
+@media screen and (max-width: 768px) {
+    .element-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }
+}
 </style>
 """, unsafe_allow_html=True)
