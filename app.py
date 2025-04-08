@@ -113,6 +113,7 @@ if export_data:
 
 st.markdown("---")
 st.caption("Data Source: Central Pollution Control Board (India)")
+st.caption("🎓 Developed for educational purposes by Kapil, PhD Student, IIT Kharagpur.")
 
 # Mobile layout tip
 st.markdown("""
