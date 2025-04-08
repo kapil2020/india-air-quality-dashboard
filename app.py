@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
-import matplotlib
+import scipy.interpolate as interp
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 
 # Set page config
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
@@ -56,76 +58,97 @@ category_colors = {
     'Good': '#007E00'
 }
 
-# ------------------- Spatial Map -------------------
-import scipy.interpolate as interp
+# City coordinates (latitude, longitude)
+city_coords = {
+    "Agra": [27.1767, 78.0081],
+    "Bengaluru": [12.9716, 77.5946],
+    "Chennai": [13.0827, 80.2707],
+    "Delhi": [28.7041, 77.1025],
+    "Faridabad": [28.4089, 77.3178],
+    "Gaya": [24.7955, 85.0119],
+    "Haldia": [22.0257, 88.0583],
+    "Hyderabad": [17.3850, 78.4867],
+    "Jodhpur": [26.2389, 73.0243],
+    "Kanpur": [26.4499, 80.3319],
+    "Lucknow": [26.8467, 80.9462],
+    "Mumbai": [19.0760, 72.8777],
+    "Muzaffarpur": [26.1209, 85.3647],
+    "Navi Mumbai": [19.0330, 73.0297],
+    "Panchkula": [30.6942, 76.8606],
+    "Patna": [25.5941, 85.1376],
+    "Pune": [18.5204, 73.8567],
+    "Varanasi": [25.3176, 82.9739],
+    "Chandrapur": [19.9615, 79.2961],
+    "Jaipur": [26.9124, 75.7873]
+}
 
+# ------------------- Spatial Map -------------------
 st.markdown(f"### 🗺️ India AQI Heatmap – {year}")
+
+# Collect data for the selected year
 map_data = []
-for city in city_coords.keys():
+for city, coords in city_coords.items():
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
     if not city_data.empty:
-        lat, lon = city_coords[city]
+        lat, lon = coords
         avg_aqi = city_data['index'].mean()
-        map_data.append([lon, lat, avg_aqi, city])  # Added city name
+        map_data.append([lon, lat, avg_aqi, city])  # [longitude, latitude, AQI, city]
 
 if map_data:
     map_array = np.array(map_data, dtype=object)
-    x = map_array[:, 0].astype(float)  # Longitudes
-    y = map_array[:, 1].astype(float)  # Latitudes
-    z = map_array[:, 2].astype(float)  # AQI values
-    cities = map_array[:, 3]           # City names
+    x = map_array[:, 0].astype(float)
+    y = map_array[:, 1].astype(float)
+    z = map_array[:, 2].astype(float)
+    cities = map_array[:, 3]
 
-    # Create a grid covering all of India
-    grid_x, grid_y = np.mgrid[67:98:200j, 6:37:200j]  # Expanded India bounds
+    # Create interpolation grid
+    grid_x, grid_y = np.mgrid[67:98:300j, 6:37:300j]  # Full India coverage
     
-    # Perform IDW interpolation
+    # Perform interpolation
     grid_z = interp.griddata((x, y), z, (grid_x, grid_y), method='linear')
 
-    # Create the map plot
-    fig = plt.figure(figsize=(14, 10))
-    ax = plt.axes(projection=ccrs.PlateCarree())
+    # Create figure
+    fig = plt.figure(figsize=(16, 12))
+    ax = fig.add_subplot(1, 1, 1, projection=ccrs.PlateCarree())
     
-    # Set map extent to cover entire India
-    ax.set_extent([67, 98, 6, 37], crs=ccrs.PlateCarree())  # Expanded bounds
-    
-    # Add map features
-    ax.add_feature(cfeature.BORDERS, linestyle='-', linewidth=0.5)
-    ax.add_feature(cfeature.COASTLINE, linewidth=0.7)
-    ax.add_feature(cfeature.STATES, linestyle=':', linewidth=0.5)
-    ax.add_feature(cfeature.LAND, facecolor='#f0f0f0')
-    ax.add_feature(cfeature.OCEAN, facecolor='#a0d8ef')
-    ax.add_feature(cfeature.LAKES, alpha=0.5)
-    ax.add_feature(cfeature.RIVERS)
+    # Set map boundaries
+    ax.set_extent([67, 98, 6, 37], crs=ccrs.PlateCarree())
 
-    # Plot the heatmap
-    heatmap = ax.contourf(grid_x, grid_y, grid_z, 60, 
-                         cmap='RdYlGn_r', 
+    # Add geographic features
+    ax.add_feature(cfeature.LAND, facecolor='#f5f5f5')
+    ax.add_feature(cfeature.OCEAN, facecolor='#a3ccff')
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.8)
+    ax.add_feature(cfeature.BORDERS, linestyle=':', linewidth=0.5)
+    ax.add_feature(cfeature.STATES, linestyle=':', linewidth=0.3)
+
+    # Plot interpolated data
+    contour = ax.contourf(grid_x, grid_y, grid_z, 60,
+                         cmap='RdYlGn_r',
                          transform=ccrs.PlateCarree(),
-                         alpha=0.7,
-                         vmin=np.nanmin(z), 
-                         vmax=np.nanmax(z))
+                         alpha=0.7)
 
     # Add city markers and labels
-    for xi, yi, zi, city in zip(x, y, z, cities):
-        ax.plot(xi, yi, 'ko', markersize=5, transform=ccrs.PlateCarree())
-        ax.text(xi + 0.2, yi + 0.1, city, 
+    for lon, lat, aqi, city in map_data:
+        ax.plot(lon, lat, 'o', markersize=8, color='black', transform=ccrs.PlateCarree())
+        ax.text(lon + 0.15, lat + 0.1, city,
                 transform=ccrs.PlateCarree(),
-                fontsize=8,
-                ha='left',
-                va='center',
+                fontsize=9,
                 bbox=dict(facecolor='white', alpha=0.7, boxstyle='round'))
 
     # Add colorbar
-    cbar = plt.colorbar(heatmap, ax=ax, shrink=0.5)
-    cbar.set_label('AQI Index')
+    cbar = plt.colorbar(contour, ax=ax, shrink=0.5)
+    cbar.set_label('AQI Index', fontsize=12)
 
-    # Add title and grid
-    ax.set_title(f"AQI Distribution Across India – {year}", fontsize=14, pad=20)
-    ax.gridlines(draw_labels=True, linewidth=0.5, color='gray', alpha=0.5)
+    # Add grid lines
+    gl = ax.gridlines(draw_labels=True, linewidth=0.5, color='gray', alpha=0.5)
+    gl.top_labels = False
+    gl.right_labels = False
 
+    ax.set_title(f'AQI Distribution Across India - {year}', fontsize=16, pad=20)
     st.pyplot(fig)
+
 else:
-    st.warning(f"No data available for any cities in {year}")
+    st.warning(f"No data available for {year}")
 
 # ------------------- Dashboard Body -------------------
 export_data = []
@@ -245,4 +268,16 @@ Associate Professor, Chairperson
 RCGSIDM, IIT Kharagpur  
 📧 akgoswami@infra.iitkgp.ac.in
 """)
+st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
 
+# ------------------- Mobile Friendly Styles -------------------
+st.markdown("""
+<style>
+@media screen and (max-width: 768px) {
+    .element-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
