@@ -6,10 +6,26 @@ import numpy as np
 from io import StringIO
 
 # Set page config
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 
 # ------------------- Title -------------------
 st.title("🇮🇳 India Air Quality Dashboard")
+
+# ------------------- Introduction -------------------
+st.info("""
+Welcome to the **India Air Quality Dashboard** 🇮🇳
+
+🔍 Use the **sidebar** to:
+- Select one or more cities
+- Choose a specific year (defaults to 2024)
+
+📊 View:
+- Calendar-style daily AQI heatmaps
+- Daily AQI trends
+- AQI category breakdowns
+
+📤 Download the filtered dataset using the button below the charts.
+""")
 
 # ------------------- Load Data -------------------
 data_path = "combined_air_quality.txt"
