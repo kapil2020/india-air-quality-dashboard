@@ -61,36 +61,71 @@ import scipy.interpolate as interp
 
 st.markdown(f"### 🗺️ India AQI Heatmap – {year}")
 map_data = []
-for city in city_coords:
+for city in city_coords.keys():
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)]
     if not city_data.empty:
         lat, lon = city_coords[city]
         avg_aqi = city_data['index'].mean()
-        map_data.append([lon, lat, avg_aqi])  # [x, y, AQI]
+        map_data.append([lon, lat, avg_aqi, city])  # Added city name
 
 if map_data:
-    map_array = np.array(map_data)
-    x = map_array[:, 0]  # Longitudes
-    y = map_array[:, 1]  # Latitudes
-    z = map_array[:, 2]  # AQI values
+    map_array = np.array(map_data, dtype=object)
+    x = map_array[:, 0].astype(float)  # Longitudes
+    y = map_array[:, 1].astype(float)  # Latitudes
+    z = map_array[:, 2].astype(float)  # AQI values
+    cities = map_array[:, 3]           # City names
 
-    # Create grid over India
-    grid_x, grid_y = np.mgrid[68:98:100j, 8:38:100j]
-    grid_z = interp.griddata((x, y), z, (grid_x, grid_y), method='cubic')
+    # Create a grid covering all of India
+    grid_x, grid_y = np.mgrid[67:98:200j, 6:37:200j]  # Expanded India bounds
+    
+    # Perform IDW interpolation
+    grid_z = interp.griddata((x, y), z, (grid_x, grid_y), method='linear')
 
-    fig, ax = plt.subplots(figsize=(10, 8))
-    heatmap = ax.imshow(grid_z.T, extent=[68, 98, 8, 38], cmap='RdYlGn_r', origin='lower', alpha=0.7)
-    ax.scatter(x, y, c='black', s=20, label='Cities')
-    ax.set_title(f"AQI Heatmap Across India – {year}")
-    ax.set_xlabel("Longitude")
-    ax.set_ylabel("Latitude")
-    ax.set_xlim(68, 98)
-    ax.set_ylim(8, 38)
-    plt.colorbar(heatmap, ax=ax, label='AQI')
-    ax.legend()
+    # Create the map plot
+    fig = plt.figure(figsize=(14, 10))
+    ax = plt.axes(projection=ccrs.PlateCarree())
+    
+    # Set map extent to cover entire India
+    ax.set_extent([67, 98, 6, 37], crs=ccrs.PlateCarree())  # Expanded bounds
+    
+    # Add map features
+    ax.add_feature(cfeature.BORDERS, linestyle='-', linewidth=0.5)
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.7)
+    ax.add_feature(cfeature.STATES, linestyle=':', linewidth=0.5)
+    ax.add_feature(cfeature.LAND, facecolor='#f0f0f0')
+    ax.add_feature(cfeature.OCEAN, facecolor='#a0d8ef')
+    ax.add_feature(cfeature.LAKES, alpha=0.5)
+    ax.add_feature(cfeature.RIVERS)
+
+    # Plot the heatmap
+    heatmap = ax.contourf(grid_x, grid_y, grid_z, 60, 
+                         cmap='RdYlGn_r', 
+                         transform=ccrs.PlateCarree(),
+                         alpha=0.7,
+                         vmin=np.nanmin(z), 
+                         vmax=np.nanmax(z))
+
+    # Add city markers and labels
+    for xi, yi, zi, city in zip(x, y, z, cities):
+        ax.plot(xi, yi, 'ko', markersize=5, transform=ccrs.PlateCarree())
+        ax.text(xi + 0.2, yi + 0.1, city, 
+                transform=ccrs.PlateCarree(),
+                fontsize=8,
+                ha='left',
+                va='center',
+                bbox=dict(facecolor='white', alpha=0.7, boxstyle='round'))
+
+    # Add colorbar
+    cbar = plt.colorbar(heatmap, ax=ax, shrink=0.5)
+    cbar.set_label('AQI Index')
+
+    # Add title and grid
+    ax.set_title(f"AQI Distribution Across India – {year}", fontsize=14, pad=20)
+    ax.gridlines(draw_labels=True, linewidth=0.5, color='gray', alpha=0.5)
+
     st.pyplot(fig)
 else:
-    st.warning(f"No data available for {year}.")
+    st.warning(f"No data available for any cities in {year}")
 
 # ------------------- Dashboard Body -------------------
 export_data = []
