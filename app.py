@@ -23,6 +23,10 @@ Welcome to the **India Air Quality Dashboard** 🇮🇳
 - Calendar-style daily AQI heatmaps
 - Daily AQI trends
 - AQI category breakdowns
+- Monthly AQI boxplots
+- Rolling average AQI line
+- Category pie chart
+- Day vs. Month heatmap
 
 📤 Download the filtered dataset using the button below the charts.
 """)
@@ -58,6 +62,8 @@ for city in selected_cities:
     st.markdown(f"## {city} – {year}")
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
     city_data['day_of_year'] = city_data['date'].dt.dayofyear
+    city_data['month'] = city_data['date'].dt.month
+    city_data['day'] = city_data['date'].dt.day
     export_data.append(city_data)
 
     # Calendar Heatmap
@@ -89,6 +95,17 @@ for city in selected_cities:
     ax2.grid(True)
     st.pyplot(fig2)
 
+    # Rolling Average
+    st.markdown("#### 7-Day Rolling Average AQI")
+    fig_roll, ax_roll = plt.subplots(figsize=(16, 3))
+    city_data['rolling'] = city_data['index'].rolling(window=7).mean()
+    ax_roll.plot(city_data['date'], city_data['rolling'], color='orange')
+    ax_roll.set_title(f"7-Day Rolling AQI Average – {city}")
+    ax_roll.set_ylabel("AQI")
+    ax_roll.set_xlabel("Date")
+    ax_roll.grid(True)
+    st.pyplot(fig_roll)
+
     # AQI Category Distribution
     st.markdown("#### AQI Category Distribution")
     category_counts = city_data['level'].value_counts().reindex(category_colors.keys(), fill_value=0)
@@ -97,6 +114,34 @@ for city in selected_cities:
     ax3.set_ylabel("Number of Days")
     ax3.set_title(f"AQI Category Breakdown - {city} ({year})")
     st.pyplot(fig3)
+
+    # Pie Chart
+    st.markdown("#### AQI Category Share (Pie Chart)")
+    fig_pie, ax_pie = plt.subplots()
+    ax_pie.pie(category_counts.values, labels=category_counts.index, autopct="%1.1f%%", colors=[category_colors[k] for k in category_counts.index])
+    ax_pie.set_title(f"AQI Category Proportions – {city} {year}")
+    st.pyplot(fig_pie)
+
+    # Box Plot by Month
+    st.markdown("#### Monthly AQI Distribution (Boxplot)")
+    fig_box, ax_box = plt.subplots(figsize=(10, 4))
+    city_data.boxplot(column='index', by='month', ax=ax_box)
+    ax_box.set_title(f"Monthly AQI Boxplot – {city} {year}")
+    ax_box.set_ylabel("AQI")
+    ax_box.set_xlabel("Month")
+    plt.suptitle("")
+    st.pyplot(fig_box)
+
+    # Heatmap by Month & Day
+    st.markdown("#### AQI Heatmap (Month x Day)")
+    heatmap_data = city_data.pivot_table(index='month', columns='day', values='index')
+    fig_heat, ax_heat = plt.subplots(figsize=(12, 4))
+    c = ax_heat.imshow(heatmap_data, aspect='auto', cmap='YlOrRd', origin='lower')
+    ax_heat.set_title(f"AQI Heatmap – {city} {year}")
+    ax_heat.set_xlabel("Day of Month")
+    ax_heat.set_ylabel("Month")
+    fig_heat.colorbar(c, ax=ax_heat, label='AQI')
+    st.pyplot(fig_heat)
 
 # ------------------- Download Filtered Data -------------------
 if export_data:
