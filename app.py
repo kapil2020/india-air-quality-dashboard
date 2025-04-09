@@ -27,7 +27,7 @@ st.set_page_config(
 # ------------------- Custom Modern Theme CSS -------------------
 st.markdown("""
     <style>
-    /* Import Inter font from Google Fonts for high readability */
+    /* Import Inter font for high readability */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
     /* Base styles */
@@ -39,7 +39,7 @@ st.markdown("""
 
     /* Main content container */
     .main .block-container {
-        background-color: #ffffff;
+        background-color: #ffffff; /* White for main content */
         padding: 2.5rem;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -47,18 +47,28 @@ st.markdown("""
         margin: 1.5rem auto;
     }
 
+    /* Ensure text in main container is visible */
+    .main .block-container, .main .block-container * {
+        color: #1f2937 !important; /* Force dark text */
+    }
+
     /* Sidebar styling */
     .css-1d391kg {
         background-color: #111827; /* Dark gray-blue */
-        color: #f3f4f6; /* Light gray text */
+        color: #f3f4f6 !important; /* Light gray text */
         padding: 1.5rem;
         border-radius: 0 12px 12px 0;
         box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
     }
 
+    /* Sidebar text and inputs */
+    .css-1d391kg * {
+        color: #f3f4f6 !important; /* Ensure sidebar text is light */
+    }
+
     /* Title styling */
     h1 {
-        color: #1e40af; /* Deep blue for prominence */
+        color: #1e40af; /* Deep blue */
         font-weight: 700;
         font-size: 2.5rem;
         text-align: center;
@@ -81,7 +91,7 @@ st.markdown("""
     /* Buttons */
     .stButton>button {
         background-color: #2563eb; /* Vibrant blue */
-        color: #ffffff;
+        color: #ffffff !important; /* White text */
         border-radius: 10px;
         padding: 0.6rem 1.8rem;
         font-weight: 600;
@@ -89,7 +99,7 @@ st.markdown("""
         transition: all 0.3s ease;
     }
     .stButton>button:hover {
-        background-color: #1e40af; /* Darker blue on hover */
+        background-color: #1e40af; /* Darker blue */
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
@@ -98,10 +108,19 @@ st.markdown("""
         background-color: #f0f9ff; /* Light blue-gray */
         border-radius: 10px;
         padding: 1.5rem;
-        color: #1e3a8a; /* Dark blue text */
+        color: #1e3a8a !important; /* Dark blue text */
         border-left: 6px solid #3b82f6; /* Blue accent */
         font-size: 1rem;
         line-height: 1.6;
+    }
+
+    /* Warning box */
+    .stWarning {
+        background-color: #fef2f2;
+        border-radius: 10px;
+        padding: 1rem;
+        color: #991b1b !important; /* Dark red text */
+        border-left: 6px solid #ef4444;
     }
 
     /* Selectbox and multiselect */
@@ -110,19 +129,21 @@ st.markdown("""
         border-radius: 8px;
         padding: 0.5rem;
         border: 1px solid #d1d5db; /* Light gray border */
-        color: #374151;
+        color: #1f2937 !important; /* Dark text */
     }
     .stSelectbox>div>div, .stMultiSelect>div>div {
+        color: #1f2937 !important; /* Dark text for dropdowns */
         font-size: 1rem;
     }
 
-    /* Warning box */
-    .stWarning {
-        background-color: #fef2f2;
-        border-radius: 10px;
-        padding: 1rem;
-        color: #991b1b;
-        border-left: 6px solid #ef4444;
+    /* Markdown text */
+    .stMarkdown, .stMarkdown * {
+        color: #1f2937 !important; /* Ensure markdown text is dark */
+    }
+
+    /* Caption text */
+    .stCaption {
+        color: #6b7280 !important; /* Medium gray for captions */
     }
 
     /* Responsive adjustments */
