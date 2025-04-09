@@ -5,6 +5,7 @@ import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 from sklearn.linear_model import LinearRegression
+
 from sklearn.metrics import mean_squared_error
 import plotly.express as px
 import osmnx as ox
@@ -12,170 +13,12 @@ import geopandas as gpd
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
+
 # Detect screen width for responsive design
 def get_device_type():
     return "mobile" if st.session_state.get("screen_width", 1000) < 768 else "desktop"
 
-# Set page config
-st.set_page_config(
-    layout="wide",
-    initial_sidebar_state="expanded",
-    page_title="India Air Quality Dashboard",
-    page_icon="🌍"
-)
-
-# ------------------- Custom Modern Theme CSS -------------------
-st.markdown("""
-    <style>
-    /* Import Inter font for high readability */
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-
-    /* Base styles */
-    html, body, [class*="css"] {
-        font-family: 'Inter', sans-serif;
-        background-color: #f9fafb; /* Light neutral background */
-        color: #1f2937; /* Dark gray for high contrast */
-    }
-
-    /* Main content container */
-    .main .block-container {
-        background-color: #ffffff !important; /* Force white background */
-        padding: 2.5rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        max-width: 1300px;
-        margin: 1.5rem auto;
-    }
-
-    /* Ensure text in main container is visible */
-    .main .block-container, .main .block-container * {
-        color: #1f2937 !important; /* Force dark text */
-    }
-
-    /* Sidebar styling */
-    .css-1d391kg {
-        background-color: #111827; /* Dark gray-blue */
-        color: #f3f4f6 !important; /* Light gray text */
-        padding: 1.5rem;
-        border-radius: 0 12px 12px 0;
-        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
-    }
-
-    /* Sidebar text and inputs */
-    .css-1d391kg * {
-        color: #f3f4f6 !important; /* Ensure sidebar text is light */
-    }
-
-    /* Title styling */
-    h1 {
-        color: #1e40af !important; /* Deep blue */
-        font-weight: 700;
-        font-size: 2.5rem;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-
-    /* Headers */
-    h2 {
-        color: #374151 !important; /* Dark gray */
-        font-weight: 600;
-        font-size: 1.75rem;
-        margin-top: 2rem;
-    }
-    h3, h4 {
-        color: #4b5563 !important; /* Medium gray */
-        font-weight: 600;
-        font-size: 1.25rem;
-    }
-
-    /* Buttons */
-    .stButton>button {
-        background-color: #2563eb; /* Vibrant blue */
-        color: #ffffff !important; /* White text */
-        border-radius: 10px;
-        padding: 0.6rem 1.8rem;
-        font-weight: 600;
-        border: none;
-        transition: all 0.3s ease;
-    }
-    .stButton>button:hover {
-        background-color: #1e40af; /* Darker blue */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Info box */
-    .stAlert {
-        background-color: #f0f9ff; /* Light blue-gray */
-        border-radius: 10px;
-        padding: 1.5rem;
-        color: #1e3a8a !important; /* Dark blue text */
-        border-left: 6px solid #3b82f6; /* Blue accent */
-        font-size: 1rem;
-        line-height: 1.6;
-    }
-
-    /* Warning box */
-    .stWarning {
-        background-color: #fef2f2;
-        border-radius: 10px;
-        padding: 1rem;
-        color: #991b1b !important; /* Dark red text */
-        border-left: 6px solid #ef4444;
-    }
-
-    /* Selectbox and multiselect */
-    .stSelectbox, .stMultiSelect {
-        background-color: #ffffff;
-        border-radius: 8px;
-        padding: 0.5rem;
-        border: 1px solid #d1d5db; /* Light gray border */
-        color: #1f2937 !important; /* Dark text */
-    }
-    .stSelectbox>div>div, .stMultiSelect>div>div {
-        color: #1f2937 !important; /* Dark text for dropdowns */
-        font-size: 1rem;
-    }
-
-    /* Markdown text */
-    .stMarkdown, .stMarkdown * {
-        color: #1f2937 !important; /* Ensure markdown text is dark */
-    }
-
-    /* Caption text */
-    .stCaption {
-        color: #6b7280 !important; /* Medium gray for captions */
-    }
-
-    /* Plotly chart title */
-    .js-plotly-plot .plotly .modebar {
-        background-color: transparent !important;
-    }
-
-    /* Responsive adjustments */
-    @media screen and (max-width: 768px) {
-        .main .block-container {
-            padding: 1.5rem;
-            margin: 1rem;
-        }
-        h1 {
-            font-size: 1.8rem;
-        }
-        h2 {
-            font-size: 1.5rem;
-        }
-        h3, h4 {
-            font-size: 1.1rem;
-        }
-        .stButton>button {
-            padding: 0.5rem 1.2rem;
-        }
-        .stAlert, .stWarning {
-            font-size: 0.9rem;
-        }
-    }
-    </style>
-""", unsafe_allow_html=True)
-
+st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 # ------------------- Title -------------------
 st.title("🇮🇳 India Air Quality Dashboard")
 
@@ -199,8 +42,9 @@ Welcome to the **India Air Quality Dashboard** 🇮🇳
 - **AQI forecast** with linear trendline predictions
 - **Interactive AQI map** with city-wise averages, categories, and dominant pollutants
 
-📤 Download the filtered dataset as a CSV using the button below the charts.
-""")
+📤 Download the filtered dataset as a CSV using the button below the charts. 
+        """)
+
 
 # ------------------- Load Data -------------------
 data_path = r"combined_air_quality.txt"
@@ -213,9 +57,11 @@ df = load_data()
 
 # ------------------- Sidebar Filters -------------------
 selected_cities = st.sidebar.multiselect("Select Cities", sorted(df['city'].unique()), default=["Delhi"])
+
 years = sorted(df['date'].dt.year.unique())
 year = st.sidebar.selectbox("Select a Year", years, index=years.index(2024) if 2024 in years else 0)
 
+# Month Dropdown
 months_dict = {
     1: 'January', 2: 'February', 3: 'March', 4: 'April',
     5: 'May', 6: 'June', 7: 'July', 8: 'August',
@@ -240,7 +86,11 @@ export_data = []
 for city in selected_cities:
     st.markdown(f"## {city} – {year}")
     
-    city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
+    city_data = df[
+        (df['city'] == city) &
+        (df['date'].dt.year == year)
+    ].copy()
+
     if selected_month != "All":
         month_number = [k for k, v in months_dict.items() if v == selected_month][0]
         city_data = city_data[city_data['date'].dt.month == month_number]
@@ -262,12 +112,14 @@ for city in selected_cities:
         color = category_colors.get(row['level'], '#FFFFFF')
         rect = patches.FancyBboxPatch((row['day_of_year'], 0), 1, 1, boxstyle="round,pad=0.1", linewidth=0, facecolor=color)
         ax.add_patch(rect)
+
     ax.set_xlim(1, 367)
     ax.set_ylim(0, 1)
     ax.axis('off')
     for day, label in zip([1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335],
                           ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']):
         ax.text(day, 1.05, label, ha='center', fontsize=10)
+
     legend_elements = [patches.Patch(facecolor=color, label=label) for label, color in category_colors.items()]
     ax.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1, 0.5), title="AQI Category")
     st.pyplot(fig)
@@ -330,7 +182,8 @@ for city in selected_cities:
     fig_heat.colorbar(c, ax=ax_heat, label='AQI')
     st.pyplot(fig_heat)
 
-# ------------------- Pollutant Colors -------------------
+
+# ------------------- Pollutant Colors (ggplot2 style) -------------------
 pollutant_colors = {
     'PM2.5': '#F8766D',
     'PM10': '#7CAE00',
@@ -344,21 +197,27 @@ pollutant_colors = {
 df['pollutant'] = df['pollutant'].astype(str).str.split(',').str[0].str.strip()
 df['pollutant'].replace(['nan', 'NaN', 'None', ''], np.nan, inplace=True)
 
-# ------------------- 📊 Chart A: Year-wise Prominent Pollutants -------------------
+# ------------------- 📊 Chart A: Year-wise Prominent Pollutants (ALL years) -------------------
 st.markdown("## 📊 Prominent Pollutants by Year (Overall Trend)")
+
 city_for_pollutant_plot = st.selectbox("Select a city for overall year-wise view:", sorted(df['city'].unique()))
+
 yearly_data = df[df['city'] == city_for_pollutant_plot].copy()
 yearly_data = yearly_data.dropna(subset=['pollutant'])
 yearly_data['year'] = yearly_data['date'].dt.year
+
 grouped_yearly = yearly_data.groupby(['year', 'pollutant']).size().unstack(fill_value=0)
 percent_yearly = grouped_yearly.div(grouped_yearly.sum(axis=1), axis=0) * 100
+
 fig_yearly, ax_yearly = plt.subplots(figsize=(10, 5))
 bottoms = np.zeros(len(percent_yearly))
+
 for pollutant in pollutant_colors:
     if pollutant in percent_yearly.columns:
         vals = percent_yearly[pollutant].values
         ax_yearly.bar(percent_yearly.index, vals, bottom=bottoms, label=pollutant, color=pollutant_colors[pollutant])
         bottoms += vals
+
 ax_yearly.set_title(f"Prominent Pollutants Over the Years – {city_for_pollutant_plot}")
 ax_yearly.set_ylabel("Percentage")
 ax_yearly.set_xlabel("Year")
@@ -368,23 +227,33 @@ ax_yearly.set_xticklabels(percent_yearly.index, rotation=45)
 ax_yearly.legend(title="Pollutant", bbox_to_anchor=(1.05, 1), loc='upper left')
 st.pyplot(fig_yearly)
 
-# ------------------- 📊 Chart B: Sidebar-Filtered Pollutants -------------------
+# ------------------- 📊 Chart B: Sidebar-Filtered Pollutants by Year (Selected) -------------------
 st.markdown("## 📊 Prominent Pollutants – Based on Sidebar Filters")
-filtered_data = df[(df['city'] == city_for_pollutant_plot) & (df['date'].dt.year == year)].copy()
+
+filtered_data = df[
+    (df['city'] == city_for_pollutant_plot) &
+    (df['date'].dt.year == year)
+].copy()
+
 if selected_month != "All":
     filtered_data = filtered_data[filtered_data['date'].dt.month == month_number]
+
 if not filtered_data.empty:
     filtered_data = filtered_data.dropna(subset=['pollutant'])
     filtered_data['year'] = filtered_data['date'].dt.year
+
     grouped_filtered = filtered_data.groupby(['year', 'pollutant']).size().unstack(fill_value=0)
     percent_filtered = grouped_filtered.div(grouped_filtered.sum(axis=1), axis=0) * 100
+
     fig_filtered, ax_filtered = plt.subplots(figsize=(10, 5))
     bottoms = np.zeros(len(percent_filtered))
+
     for pollutant in pollutant_colors:
         if pollutant in percent_filtered.columns:
             vals = percent_filtered[pollutant].values
             ax_filtered.bar(percent_filtered.index, vals, bottom=bottoms, label=pollutant, color=pollutant_colors[pollutant])
             bottoms += vals
+
     title_suffix = f"{selected_month} {year}" if selected_month != "All" else f"{year}"
     ax_filtered.set_title(f"Prominent Pollutants – {city_for_pollutant_plot}, {title_suffix}")
     ax_filtered.set_ylabel("Percentage")
@@ -397,28 +266,50 @@ if not filtered_data.empty:
 else:
     st.warning("No data available for the selected city and time period.")
 
+
+
 # ------------------- 📈 AQI Trendline Forecast -------------------
 st.markdown("## 📈 AQI Forecast – Linear Trendline")
+
 forecast_city = st.selectbox("Select a city for AQI forecast:", sorted(df['city'].unique()), index=0)
-forecast_data = df[(df['city'] == forecast_city) & (df['date'].dt.year == year)].copy()
+
+# Filter data
+forecast_data = df[
+    (df['city'] == forecast_city) &
+    (df['date'].dt.year == year)
+].copy()
+
 if selected_month != "All":
     forecast_data = forecast_data[forecast_data['date'].dt.month == month_number]
+
+# Continue only if there's enough data
 if len(forecast_data) >= 15:
     forecast_data = forecast_data.sort_values('date')
     forecast_data = forecast_data[['date', 'index']].dropna()
+
+    # Prepare data for regression
     forecast_data['days_since_start'] = (forecast_data['date'] - forecast_data['date'].min()).dt.days
     X = forecast_data[['days_since_start']]
     y = forecast_data['index']
+
+    # Linear Regression
     model = LinearRegression()
     model.fit(X, y)
+
+    # Predict existing & future days
     future_days = 15
     total_days = forecast_data['days_since_start'].max() + future_days
     future_X = pd.DataFrame({'days_since_start': np.arange(0, total_days + 1)})
     future_y_pred = model.predict(future_X)
+
+    # Dates for future prediction
     future_dates = [forecast_data['date'].min() + pd.Timedelta(days=int(i)) for i in future_X['days_since_start']]
+    
+    # Plot
     fig_forecast, ax_forecast = plt.subplots(figsize=(10, 4))
     ax_forecast.plot(forecast_data['date'], y, 'bo-', label='Observed AQI')
     ax_forecast.plot(future_dates, future_y_pred, 'r--', label='Forecast (Linear Trend)', linewidth=2)
+
     ax_forecast.set_title(f"AQI Forecast – {forecast_city} ({selected_month if selected_month != 'All' else 'Full Year'} {year})")
     ax_forecast.set_xlabel("Date")
     ax_forecast.set_ylabel("AQI Index")
@@ -431,8 +322,8 @@ else:
 # ------------------- Load City Coordinates -------------------
 with open(r"lat_long.txt", "r") as f:
     lines = f.readlines()
-    dict_text = ''.join(lines[1:])
-    city_coords = eval("{" + dict_text)
+    dict_text = ''.join(lines[1:])  # Skip the first line (e.g., 'city_coords = {')
+    city_coords = eval("{" + dict_text)  # Add the opening brace back
 
 # Convert to DataFrame
 latlong_df = pd.DataFrame([
@@ -440,8 +331,10 @@ latlong_df = pd.DataFrame([
     for city, coords in city_coords.items()
 ])
 
-# ------------------- 🗺️ Interactive AQI Map -------------------
+# ------------------- 🗺️ Improved Interactive AQI Map -------------------
 st.markdown("## 🗺️ Interactive Air Quality Map – City-wise")
+
+# Assign AQI category to map_merged
 def classify_aqi(val):
     if val <= 50:
         return "Good"
@@ -459,15 +352,19 @@ def classify_aqi(val):
 map_data = df.copy()
 map_data['year'] = map_data['date'].dt.year
 map_data = map_data[map_data['year'] == year]
+
 if selected_month != "All":
     map_data = map_data[map_data['date'].dt.month == month_number]
+
 map_grouped = map_data.groupby('city').agg({
     'index': 'mean',
     'pollutant': lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan
 }).reset_index().rename(columns={'index': 'avg_aqi', 'pollutant': 'dominant_pollutant'})
+
 map_merged = pd.merge(map_grouped, latlong_df, on='city', how='inner')
 map_merged["AQI Category"] = map_merged["avg_aqi"].apply(classify_aqi)
-
+# Dropdown filter for AQI Category
+# Custom color scale similar to CPCB categories
 aqi_colors = {
     "Good": "#007E00",
     "Satisfactory": "#00E400",
@@ -479,8 +376,10 @@ aqi_colors = {
 aqi_categories = ["All"] + list(aqi_colors.keys())
 selected_aqi_category = st.selectbox("🧪 Filter by AQI Category", aqi_categories, index=0)
 
+# Filter data if category is selected
 if selected_aqi_category != "All":
     map_merged = map_merged[map_merged["AQI Category"] == selected_aqi_category]
+
 
 fig_map = px.scatter_mapbox(
     map_merged,
@@ -491,17 +390,29 @@ fig_map = px.scatter_mapbox(
     color="AQI Category",
     color_discrete_map=aqi_colors,
     hover_name="city",
-    hover_data={"avg_aqi": True, "dominant_pollutant": True, "AQI Category": True, "lat": False, "lon": False},
+    hover_data={
+        "avg_aqi": True,
+        "dominant_pollutant": True,
+        "AQI Category": True,
+        "lat": False,
+        "lon": False
+    },
     zoom=4,
     height=800,
 )
+
 fig_map.update_layout(
     mapbox_style="carto-positron",
     title="Average AQI by City with Categories",
     legend_title="AQI Category",
     margin={"r": 0, "t": 40, "l": 0, "b": 0}
 )
+
 st.plotly_chart(fig_map, use_container_width=True)
+
+
+
+
 
 # ------------------- Download Filtered Data -------------------
 if export_data:
@@ -531,3 +442,15 @@ RCGSIDM, IIT Kharagpur
 📧 akgoswami@infra.iitkgp.ac.in
 """)
 st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
+
+# ------------------- Mobile Friendly Styles -------------------
+st.markdown("""
+<style>
+@media screen and (max-width: 768px) {
+    .element-container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
