@@ -16,7 +16,7 @@ from shapely.ops import unary_union
 def get_device_type():
     return "mobile" if st.session_state.get("screen_width", 1000) < 768 else "desktop"
 
-# Set page config with a modern layout
+# Set page config
 st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
@@ -27,69 +27,81 @@ st.set_page_config(
 # ------------------- Custom Modern Theme CSS -------------------
 st.markdown("""
     <style>
-    /* Import modern font from Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+    /* Import Inter font from Google Fonts for high readability */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
     /* Base styles */
     html, body, [class*="css"] {
-        font-family: 'Poppins', sans-serif;
-        background-color: #f4f7fa;
-        color: #2c3e50;
+        font-family: 'Inter', sans-serif;
+        background-color: #f9fafb; /* Light neutral background */
+        color: #1f2937; /* Dark gray for high contrast */
     }
 
     /* Main content container */
     .main .block-container {
         background-color: #ffffff;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        max-width: 1200px;
-        margin: 1rem auto;
+        padding: 2.5rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        max-width: 1300px;
+        margin: 1.5rem auto;
     }
 
     /* Sidebar styling */
     .css-1d391kg {
-        background-color: #2c3e50;
-        color: #ecf0f1;
-        border-radius: 0 15px 15px 0;
-        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #111827; /* Dark gray-blue */
+        color: #f3f4f6; /* Light gray text */
+        padding: 1.5rem;
+        border-radius: 0 12px 12px 0;
+        box-shadow: 2px 0 12px rgba(0, 0, 0, 0.1);
     }
 
     /* Title styling */
     h1 {
-        color: #2980b9;
-        font-weight: 600;
+        color: #1e40af; /* Deep blue for prominence */
+        font-weight: 700;
+        font-size: 2.5rem;
         text-align: center;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     /* Headers */
-    h2, h3, h4 {
-        color: #34495e;
+    h2 {
+        color: #374151; /* Dark gray */
         font-weight: 600;
+        font-size: 1.75rem;
+        margin-top: 2rem;
+    }
+    h3, h4 {
+        color: #4b5563; /* Medium gray */
+        font-weight: 600;
+        font-size: 1.25rem;
     }
 
     /* Buttons */
     .stButton>button {
-        background-color: #3498db;
-        color: white;
-        border-radius: 8px;
-        padding: 0.5rem 1.5rem;
+        background-color: #2563eb; /* Vibrant blue */
+        color: #ffffff;
+        border-radius: 10px;
+        padding: 0.6rem 1.8rem;
+        font-weight: 600;
         border: none;
         transition: all 0.3s ease;
     }
     .stButton>button:hover {
-        background-color: #2980b9;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        background-color: #1e40af; /* Darker blue on hover */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     /* Info box */
     .stAlert {
-        background-color: #ecf0f1;
+        background-color: #f0f9ff; /* Light blue-gray */
         border-radius: 10px;
-        padding: 1rem;
-        color: #2c3e50;
-        border-left: 5px solid #3498db;
+        padding: 1.5rem;
+        color: #1e3a8a; /* Dark blue text */
+        border-left: 6px solid #3b82f6; /* Blue accent */
+        font-size: 1rem;
+        line-height: 1.6;
     }
 
     /* Selectbox and multiselect */
@@ -97,20 +109,42 @@ st.markdown("""
         background-color: #ffffff;
         border-radius: 8px;
         padding: 0.5rem;
-        border: 1px solid #dcdcdc;
+        border: 1px solid #d1d5db; /* Light gray border */
+        color: #374151;
+    }
+    .stSelectbox>div>div, .stMultiSelect>div>div {
+        font-size: 1rem;
+    }
+
+    /* Warning box */
+    .stWarning {
+        background-color: #fef2f2;
+        border-radius: 10px;
+        padding: 1rem;
+        color: #991b1b;
+        border-left: 6px solid #ef4444;
     }
 
     /* Responsive adjustments */
     @media screen and (max-width: 768px) {
         .main .block-container {
-            padding: 1rem;
-            margin: 0.5rem;
+            padding: 1.5rem;
+            margin: 1rem;
         }
         h1 {
+            font-size: 1.8rem;
+        }
+        h2 {
             font-size: 1.5rem;
         }
+        h3, h4 {
+            font-size: 1.1rem;
+        }
         .stButton>button {
-            padding: 0.4rem 1rem;
+            padding: 0.5rem 1.2rem;
+        }
+        .stAlert, .stWarning {
+            font-size: 0.9rem;
         }
     }
     </style>
@@ -156,7 +190,6 @@ selected_cities = st.sidebar.multiselect("Select Cities", sorted(df['city'].uniq
 years = sorted(df['date'].dt.year.unique())
 year = st.sidebar.selectbox("Select a Year", years, index=years.index(2024) if 2024 in years else 0)
 
-# Month Dropdown
 months_dict = {
     1: 'January', 2: 'February', 3: 'March', 4: 'April',
     5: 'May', 6: 'June', 7: 'July', 8: 'August',
@@ -182,7 +215,6 @@ for city in selected_cities:
     st.markdown(f"## {city} – {year}")
     
     city_data = df[(df['city'] == city) & (df['date'].dt.year == year)].copy()
-
     if selected_month != "All":
         month_number = [k for k, v in months_dict.items() if v == selected_month][0]
         city_data = city_data[city_data['date'].dt.month == month_number]
@@ -272,7 +304,7 @@ for city in selected_cities:
     fig_heat.colorbar(c, ax=ax_heat, label='AQI')
     st.pyplot(fig_heat)
 
-# ------------------- Pollutant Colors (ggplot2 style) -------------------
+# ------------------- Pollutant Colors -------------------
 pollutant_colors = {
     'PM2.5': '#F8766D',
     'PM10': '#7CAE00',
@@ -286,7 +318,7 @@ pollutant_colors = {
 df['pollutant'] = df['pollutant'].astype(str).str.split(',').str[0].str.strip()
 df['pollutant'].replace(['nan', 'NaN', 'None', ''], np.nan, inplace=True)
 
-# ------------------- 📊 Chart A: Year-wise Prominent Pollutants (ALL years) -------------------
+# ------------------- 📊 Chart A: Year-wise Prominent Pollutants -------------------
 st.markdown("## 📊 Prominent Pollutants by Year (Overall Trend)")
 city_for_pollutant_plot = st.selectbox("Select a city for overall year-wise view:", sorted(df['city'].unique()))
 yearly_data = df[df['city'] == city_for_pollutant_plot].copy()
@@ -310,7 +342,7 @@ ax_yearly.set_xticklabels(percent_yearly.index, rotation=45)
 ax_yearly.legend(title="Pollutant", bbox_to_anchor=(1.05, 1), loc='upper left')
 st.pyplot(fig_yearly)
 
-# ------------------- 📊 Chart B: Sidebar-Filtered Pollutants by Year (Selected) -------------------
+# ------------------- 📊 Chart B: Sidebar-Filtered Pollutants -------------------
 st.markdown("## 📊 Prominent Pollutants – Based on Sidebar Filters")
 filtered_data = df[(df['city'] == city_for_pollutant_plot) & (df['date'].dt.year == year)].copy()
 if selected_month != "All":
@@ -382,7 +414,7 @@ latlong_df = pd.DataFrame([
     for city, coords in city_coords.items()
 ])
 
-# ------------------- 🗺️ Improved Interactive AQI Map -------------------
+# ------------------- 🗺️ Interactive AQI Map -------------------
 st.markdown("## 🗺️ Interactive Air Quality Map – City-wise")
 def classify_aqi(val):
     if val <= 50:
