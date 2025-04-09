@@ -39,7 +39,7 @@ st.markdown("""
 
     /* Main content container */
     .main .block-container {
-        background-color: #ffffff; /* White for main content */
+        background-color: #ffffff !important; /* Force white background */
         padding: 2.5rem;
         border-radius: 12px;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -68,7 +68,7 @@ st.markdown("""
 
     /* Title styling */
     h1 {
-        color: #1e40af; /* Deep blue */
+        color: #1e40af !important; /* Deep blue */
         font-weight: 700;
         font-size: 2.5rem;
         text-align: center;
@@ -77,13 +77,13 @@ st.markdown("""
 
     /* Headers */
     h2 {
-        color: #374151; /* Dark gray */
+        color: #374151 !important; /* Dark gray */
         font-weight: 600;
         font-size: 1.75rem;
         margin-top: 2rem;
     }
     h3, h4 {
-        color: #4b5563; /* Medium gray */
+        color: #4b5563 !important; /* Medium gray */
         font-weight: 600;
         font-size: 1.25rem;
     }
@@ -144,6 +144,11 @@ st.markdown("""
     /* Caption text */
     .stCaption {
         color: #6b7280 !important; /* Medium gray for captions */
+    }
+
+    /* Plotly chart title */
+    .js-plotly-plot .plotly .modebar {
+        background-color: transparent !important;
     }
 
     /* Responsive adjustments */
