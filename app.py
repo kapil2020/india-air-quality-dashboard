@@ -5,7 +5,8 @@ import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 from sklearn.linear_model import LinearRegression
-
+import os
+from datetime import date
 from sklearn.metrics import mean_squared_error
 import plotly.express as px
 import osmnx as ox
@@ -46,12 +47,18 @@ Welcome to the **India Air Quality Dashboard** 🇮🇳
         """)
 
 
-# ------------------- Load Data -------------------
-data_path = r"combined_air_quality.txt"
-
-@st.cache_data(ttl=600)
+@st.cache_data(ttl=3600)
 def load_data():
-    return pd.read_csv(data_path, sep='\t', parse_dates=['date'])
+    today = date.today()
+    csv_path = f"data/{today}.csv"
+    
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+        df['date'] = pd.to_datetime(today)
+        return df
+    else:
+        st.warning(f"No AQI report found for today ({today}).")
+        return pd.read_csv("combined_air_quality.txt", sep="\t", parse_dates=['date'])
 
 df = load_data()
 
