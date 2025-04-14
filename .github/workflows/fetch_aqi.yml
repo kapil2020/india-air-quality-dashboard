@@ -1,10 +1,3 @@
-name: Fetch Daily AQI Bulletin
-
-on:
-  schedule:
-    - cron: '15 12 * * *'  # Every day at 5:45 PM IST (12:15 UTC)
-  workflow_dispatch:       # Allows you to trigger it manually
-
 jobs:
   fetch_and_commit:
     runs-on: ubuntu-latest
@@ -21,6 +14,16 @@ jobs:
       - name: 🐍 Install Tabula via PyCall
         run: |
           julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(`pip install tabula-py`)'
+
+      - name: 📦 Install Required Julia Packages
+        run: |
+          julia -e '
+            using Pkg
+            Pkg.add("CSV")
+            Pkg.add("DataFrames")
+            Pkg.add("PyCall")
+            Pkg.add("TimeZones")
+          '
 
       - name: 📥 Run Julia Script to Fetch AQI
         run: julia fetch_cpcb_aqi.jl
