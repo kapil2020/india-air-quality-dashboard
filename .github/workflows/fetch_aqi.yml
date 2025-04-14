@@ -36,7 +36,7 @@ jobs:
         run: julia fetch_cpcb_aqi.jl
 
           - name: 🚀 Commit and Push New CSV (if available)
-        run: |
+            run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           if ls data/*.csv 1> /dev/null 2>&1; then
