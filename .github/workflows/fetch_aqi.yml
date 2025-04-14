@@ -1,3 +1,10 @@
+name: Fetch Daily AQI Bulletin
+
+on:
+  schedule:
+    - cron: '15 12 * * *'  # Every day at 5:45 PM IST (12:15 UTC)
+  workflow_dispatch:
+
 jobs:
   fetch_and_commit:
     runs-on: ubuntu-latest
