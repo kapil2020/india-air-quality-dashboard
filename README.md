@@ -71,6 +71,6 @@ https://cpcb.nic.in/air-quality-monitoring/
 👨‍💻 Author
 Kapil Meena
 Doctoral Scholar, IIT Kharagpur
-🌐 Website
+🌐 Website, https://sites.google.com/view/kapil-lab/home
 📧 kapil.meena@kgpian.iitkgp.ac.in
 
