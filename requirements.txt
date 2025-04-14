@@ -9,3 +9,5 @@ geopandas
 shapely
 cartopy
 scipy
+tabula-py
+pyarrow
