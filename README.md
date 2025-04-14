@@ -36,17 +36,20 @@ india-air-quality-dashboard/ ├── .github/workflows/ # GitHub Actions: auto
    cd india-air-quality-dashboard
 
 2. Create and activate a virtual environment:
+      ```
       python -m venv venv
-source venv/bin/activate  # or .\venv\Scripts\activate on Windows
+      source venv/bin/activate  # On Windows: .\venv\Scripts\activate
 
 3. Install dependencies:
+     ```
       pip install -r requirements.txt
 
 4. Run the app:
+    ```
     streamlit run app.py
 
 
-   Data Automation via GitHub Actions
+Data Automation via GitHub Actions
 The repository includes a GitHub Action that:
 
 Runs daily at 5:45 PM IST
