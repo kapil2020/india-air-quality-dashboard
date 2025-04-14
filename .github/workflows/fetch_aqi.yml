@@ -35,8 +35,8 @@ jobs:
       - name: 📥 Run Julia Script to Fetch AQI
         run: julia fetch_cpcb_aqi.jl
 
-          - name: 🚀 Commit and Push New CSV (if available)
-            run: |
+               - name: 🚀 Commit and Push New CSV (if available)
+        run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           if ls data/*.csv 1> /dev/null 2>&1; then
@@ -46,5 +46,6 @@ jobs:
           else
             echo "No new CSV files to commit."
           fi
+
 
 
