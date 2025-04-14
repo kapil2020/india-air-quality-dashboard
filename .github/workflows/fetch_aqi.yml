@@ -1,0 +1,34 @@
+name: Fetch Daily AQI Bulletin
+
+on:
+  schedule:
+    - cron: '15 12 * * *'  # Every day at 5:45 PM IST (12:15 UTC)
+  workflow_dispatch:       # Allows you to trigger it manually
+
+jobs:
+  fetch_and_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Set up Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.10'
+
+      - name: 🐍 Install Tabula via PyCall
+        run: |
+          julia -e 'using Pkg; Pkg.add("PyCall"); using PyCall; run(`pip install tabula-py`)'
+
+      - name: 📥 Run Julia Script to Fetch AQI
+        run: julia fetch_cpcb_aqi.jl
+
+      - name: 🚀 Commit and Push New CSV
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add data/*.csv
+          git commit -m "Add AQI bulletin for $(date +'%Y-%m-%d')" || echo "No new file to commit"
+          git push
