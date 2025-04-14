@@ -1,0 +1,28 @@
+[project]
+name = "india-air-quality-dashboard"
+version = "0.1.0"
+description = "Interactive dashboard to explore CPCB's daily AQI data across Indian cities"
+authors = [{ name="Kapil Meena", email="kapil.meena@kgpian.iitkgp.ac.in" }]
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "MIT" }
+dependencies = [
+    "streamlit",
+    "pandas",
+    "matplotlib",
+    "numpy",
+    "plotly",
+    "scikit-learn",
+    "geopandas",
+    "shapely",
+    "osmnx",
+    "cartopy",
+    "scipy"
+]
+
+[project.scripts]
+india-aqi-dashboard = "india_air_quality_dashboard.cli:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
