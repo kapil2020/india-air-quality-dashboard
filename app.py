@@ -141,6 +141,7 @@ for city in selected_cities:
     ax2.grid(True)
     st.pyplot(fig2)
 
+
     # Rolling Average
     st.markdown("#### 7-Day Rolling Average AQI")
     fig_roll, ax_roll = plt.subplots(figsize=(fig_width * 0.8, 3))
@@ -189,7 +190,29 @@ for city in selected_cities:
     fig_heat.colorbar(c, ax=ax_heat, label='AQI')
     st.pyplot(fig_heat)
 
+# ------------------- 📈 City-wise AQI Time Series Comparison -------------------
+if len(selected_cities) > 1:
+    st.markdown("## 📈 AQI Comparison Across Selected Cities")
 
+    fig_cmp, ax_cmp = plt.subplots(figsize=(14, 4))
+
+    for city in selected_cities:
+        city_ts = df[
+            (df['city'] == city) &
+            (df['date'].dt.year == year)
+        ]
+        if selected_month != "All":
+            month_number = [k for k, v in months_dict.items() if v == selected_month][0]
+            city_ts = city_ts[city_ts['date'].dt.month == month_number]
+        city_ts = city_ts.sort_values('date')
+        ax_cmp.plot(city_ts['date'], city_ts['index'], marker='o', label=city, linewidth=1.5, markersize=2)
+
+    ax_cmp.set_title(f"AQI Trends Across Cities – {year}" + (f", {selected_month}" if selected_month != "All" else ""), fontsize=14)
+    ax_cmp.set_xlabel("Date")
+    ax_cmp.set_ylabel("AQI Index")
+    ax_cmp.grid(True, linestyle='--', alpha=0.6)
+    ax_cmp.legend(loc='upper right')
+    st.pyplot(fig_cmp)
 # ------------------- Pollutant Colors (ggplot2 style) -------------------
 pollutant_colors = {
     'PM2.5': '#F8766D',
@@ -461,3 +484,4 @@ st.markdown("""
 }
 </style>
 """, unsafe_allow_html=True)
+
