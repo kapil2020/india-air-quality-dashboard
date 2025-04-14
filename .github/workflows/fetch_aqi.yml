@@ -35,7 +35,8 @@ jobs:
       - name: 📥 Run Julia Script to Fetch AQI
         run: julia fetch_cpcb_aqi.jl
 
-               - name: 🚀 Commit and Push New CSV (if available)
+      - name: 🚀 Commit and Push New CSV (if available)
+        shell: bash
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
@@ -46,6 +47,7 @@ jobs:
           else
             echo "No new CSV files to commit."
           fi
+
 
 
 
