@@ -671,52 +671,7 @@ with st.container():
         st.warning(f"Need at least 15 data points for {forecast_city_select} for forecasting; found {len(forecast_src_data)}.")
 
 
-# ------------------- 💡 NATIONAL KEY INSIGHTS -------------------
-st.markdown("## 🇮🇳 National Snapshot")
-with st.container(): # This will adopt card styling if CSS is global enough, or style elements within
-    if year:
-        st.markdown(f"##### Key Metro Annual Average AQI ({year})")
-        major_cities = ['Delhi', 'Mumbai', 'Kolkata', 'Bengaluru', 'Chennai', 'Hyderabad', 'Pune', 'Ahmedabad']
-        major_cities_annual_data = df[df['date'].dt.year == year] # Data for the whole selected year
-        major_cities_annual_data = major_cities_annual_data[major_cities_annual_data['city'].isin(major_cities)]
 
-        if not major_cities_annual_data.empty:
-            avg_aqi_major_cities = major_cities_annual_data.groupby('city')['index'].mean().dropna()
-            present_major_cities = [city for city in major_cities if city in avg_aqi_major_cities.index]
-            
-            if present_major_cities:
-                cols = st.columns(min(len(present_major_cities), 4)) # Max 4 cols for better metric display
-                col_idx = 0
-                for city_name in present_major_cities:
-                    with cols[col_idx % len(cols)]:
-                        aqi_val = avg_aqi_major_cities.get(city_name)
-                        st.metric(label=city_name, value=f"{aqi_val:.1f}")
-                    col_idx +=1
-            else:
-                st.info(f"No annual AQI data available for the selected key metro cities in {year}.")
-        else:
-            st.info(f"No data available for key metro cities in {year}.")
-
-        st.markdown(f"##### General Insights for Selected Period ({selected_month_display_name}, {year})")
-        if not df_period_filtered.empty:
-            avg_aqi_national = df_period_filtered['index'].mean()
-            city_avg_aqi_stats = df_period_filtered.groupby('city')['index'].mean().dropna() # Drop NA before finding min/max
-            if not city_avg_aqi_stats.empty:
-                num_cities_observed = df_period_filtered['city'].nunique()
-                best_city_name, best_city_aqi = city_avg_aqi_stats.idxmin(), city_avg_aqi_stats.min()
-                worst_city_name, worst_city_aqi = city_avg_aqi_stats.idxmax(), city_avg_aqi_stats.max()
-                st.markdown(f"""<div style="font-size: 1.05rem; line-height: 1.7;">
-                    Across <b>{num_cities_observed}</b> observed cities, the average AQI is <b style="color:{ACCENT_COLOR}; font-size:1.15em;">{avg_aqi_national:.2f}</b>.
-                    City with best average air quality: <b style="color:{CATEGORY_COLORS_DARK.get('Good', '#FFFFFF')};">{best_city_name}</b> ({best_city_aqi:.2f}).
-                    Most challenged city: <b style="color:{CATEGORY_COLORS_DARK.get('Severe', '#FFFFFF')};">{worst_city_name}</b> ({worst_city_aqi:.2f}).
-                </div>""", unsafe_allow_html=True)
-            else:
-                st.info("AQI statistics could not be computed for the selected period (no valid city averages).")
-        else:
-            st.info("No data available for the selected period to generate general insights.")
-    else:
-        st.warning("Please select a year to view national insights.")
-st.markdown("---") # Thematic break
 
 # ------------------- 🗺️ INTERACTIVE AIR QUALITY MAP (City Hotspots) -------------------
 st.markdown("## 📍 City AQI Hotspots")
