@@ -1,7 +1,5 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
 import numpy as np
 from io import StringIO
 from sklearn.linear_model import LinearRegression
@@ -69,38 +67,30 @@ st.markdown(f"""
         border-radius: 12px;
         border: 1px solid {BORDER_COLOR};
         background-color: {CARD_BACKGROUND_COLOR};
-        padding: 1.5rem; /* Increased padding */
-        margin-bottom: 2rem;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Softer shadow for dark theme */
-    }}
-    .stpyplot {{ /* Matplotlib specific styling */
-        border-radius: 12px;
-        border: 1px solid {BORDER_COLOR};
-        background-color: {CARD_BACKGROUND_COLOR}; /* Match card background */
-        padding: 1rem;
+        padding: 1.5rem;
         margin-bottom: 2rem;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     }}
-
+    
     .stTabs [data-baseweb="tab-list"] {{
          box-shadow: none;
          border-bottom: 2px solid {BORDER_COLOR};
          padding-bottom: 0;
-         background-color: transparent; /* Ensure tabs blend */
+         background-color: transparent;
     }}
     .stTabs [data-baseweb="tab"] {{
         padding: 0.8rem 1.5rem;
         font-weight: 600;
         color: {SUBTLE_TEXT_COLOR_DARK_THEME};
         background-color: transparent;
-        border-radius: 8px 8px 0 0; /* Rounded top corners */
+        border-radius: 8px 8px 0 0;
         margin-right: 0.5rem;
         transition: background-color 0.3s ease, color 0.3s ease;
     }}
      .stTabs [aria-selected="true"] {{
         border-bottom: 3px solid {ACCENT_COLOR};
         color: {ACCENT_COLOR};
-        background-color: {BACKGROUND_COLOR}; /* Slightly different bg for active tab */
+        background-color: {BACKGROUND_COLOR};
      }}
 
     /* Headings */
@@ -108,7 +98,7 @@ st.markdown(f"""
         font-family: 'Inter', sans-serif;
         color: {TEXT_COLOR_DARK_THEME};
         text-align: center;
-        margin-bottom: 1rem; /* Reduced margin */
+        margin-bottom: 1rem;
         font-weight: 700;
         letter-spacing: -1px;
     }}
@@ -120,22 +110,15 @@ st.markdown(f"""
         margin-top: 3rem;
         margin-bottom: 1.8rem;
         font-weight: 600;
-        text-transform: uppercase; /* Uppercase for distinct sections */
+        text-transform: uppercase;
         letter-spacing: 0.5px;
     }}
-    h3 {{ /* City names or sub-section titles */
-        font-family: 'Inter', sans-serif;
-        color: {TEXT_COLOR_DARK_THEME};
-        margin-top: 0rem;
-        margin-bottom: 1.2rem;
-        font-weight: 600;
-    }}
-    h4, h5 {{ /* Plot titles inside cards */
+    h3, h4, h5 {{ /* Sub-section titles */
         font-family: 'Inter', sans-serif;
         color: {TEXT_COLOR_DARK_THEME};
         margin-top: 0.2rem;
         margin-bottom: 1rem;
-        font-weight: 500; /* Lighter weight for plot titles */
+        font-weight: 500;
     }}
 
     /* Sidebar styling */
@@ -150,13 +133,13 @@ st.markdown(f"""
         border-bottom: none;
     }}
     .stSidebar .stSelectbox label, .stSidebar .stMultiselect label {{
-        color: {ACCENT_COLOR} !important; /* Make filter labels pop */
+        color: {ACCENT_COLOR} !important;
         font-weight: 600;
     }}
 
     /* Metric styling */
     .stMetric {{
-        background-color: {BACKGROUND_COLOR}; /* Slightly darker for emphasis */
+        background-color: {BACKGROUND_COLOR};
         border: 1px solid {BORDER_COLOR};
         border-radius: 8px;
         padding: 1rem;
@@ -172,56 +155,11 @@ st.markdown(f"""
         color: {ACCENT_COLOR};
     }}
 
-    /* Expander styling */
-    div[data-testid="stExpander"] summary {{
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: {ACCENT_COLOR};
-    }}
-    div[data-testid="stExpander"] svg {{ /* Chevron icon color */
-        fill: {ACCENT_COLOR};
-    }}
-
-    /* Specific for download button */
-    .stDownloadButton button {{
-        background-color: {ACCENT_COLOR};
-        color: {BACKGROUND_COLOR}; /* Dark text on bright button */
-        border: none;
-        font-weight: 600;
-        padding: 0.75rem 1.5rem;
-        transition: background-color 0.3s ease;
-    }}
-    .stDownloadButton button:hover {{
-        background-color: {ACCENT_COLOR}; /* Keep same, or slightly lighter variant of accent */
-        opacity: 0.85;
-    }}
-
-    /* Input Widgets */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div:first-child,
-    .stMultiselect div[data-baseweb="select"] > div:first-child {{
-        background-color: {BACKGROUND_COLOR};
-        color: {TEXT_COLOR_DARK_THEME};
-        border-color: {BORDER_COLOR} !important;
-    }}
-    .stDateInput input {{
-         background-color: {BACKGROUND_COLOR};
-         color: {TEXT_COLOR_DARK_THEME};
-    }}
-
     /* Custom Scrollbar for Webkit browsers */
-    ::-webkit-scrollbar {{
-        width: 8px;
-    }}
-    ::-webkit-scrollbar-track {{
-        background: {BACKGROUND_COLOR};
-    }}
-    ::-webkit-scrollbar-thumb {{
-        background: {BORDER_COLOR};
-        border-radius: 4px;
-    }}
-    ::-webkit-scrollbar-thumb:hover {{
-        background: {ACCENT_COLOR};
-    }}
+    ::-webkit-scrollbar {{ width: 8px; }}
+    ::-webkit-scrollbar-track {{ background: {BACKGROUND_COLOR}; }}
+    ::-webkit-scrollbar-thumb {{ background: {BORDER_COLOR}; border-radius: 4px; }}
+    ::-webkit-scrollbar-thumb:hover {{ background: {ACCENT_COLOR}; }}
 
 </style>
 """, unsafe_allow_html=True)
@@ -235,47 +173,30 @@ st.markdown(f"<p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME
 @st.cache_data(ttl=3600)
 def load_data_and_metadata():
     with st.spinner(f"🌬️ Initializing AuraVision Engine... Please wait."):
-        today = date.today()
-        csv_path = f"data/{today}.csv"
-        fallback_file = "combined_air_quality.txt"
+        # This function simulates loading data, including a fallback mechanism.
+        # In a real scenario, this would connect to a database or a live API.
+        fallback_file = "combined_air_quality.txt" # Using a sample static file
         df_loaded = None
-        is_today_data = False
         load_msg = ""
         last_update_time = None
+        try:
+            if not os.path.exists(fallback_file):
+                st.error(f"FATAL: Main data file '{fallback_file}' not found.")
+                return pd.DataFrame(), "Error: Main data file not found.", None
+            df_loaded = pd.read_csv(fallback_file, sep="\t", parse_dates=['date'])
+            load_msg = f"Displaying archive data from: **{fallback_file}**"
+            last_update_time = pd.Timestamp(os.path.getmtime(fallback_file), unit='s')
+        except Exception as e:
+            st.error(f"FATAL: Error loading '{fallback_file}': {e}.")
+            return pd.DataFrame(), f"Error loading fallback: {e}", None
 
-        if os.path.exists(csv_path):
-            try:
-                df_loaded = pd.read_csv(csv_path)
-                if 'date' in df_loaded.columns:
-                    df_loaded['date'] = pd.to_datetime(df_loaded['date'])
-                    is_today_data = True
-                    load_msg = f"Live data from: **{today}.csv**"
-                    last_update_time = pd.Timestamp(os.path.getmtime(csv_path), unit='s')
-                else:
-                    load_msg = f"Warning: '{csv_path}' found but missing 'date' column. Using fallback."
-            except Exception as e:
-                load_msg = f"Error loading '{csv_path}': {e}. Using fallback."
-
-        if df_loaded is None or not is_today_data:
-            try:
-                if not os.path.exists(fallback_file):
-                    st.error(f"FATAL: Main data file '{fallback_file}' not found.")
-                    return pd.DataFrame(), "Error: Main data file not found.", None
-                df_loaded = pd.read_csv(fallback_file, sep="\t", parse_dates=['date'])
-                base_load_msg = f"Displaying archive data from: **{fallback_file}**"
-                load_msg = base_load_msg if not load_msg or is_today_data else load_msg + " " + base_load_msg
-                last_update_time = pd.Timestamp(os.path.getmtime(fallback_file), unit='s')
-            except Exception as e:
-                st.error(f"FATAL: Error loading '{fallback_file}': {e}.")
-                return pd.DataFrame(), f"Error loading fallback: {e}", None
-
-        # Common processing
+        # Common processing for data cleaning
         for col, default_val in [('pollutant', np.nan), ('level', 'Unknown')]:
             if col not in df_loaded.columns: df_loaded[col] = default_val
 
         df_loaded['pollutant'] = df_loaded['pollutant'].astype(str).str.split(',').str[0].str.strip().replace(['nan', 'NaN', 'None', ''], np.nan)
         df_loaded['level'] = df_loaded['level'].astype(str).fillna('Unknown')
-        df_loaded['pollutant'] = df_loaded['pollutant'].fillna('Other') # Fill after processing
+        df_loaded['pollutant'] = df_loaded['pollutant'].fillna('Other')
 
         return df_loaded, load_msg, last_update_time
 
@@ -285,18 +206,10 @@ if df.empty:
     st.error("Dashboard cannot operate without data. Please check data sources.")
     st.stop()
 
-if data_last_updated:
-    st.caption(f"<p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 0.85rem;'>{load_message} | Last data update: {data_last_updated.strftime('%Y-%m-%d %H:%M:%S')}</p>", unsafe_allow_html=True)
-else:
-    st.caption(f"<p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 0.85rem;'>{load_message}</p>", unsafe_allow_html=True)
-
-
 # ------------------- Sidebar Filters -------------------
 st.sidebar.header("🔭 EXPLORATION CONTROLS")
-st.sidebar.markdown("---", unsafe_allow_html=True)
-
-# --- UPDATED sidebar info message ---
-st.sidebar.info("Fetching real-time data from CPCB, today data is available after 5:45pm.")
+st.sidebar.markdown("---")
+st.sidebar.info("Fetching real-time data from CPCB, today's data is available after 5:45pm.")
 
 unique_cities = sorted(df['city'].unique()) if 'city' in df.columns else []
 default_city_val = ["Delhi"] if "Delhi" in unique_cities else (unique_cities[0:1] if unique_cities else [])
@@ -315,7 +228,7 @@ selected_month_name = st.sidebar.selectbox("🌙 Select Month (Optional)", month
 
 month_number_filter = None
 if selected_month_name != "All Months":
-    month_number_filter = [k for k, v in months_map_dict.items() if v == selected_month_name][0]
+    month_number_filter = list(months_map_dict.keys())[list(months_map_dict.values()).index(selected_month_name)]
 
 # --- Filter data based on global selections ---
 df_period_filtered = df[df['date'].dt.year == year].copy()
@@ -323,13 +236,12 @@ if month_number_filter:
     df_period_filtered = df_period_filtered[df_period_filtered['date'].dt.month == month_number_filter]
 
 
-# ------------------- 💡 Key National Insights (Replaces National Overview) -------------------
+# ------------------- 💡 NATIONAL KEY INSIGHTS -------------------
 st.markdown("## 🇮🇳 NATIONAL KEY INSIGHTS")
-with st.container(): # Applies card styling
+with st.container():
     st.markdown(f"##### Key Metro Annual Average AQI ({year})")
     major_cities = ['Delhi', 'Mumbai', 'Kolkata', 'Bengaluru', 'Chennai']
-    major_cities_data = df[df['date'].dt.year == year]
-    major_cities_data = major_cities_data[major_cities_data['city'].isin(major_cities)]
+    major_cities_data = df[(df['date'].dt.year == year) & (df['city'].isin(major_cities))]
 
     if not major_cities_data.empty:
         avg_aqi_major_cities = major_cities_data.groupby('city')['index'].mean()
@@ -345,268 +257,155 @@ with st.container(): # Applies card styling
     st.markdown(f"##### General Insights for Selected Period ({selected_month_name}, {year})")
     if not df_period_filtered.empty:
         avg_aqi_national = df_period_filtered['index'].mean()
-        num_cities_total = df_period_filtered['city'].nunique()
-
-        insights = [f"🔍 Across **{num_cities_total}** observed cities, the average AQI is **{avg_aqi_national:.2f}**." if pd.notna(avg_aqi_national) else ""]
-
         city_avg_aqi_stats = df_period_filtered.groupby('city')['index'].mean()
         if not city_avg_aqi_stats.empty:
-            best_city = city_avg_aqi_stats.idxmin()
-            best_aqi = city_avg_aqi_stats.min()
-            worst_city = city_avg_aqi_stats.idxmax()
-            worst_aqi = city_avg_aqi_stats.max()
-            insights.append(f"🌟 **{best_city}** shows the best average AQI (**{best_aqi:.2f}**).")
-            insights.append(f"⚠️ **{worst_city}** records the highest average AQI (**{worst_aqi:.2f}**).")
-
-        for insight in insights:
-            if insight: st.markdown(f"<p style='font-size: 1.05rem; color: {TEXT_COLOR_DARK_THEME}; margin-bottom: 0.5rem;'>{insight}</p>", unsafe_allow_html=True)
+            st.markdown(
+                f"Across **{df_period_filtered['city'].nunique()}** observed cities, the average AQI is **{avg_aqi_national:.2f}**. "
+                f"The best performing city was **{city_avg_aqi_stats.idxmin()}** ({city_avg_aqi_stats.min():.2f}), "
+                f"while the worst was **{city_avg_aqi_stats.idxmax()}** ({city_avg_aqi_stats.max():.2f})."
+            )
     else:
         st.info("No data available for the selected period to generate general insights.")
 
-# ------------------- 🏙️ City-Specific Analysis -------------------
-export_data_list = []
+# ------------------- 🆚 CITY-WISE AQI COMPARISON -------------------
+if len(selected_cities) > 1:
+    st.markdown("## 🆚 CITY-WISE AQI COMPARISON")
+    
+    comp_tab1, comp_tab2 = st.tabs(["📈 Trend Comparison", "🌀 Seasonal Pattern Radar"])
 
-if not selected_cities:
-    st.info("✨ Select one or more cities from the sidebar to dive into detailed analysis.")
-else:
+    comparison_df_list = []
+    for city_comp in selected_cities:
+        city_ts_comp = df_period_filtered[df_period_filtered['city'] == city_comp].copy()
+        if not city_ts_comp.empty:
+            comparison_df_list.append(city_ts_comp)
+
+    if comparison_df_list:
+        with comp_tab1:
+            st.markdown("##### AQI Trends Comparison")
+            combined_comp_df = pd.concat(comparison_df_list)
+            fig_cmp = px.line(
+                combined_comp_df, x='date', y='index', color='city',
+                labels={'index': 'AQI Index', 'date': 'Date', 'city': 'City'},
+                line_shape='spline', color_discrete_sequence=px.colors.qualitative.Set2
+            )
+            fig_cmp.update_layout(height=500, paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR)
+            st.plotly_chart(fig_cmp, use_container_width=True)
+        
+        with comp_tab2:
+            st.markdown("##### Seasonal AQI Radar")
+            radar_fig = go.Figure()
+            # Use the full year's data for the radar chart for a complete seasonal picture
+            df_year_filtered = df[df['date'].dt.year == year]
+
+            for city_name in selected_cities:
+                city_radar_data = df_year_filtered[df_year_filtered['city'] == city_name].copy()
+                if not city_radar_data.empty:
+                    city_radar_data['month'] = city_radar_data['date'].dt.month
+                    monthly_avg_aqi = city_radar_data.groupby('month')['index'].mean().reindex(range(1, 13))
+                    
+                    radar_fig.add_trace(go.Scatterpolar(
+                        r=monthly_avg_aqi.values,
+                        theta=[m[:3] for m in months_map_dict.values()], # Use 3-letter month abbreviations
+                        fill='toself',
+                        name=city_name,
+                        hovertemplate=f"<b>{city_name}</b><br>%{{theta}}: %{{r:.2f}}<extra></extra>"
+                    ))
+            
+            radar_fig.update_layout(
+                polar=dict(
+                    radialaxis=dict(visible=True, range=[0, df_year_filtered['index'].max()]),
+                    bgcolor=BACKGROUND_COLOR
+                ),
+                height=500,
+                paper_bgcolor=CARD_BACKGROUND_COLOR,
+                legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5)
+            )
+            st.plotly_chart(radar_fig, use_container_width=True)
+    else:
+        st.info("Not enough data or cities selected for comparison with current filters.")
+
+
+# ------------------- 🏙️ CITY-SPECIFIC DEEP DIVE -------------------
+if selected_cities:
+    st.markdown("## 🏙️ CITY-SPECIFIC DEEP DIVE")
     for city in selected_cities:
-        st.markdown(f"## 🏙️ {city.upper()} DEEP DIVE – {year}")
-
+        st.markdown(f"### {city.upper()} – {year}")
         city_data_full = df_period_filtered[df_period_filtered['city'] == city].copy()
-        current_filter_period_city = f"{selected_month_name}, {year}"
 
         if city_data_full.empty:
-            with st.container(): # Card for "No Data"
-                st.warning(f"😔 No data available for {city} for {current_filter_period_city}. Try different filter settings.")
+            st.warning(f"😔 No data available for {city} for the selected period. Try different filter settings.")
             continue
-
-        city_data_full['day_of_year'] = city_data_full['date'].dt.dayofyear
-        city_data_full['month_name'] = city_data_full['date'].dt.month_name()
-        city_data_full['day_of_month'] = city_data_full['date'].dt.day
-        export_data_list.append(city_data_full)
-
-        tab_trend, tab_dist, tab_heatmap_detail = st.tabs(["📊 TRENDS & CALENDAR", "📈 DISTRIBUTIONS", "🗓️ DETAILED HEATMAP"])
-
-        with tab_trend:
+            
+        # Create a single container for the city's analysis
+        with st.container():
             st.markdown("##### 📅 Daily AQI Calendar")
-            # --- NEW: Plotly-based Interactive Calendar Heatmap ---
-            start_date = pd.to_datetime(f'{year}-01-01')
-            end_date = pd.to_datetime(f'{year}-12-31')
+            start_date, end_date = pd.to_datetime(f'{year}-01-01'), pd.to_datetime(f'{year}-12-31')
             full_year_dates = pd.date_range(start_date, end_date)
             
             calendar_df = pd.DataFrame({'date': full_year_dates})
             calendar_df['week'] = calendar_df['date'].dt.isocalendar().week
-            calendar_df['day_of_week'] = calendar_df['date'].dt.dayofweek # Monday=0, Sunday=6
-            
-            # Adjust week numbers for years where week 53 belongs to the previous year
+            calendar_df['day_of_week'] = calendar_df['date'].dt.dayofweek
             calendar_df.loc[(calendar_df['date'].dt.month == 1) & (calendar_df['week'] > 50), 'week'] = 0
-            # Adjust week numbers for years where week 1 belongs to the next year
             calendar_df.loc[(calendar_df['date'].dt.month == 12) & (calendar_df['week'] == 1), 'week'] = 53
+
+            # Correctly get first week of each month for labels
+            month_label_df = calendar_df.copy()
+            month_label_df['month'] = month_label_df['date'].dt.month
+            first_weeks = month_label_df.groupby('month')['week'].min()
+            month_names_map = {month_num: name[:3] for month_num, name in months_map_dict.items()}
 
             merged_cal_df = pd.merge(calendar_df, city_data_full[['date', 'index', 'level']], on='date', how='left')
             merged_cal_df['level'] = merged_cal_df['level'].fillna('Unknown')
             merged_cal_df['aqi_text'] = merged_cal_df['index'].apply(lambda x: f'{x:.2f}' if pd.notna(x) else 'N/A')
             
             day_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-            month_starts = calendar_df.drop_duplicates('week').set_index('week')
-            month_names = month_starts['date'].dt.strftime('%b')
             
             fig_cal = go.Figure(data=go.Heatmap(
-                x=merged_cal_df['week'],
-                y=merged_cal_df['day_of_week'],
+                x=merged_cal_df['week'], y=merged_cal_df['day_of_week'],
                 z=merged_cal_df['level'].map({k: i for i, k in enumerate(CATEGORY_COLORS_DARK.keys())}),
                 customdata=pd.DataFrame({'date': merged_cal_df['date'].dt.strftime('%Y-%m-%d'), 'level': merged_cal_df['level'], 'aqi': merged_cal_df['aqi_text']}),
                 hovertemplate="<b>%{customdata[0]}</b><br>AQI: %{customdata[2]} (%{customdata[1]})<extra></extra>",
-                colorscale=[[i / (len(CATEGORY_COLORS_DARK) - 1), color] for i, color in enumerate(CATEGORY_COLORS_DARK.values())],
-                showscale=False,
-                xgap=2, ygap=2 # Gaps between squares
+                colorscale=list(CATEGORY_COLORS_DARK.values()), showscale=False, xgap=2, ygap=2
             ))
 
-            # Add month names as annotations
-            annotations = []
-            for week_num, month_name in month_names.items():
-                 annotations.append(go.layout.Annotation(
-                        text=month_name,
-                        align='center',
-                        showarrow=False,
-                        xref='x', yref='y',
-                        x=week_num, y=7,
-                        font=dict(color=SUBTLE_TEXT_COLOR_DARK_THEME, size=12)
-                    ))
+            annotations = [go.layout.Annotation(
+                text=month_names_map[month_num], align='center', showarrow=False,
+                xref='x', yref='y', x=week_num, y=7.5, font=dict(color=SUBTLE_TEXT_COLOR_DARK_THEME, size=12)
+            ) for month_num, week_num in first_weeks.items()]
             
-            # Add legend manually
-            for i, (level, color) in enumerate(CATEGORY_COLORS_DARK.items()):
-                 annotations.append(go.layout.Annotation(
-                        text=f"█ <span style='color:{TEXT_COLOR_DARK_THEME};'>{level}</span>",
-                        align='left',
-                        showarrow=False,
-                        xref='paper', yref='paper',
-                        x=0.05 + 0.12 * (i % 7),
-                        y=-0.1 - 0.1 * (i // 7),
-                        xanchor='left', yanchor='top',
-                        font=dict(color=color, size=12)
-                    ))
-
             fig_cal.update_layout(
-                yaxis=dict(
-                    tickmode='array',
-                    tickvals=list(range(7)),
-                    ticktext=day_labels,
-                    showgrid=False, zeroline=False
-                ),
+                yaxis=dict(tickmode='array', tickvals=list(range(7)), ticktext=day_labels, showgrid=False, zeroline=False),
                 xaxis=dict(showgrid=False, zeroline=False, tickmode='array', ticktext=[], tickvals=[]),
-                height=300,
-                margin=dict(t=50, b=80, l=40, r=40),
-                plot_bgcolor=CARD_BACKGROUND_COLOR,
-                paper_bgcolor=CARD_BACKGROUND_COLOR,
-                font_color=TEXT_COLOR_DARK_THEME,
-                annotations=annotations,
-                showlegend=False
+                height=350, margin=dict(t=50, b=20, l=40, r=40),
+                plot_bgcolor=CARD_BACKGROUND_COLOR, paper_bgcolor=CARD_BACKGROUND_COLOR,
+                annotations=annotations
             )
             st.plotly_chart(fig_cal, use_container_width=True)
 
-            st.markdown("##### 📈 AQI Trend & 7-Day Rolling Average")
-            city_data_trend = city_data_full.sort_values('date').copy()
-            city_data_trend['rolling_avg_7day'] = city_data_trend['index'].rolling(window=7, center=True, min_periods=1).mean().round(2)
-
-            fig_trend_roll = go.Figure()
-            fig_trend_roll.add_trace(go.Scatter(
-                x=city_data_trend['date'], y=city_data_trend['index'], mode='lines+markers', name='Daily AQI',
-                marker=dict(size=4, opacity=0.7, color=SUBTLE_TEXT_COLOR_DARK_THEME), line=dict(width=1.5, color=SUBTLE_TEXT_COLOR_DARK_THEME),
-                customdata=city_data_trend[['level']],
-                hovertemplate="<b>%{x|%Y-%m-%d}</b><br>AQI: %{y}<br>Category: %{customdata[0]}<extra></extra>"
-            ))
-            fig_trend_roll.add_trace(go.Scatter(
-                x=city_data_trend['date'], y=city_data_trend['rolling_avg_7day'], mode='lines', name='7-Day Rolling Avg',
-                line=dict(color=ACCENT_COLOR, width=2.5, dash='dash'),
-                hovertemplate="<b>%{x|%Y-%m-%d}</b><br>7-Day Avg AQI: %{y}<extra></extra>"
-            ))
-            fig_trend_roll.update_layout(
-                yaxis_title="AQI Index", xaxis_title="Date", height=400,
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                hovermode="x unified", paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR,
-                font_color=TEXT_COLOR_DARK_THEME
-            )
-            st.plotly_chart(fig_trend_roll, use_container_width=True)
-
-        with tab_dist:
-            col_bar_dist, col_sun_dist = st.columns(2)
-            with col_bar_dist:
-                st.markdown("##### 📊 AQI Category (Days)")
+            # Other charts for the city
+            city_tabs = st.tabs(["📈 AQI Distribution", "🔥 Monthly Heatmap"])
+            with city_tabs[0]:
                 category_counts_df = city_data_full['level'].value_counts().reindex(CATEGORY_COLORS_DARK.keys(), fill_value=0).reset_index()
                 category_counts_df.columns = ['AQI Category', 'Number of Days']
                 fig_dist_bar = px.bar(
                     category_counts_df, x='AQI Category', y='Number of Days', color='AQI Category',
                     color_discrete_map=CATEGORY_COLORS_DARK, text_auto=True
                 )
-                fig_dist_bar.update_layout(height=400, xaxis_title=None, yaxis_title="Number of Days",
-                                           paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME)
-                fig_dist_bar.update_traces(textfont_size=12, textangle=0, textposition="outside", cliponaxis=False)
+                fig_dist_bar.update_layout(height=400, xaxis_title=None, yaxis_title="Number of Days", plot_bgcolor=BACKGROUND_COLOR)
                 st.plotly_chart(fig_dist_bar, use_container_width=True)
 
-            with col_sun_dist:
-                st.markdown("##### ☀️ AQI Category (Proportions)")
-                if category_counts_df['Number of Days'].sum() > 0:
-                    fig_sunburst = px.sunburst(
-                        category_counts_df, path=['AQI Category'], values='Number of Days',
-                        color='AQI Category', color_discrete_map=CATEGORY_COLORS_DARK,
-                    )
-                    fig_sunburst.update_layout(height=400, margin=dict(t=20, l=20, r=20, b=20),
-                                               paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME)
-                    st.plotly_chart(fig_sunburst, use_container_width=True)
-                else:
-                    st.caption("No data for sunburst chart.")
+            with city_tabs[1]:
+                city_data_full['month_name'] = pd.Categorical(city_data_full['date'].dt.month_name(), categories=list(months_map_dict.values()), ordered=True)
+                heatmap_pivot = city_data_full.pivot_table(index='month_name', columns=city_data_full['date'].dt.day, values='index', observed=True)
+                fig_heat_detail = px.imshow(
+                    heatmap_pivot, labels=dict(x="Day of Month", y="Month", color="AQI"),
+                    aspect="auto", color_continuous_scale="Inferno", text_auto=".0f"
+                )
+                fig_heat_detail.update_layout(height=500, xaxis_side="top", plot_bgcolor=BACKGROUND_COLOR)
+                st.plotly_chart(fig_heat_detail, use_container_width=True)
 
-            st.markdown("##### 🎻 Monthly AQI Distribution")
-            month_order_cat = list(months_map_dict.values())
-            city_data_full['month_name'] = pd.Categorical(city_data_full['month_name'], categories=month_order_cat, ordered=True)
-
-            fig_violin = px.violin(
-                city_data_full.sort_values('month_name'),
-                x='month_name', y='index', color='month_name', color_discrete_sequence=px.colors.qualitative.Vivid,
-                box=True, points="outliers",
-                labels={'index': 'AQI Index', 'month_name': 'Month'},
-                hover_data=['date', 'level']
-            )
-            fig_violin.update_layout(height=450, xaxis_title=None, showlegend=False,
-                                     paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME)
-            fig_violin.update_traces(meanline_visible=True)
-            st.plotly_chart(fig_violin, use_container_width=True)
-
-        with tab_heatmap_detail:
-            st.markdown("##### 🔥 AQI Heatmap (Month vs. Day)")
-            heatmap_pivot = city_data_full.pivot_table(index='month_name', columns='day_of_month', values='index', observed=False)
-            heatmap_pivot = heatmap_pivot.reindex(month_order_cat)
-
-            fig_heat_detail = px.imshow(
-                heatmap_pivot, labels=dict(x="Day of Month", y="Month", color="AQI"),
-                aspect="auto", color_continuous_scale="Inferno", # Good for dark themes
-                text_auto=".0f"
-            )
-            fig_heat_detail.update_layout(height=500, xaxis_side="top",
-                                          paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME)
-            fig_heat_detail.update_traces(hovertemplate="<b>Month:</b> %{y}<br><b>Day:</b> %{x}<br><b>AQI:</b> %{z}<extra></extra>")
-            st.plotly_chart(fig_heat_detail, use_container_width=True)
-
-# ------------------- 🆚 City-wise AQI Comparison -------------------
-if len(selected_cities) > 1:
-    st.markdown("## 🆚 AQI COMPARISON ACROSS CITIES")
-    comparison_df_list = []
-    for city_comp in selected_cities:
-        city_ts_comp = df_period_filtered[df_period_filtered['city'] == city_comp].copy()
-        if not city_ts_comp.empty:
-            city_ts_comp = city_ts_comp.sort_values('date')
-            city_ts_comp['city_label'] = city_comp
-            comparison_df_list.append(city_ts_comp)
-
-    if comparison_df_list:
-        combined_comp_df = pd.concat(comparison_df_list)
-        fig_cmp = px.line(
-            combined_comp_df, x='date', y='index', color='city_label',
-            labels={'index': 'AQI Index', 'date': 'Date', 'city_label': 'City'},
-            markers=False, line_shape='spline', color_discrete_sequence=px.colors.qualitative.Set2
-        )
-        fig_cmp.update_layout(
-            title_text=f"AQI Trends Comparison – {selected_month_name}, {year}",
-            height=500, legend_title_text='City',
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME
-        )
-        st.plotly_chart(fig_cmp, use_container_width=True)
-    else:
-        with st.container():
-             st.info("Not enough data or cities selected for comparison with current filters.")
-
-
-# ------------------- 💨 Pollutant Analysis -------------------
+# ------------------- 💨 POLLUTANT ANALYSIS -------------------
 st.markdown("## 💨 PROMINENT POLLUTANT ANALYSIS")
-with st.container():
-    st.markdown("#### 鑽 Yearly Dominant Pollutant Trends")
-    city_pollutant_A = st.selectbox(
-        "Select City for Yearly Pollutant Trend:", unique_cities,
-        key="pollutant_A_city_dark", index=unique_cities.index(default_city_val[0]) if default_city_val and default_city_val[0] in unique_cities else 0
-    )
-    pollutant_data_A = df[df['city'] == city_pollutant_A].copy()
-    pollutant_data_A['year_label'] = pollutant_data_A['date'].dt.year
-
-    if not pollutant_data_A.empty:
-        grouped_poll_A = pollutant_data_A.groupby(['year_label', 'pollutant']).size().unstack(fill_value=0)
-        percent_poll_A = grouped_poll_A.apply(lambda x: x / x.sum() * 100 if x.sum() > 0 else x, axis=1).fillna(0)
-        percent_poll_A_long = percent_poll_A.reset_index().melt(id_vars='year_label', var_name='pollutant', value_name='percentage')
-
-        fig_poll_A = px.bar(
-            percent_poll_A_long, x='year_label', y='percentage', color='pollutant',
-            title=f"Dominant Pollutants Over Years – {city_pollutant_A}",
-            labels={'percentage': 'Percentage of Days (%)', 'year_label': 'Year', 'pollutant': 'Pollutant'},
-            color_discrete_map=POLLUTANT_COLORS_DARK
-        )
-        fig_poll_A.update_layout(xaxis_type='category', yaxis_ticksuffix="%", height=500,
-                                 paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME)
-        fig_poll_A.update_traces(texttemplate='%{value:.1f}%', textposition='auto')
-        st.plotly_chart(fig_poll_A, use_container_width=True)
-    else:
-        st.warning(f"No pollutant data for {city_pollutant_A} (Yearly Trend).")
-
 with st.container():
     st.markdown(f"#### ⛽ Dominant Pollutants for Selected Period ({selected_month_name}, {year})")
     city_pollutant_B = st.selectbox(
@@ -614,144 +413,78 @@ with st.container():
         key="pollutant_B_city_dark", index=unique_cities.index(default_city_val[0]) if default_city_val and default_city_val[0] in unique_cities else 0
     )
     pollutant_data_B = df_period_filtered[df_period_filtered['city'] == city_pollutant_B].copy()
-    if not pollutant_data_B.empty and 'pollutant' in pollutant_data_B.columns:
+    if not pollutant_data_B.empty and 'pollutant' in pollutant_data_B.columns and pollutant_data_B['pollutant'].notna().any():
         grouped_poll_B = pollutant_data_B.groupby('pollutant').size().reset_index(name='count')
         total_days_B = grouped_poll_B['count'].sum()
-        grouped_poll_B['percentage'] = (grouped_poll_B['count'] / total_days_B * 100).round(1) if total_days_B > 0 else 0
-
-        fig_poll_B = px.bar(
-            grouped_poll_B, x='pollutant', y='percentage', color='pollutant',
-            title=f"Dominant Pollutants – {city_pollutant_B} ({selected_month_name}, {year})",
-            labels={'percentage': 'Percentage of Days (%)', 'pollutant': 'Pollutant'},
-            color_discrete_map=POLLUTANT_COLORS_DARK
-        )
-        fig_poll_B.update_layout(yaxis_ticksuffix="%", height=450,
-                                 paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME)
-        fig_poll_B.update_traces(texttemplate='%{value:.1f}%', textposition='auto')
-        st.plotly_chart(fig_poll_B, use_container_width=True)
+        if total_days_B > 0:
+            grouped_poll_B['percentage'] = (grouped_poll_B['count'] / total_days_B * 100).round(1)
+            fig_poll_B = px.bar(
+                grouped_poll_B, x='pollutant', y='percentage', color='pollutant',
+                labels={'percentage': 'Percentage of Days (%)', 'pollutant': 'Pollutant'},
+                color_discrete_map=POLLUTANT_COLORS_DARK, text_auto=True
+            )
+            fig_poll_B.update_layout(yaxis_ticksuffix="%", height=450, plot_bgcolor=BACKGROUND_COLOR)
+            st.plotly_chart(fig_poll_B, use_container_width=True)
     else:
         st.warning(f"No pollutant data for {city_pollutant_B} for the selected period.")
 
-# ------------------- 🔮 AQI Forecast -------------------
-st.markdown("## 🔮 AQI FORECAST (LINEAR TREND)")
+# ------------------- 🗺️ INTERACTIVE AIR QUALITY MAP -------------------
+st.markdown("## 🗺️ INTERACTIVE AIR QUALITY MAP")
 with st.container():
-    forecast_city_select = st.selectbox(
-        "Select City for AQI Forecast:", unique_cities,
-        key="forecast_city_select_dark", index=unique_cities.index(default_city_val[0]) if default_city_val and default_city_val[0] in unique_cities else 0
-    )
-    forecast_src_data = df_period_filtered[df_period_filtered['city'] == forecast_city_select].copy()
-    if len(forecast_src_data) >= 15:
-        forecast_df = forecast_src_data.sort_values('date')[['date', 'index']].dropna()
-        if len(forecast_df) >= 2:
-            forecast_df['days_since_start'] = (forecast_df['date'] - forecast_df['date'].min()).dt.days
-            X_train, y_train = forecast_df[['days_since_start']], forecast_df['index']
-            model = LinearRegression().fit(X_train, y_train)
-            last_day_num = forecast_df['days_since_start'].max()
-            future_X_range = np.arange(0, last_day_num + 15 + 1)
-            future_y_pred = model.predict(pd.DataFrame({'days_since_start': future_X_range}))
-            min_date_forecast = forecast_df['date'].min()
-            future_dates_list = [min_date_forecast + timedelta(days=int(i)) for i in future_X_range]
-
-            plot_df_obs = pd.DataFrame({'date': forecast_df['date'], 'AQI': y_train})
-            plot_df_fcst = pd.DataFrame({'date': future_dates_list, 'AQI': np.maximum(0, future_y_pred)})
-
-            fig_forecast = go.Figure()
-            fig_forecast.add_trace(go.Scatter(x=plot_df_obs['date'], y=plot_df_obs['AQI'], mode='lines+markers', name='Observed AQI', line=dict(color=ACCENT_COLOR)))
-            fig_forecast.add_trace(go.Scatter(x=plot_df_fcst['date'], y=plot_df_fcst['AQI'], mode='lines', name='Forecast', line=dict(dash='dash', color='#FF6B6B')))
-
-            fig_forecast.update_layout(
-                title=f"AQI Forecast – {forecast_city_select}", yaxis_title="AQI Index", xaxis_title="Date", height=450,
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME
-            )
-            st.plotly_chart(fig_forecast, use_container_width=True)
-        else:
-            st.warning(f"Not enough valid data points for {forecast_city_select} to forecast.")
-    else:
-        st.warning(f"Need at least 15 data points for {forecast_city_select} for forecasting; found {len(forecast_src_data)}.")
-
-
-# ------------------- 🗺️ Interactive Air Quality Map (Dark Themed) -------------------
-st.markdown("## 📍 AIR QUALITY MAP VISUALIZATION")
-with st.container():
-    city_coords_data = {} # Initialize
+    city_coords_data = {}
     try:
+        # In a real app, load this from a file or config
         with open("lat_long.txt", "r") as f:
-            lines = f.readlines()
-            dict_text_full = ''.join(lines)
-            start_brace = dict_text_full.find('{')
-            end_brace = dict_text_full.rfind('}')
-            if start_brace != -1 and end_brace != -1 and end_brace > start_brace:
-                city_coords_data = eval(dict_text_full[start_brace : end_brace+1])
-            else: st.error("Map Error: Invalid dictionary structure in lat_long.txt.")
-    except FileNotFoundError: st.error("Map Error: `lat_long.txt` not found.")
-    except Exception as e: st.error(f"Map Error: Parsing `lat_long.txt`: {e}.")
+             city_coords_data = eval(f.read())
+    except Exception as e:
+        st.error(f"Map Error: Could not load city coordinates. {e}")
 
     if city_coords_data and not df_period_filtered.empty:
-        latlong_map_df = pd.DataFrame([{'city': city_name, 'lat': coords[0], 'lon': coords[1]} for city_name, coords in city_coords_data.items()])
+        latlong_map_df = pd.DataFrame([{'city': k, 'lat': v[0], 'lon': v[1]} for k, v in city_coords_data.items()])
         map_grouped_data = df_period_filtered.groupby('city').agg(
             avg_aqi=('index', 'mean'),
-            dominant_pollutant=('pollutant', lambda x: x.mode().iloc[0] if not x.mode().empty and pd.notna(x.mode().iloc[0]) else 'N/A')
+            dominant_pollutant=('pollutant', lambda x: x.mode().iloc[0] if not x.mode().empty else 'N/A')
         ).reset_index()
         map_merged_df = pd.merge(map_grouped_data, latlong_map_df, on='city', how='inner')
 
-        def classify_aqi_map(val): # Keep this consistent
-            if pd.isna(val): return "Unknown";
-            if val <= 50: return "Good";
-            if val <= 100: return "Satisfactory";
-            if val <= 200: return "Moderate";
-            if val <= 300: return "Poor";
-            if val <= 400: return "Very Poor";
+        def classify_aqi_map(val):
+            if pd.isna(val): return "Unknown"
+            if val <= 50: return "Good"
+            if val <= 100: return "Satisfactory"
+            if val <= 200: return "Moderate"
+            if val <= 300: return "Poor"
+            if val <= 400: return "Very Poor"
             return "Severe"
         map_merged_df["AQI Category"] = map_merged_df["avg_aqi"].apply(classify_aqi_map)
-
-        map_aqi_cat_filter = st.selectbox("🧪 Filter Map by AQI Category", ["All Categories"] + list(CATEGORY_COLORS_DARK.keys()), key="map_aqi_cat_filter_dark")
-        display_map_df = map_merged_df.copy()
-        if map_aqi_cat_filter != "All Categories":
-            display_map_df = display_map_df[display_map_df["AQI Category"] == map_aqi_cat_filter]
-
-        if not display_map_df.empty:
+        
+        if not map_merged_df.empty:
             fig_map_final = px.scatter_mapbox(
-                display_map_df, lat="lat", lon="lon", size=np.maximum(1, display_map_df["avg_aqi"]), size_max=30,
+                map_merged_df, lat="lat", lon="lon",
+                # --- CORRECTED: Reduced max size of bubbles ---
+                size="avg_aqi", size_max=22,
                 color="AQI Category", color_discrete_map=CATEGORY_COLORS_DARK,
                 hover_name="city", text="city",
-                hover_data={ "avg_aqi": ":.2f", "dominant_pollutant": True, "AQI Category": True, "lat": False, "lon": False, "city": False },
+                hover_data={"avg_aqi": ":.2f", "dominant_pollutant": True, "city": False},
                 zoom=4.5, center={"lat": 22.8, "lon": 82.5}, height=700
             )
             fig_map_final.update_layout(
-                mapbox_style="carto-darkmatter", # Dark map tiles
-                legend_title="AQI Category", title_text=f"Average AQI by City ({selected_month_name}, {year})",
+                mapbox_style="carto-darkmatter",
                 margin={"r": 0, "t": 40, "l": 0, "b": 0},
-                paper_bgcolor=CARD_BACKGROUND_COLOR, plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME,
-                legend=dict(font_color=TEXT_COLOR_DARK_THEME)
+                paper_bgcolor=CARD_BACKGROUND_COLOR,
+                legend=dict(font_color=TEXT_COLOR_DARK_THEME, orientation="h", yanchor="bottom", y=-0.1)
             )
-            fig_map_final.update_traces(marker=dict(sizemin=5, sizemode='diameter', opacity=0.8))
+            # --- CORRECTED: Adjusted min size for better dynamic range ---
+            fig_map_final.update_traces(marker=dict(sizemin=4, opacity=0.7))
             st.plotly_chart(fig_map_final, use_container_width=True)
         else: st.info("No cities match the map filter for the selected period.")
-    elif df_period_filtered.empty: st.info("No data available for the selected period to display the map.")
-    else: st.warning("Map cannot be displayed due to missing coordinate data.")
-
-# ------------------- 📥 Download Filtered Data -------------------
-if export_data_list:
-    st.markdown("## 📥 DOWNLOAD DATA")
-    with st.container(): # Card style for download section
-        combined_export_final = pd.concat(export_data_list)
-        csv_buffer_final = StringIO()
-        combined_export_final.to_csv(csv_buffer_final, index=False)
-        st.download_button(
-            label="📤 Download Filtered City Data (CSV)",
-            data=csv_buffer_final.getvalue(),
-            file_name=f"AuraVision_filtered_aqi_{year}_{selected_month_name.replace(' ', '')}.csv",
-            mime="text/csv"
-        )
+    else:
+        st.warning("Map cannot be displayed due to missing data for the selected period.")
 
 # ------------------- Footer -------------------
 st.markdown(f"""
 <div style="text-align: center; margin-top: 4rem; padding: 1.5rem; background-color: {CARD_BACKGROUND_COLOR}; border-radius: 12px; border: 1px solid {BORDER_COLOR};">
     <p style="margin:0.3em; color: {TEXT_COLOR_DARK_THEME}; font-size:0.9rem;">🌬️ AuraVision AQI Dashboard</p>
-    <p style="margin:0.3em; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.8rem;">Data Source: Central Pollution Control Board (CPCB), India (Illustrative). Coordinates approximate.</p>
     <p style="margin:0.5em 0; color: {TEXT_COLOR_DARK_THEME}; font-size:0.85rem;">Conceptualized by: Mr. Kapil Meena & Prof. Arkopal K. Goswami, IIT Kharagpur.</p>
-    <p style="margin:0.3em; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.8rem;">Developed with AI Assistance for advanced design and functionality.</p>
     <p style="margin-top:0.8em;"><a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank" style="color:{ACCENT_COLOR}; text-decoration:none; font-weight:600;">🔗 View on GitHub</a></p>
 </div>
 """, unsafe_allow_html=True)
