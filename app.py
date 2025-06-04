@@ -287,7 +287,7 @@ def load_data_and_metadata():
                 st.error(f"FATAL: Main data file '{fallback_file}' not found.")
                 return pd.DataFrame(), "Error: Main data file not found.", None
             df_loaded = pd.read_csv(fallback_file, sep="\t", parse_dates=["date"])
-            #base_load_msg = f"Displaying archive data from: **{fallback_file}**"
+            base_load_msg = f"Displaying archive data from: **{fallback_file}**"
             load_msg = base_load_msg if not load_msg or is_today_data else load_msg + " " + base_load_msg
             last_update_time = pd.Timestamp(os.path.getmtime(fallback_file), unit="s")
         except Exception as e:
