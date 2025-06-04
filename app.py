@@ -243,7 +243,7 @@ def get_custom_plotly_layout_args(height: int = None, title_text: str = None) ->
 
 
 # ------------------- Title -------------------
-st.markdown("<h1 style='text-align: center; margin-bottom:0.5rem;'>🌬️ IIT KGP AQI</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; margin-bottom:0.5rem;'>🌬️ IIT KGP AQI Dashboard</h1>", unsafe_allow_html=True)
 st.markdown(f"""
 <p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 1.1rem; margin-bottom: 2.5rem;'>
     Illuminating Air Quality Insights Across India
@@ -287,7 +287,7 @@ def load_data_and_metadata():
                 st.error(f"FATAL: Main data file '{fallback_file}' not found.")
                 return pd.DataFrame(), "Error: Main data file not found.", None
             df_loaded = pd.read_csv(fallback_file, sep="\t", parse_dates=["date"])
-            base_load_msg = f"Displaying archive data from: **{fallback_file}**"
+            #base_load_msg = f"Displaying archive data from: **{fallback_file}**"
             load_msg = base_load_msg if not load_msg or is_today_data else load_msg + " " + base_load_msg
             last_update_time = pd.Timestamp(os.path.getmtime(fallback_file), unit="s")
         except Exception as e:
