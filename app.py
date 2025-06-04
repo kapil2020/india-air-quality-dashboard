@@ -578,13 +578,13 @@ if export_data_list: # Check if list is populated
 st.markdown("---")
 st.caption("📊 Data Source: Central Pollution Control Board (CPCB), India (Data is illustrative). Latitude/Longitude are approximate.")
 st.markdown("""
-**Developed by:** Mr. [Kapil Meena](https://sites.google.com/view/kapil-lab/home) (Conceptual) & AI Assistant
+**Developed by:** Mr. [Kapil Meena](https://sites.google.com/view/kapil-lab/home) 
 Doctoral Scholar, IIT Kharagpur  
-📧 kapil.meena@kgpian.iitkgp.ac.in (Conceptual)
+📧 kapil.meena@kgpian.iitkgp.ac.in 
 
-**With guidance from:** [Prof. Arkopal K. Goswami, PhD](https://www.mustlab.in/faculty) (Conceptual)
+**With guidance from:** [Prof. Arkopal K. Goswami, PhD](https://www.mustlab.in/faculty) 
 """)
-st.markdown("🔗 [View on GitHub (Example Structure)](https://github.com/kapil2020/india-air-quality-dashboard)")
+st.markdown("🔗 [View on GitHub (Source code)](https://github.com/kapil2020/india-air-quality-dashboard)")
 
 # ------------------- Mobile Friendly Styles -------------------
 st.markdown("""
