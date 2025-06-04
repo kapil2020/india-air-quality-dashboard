@@ -33,7 +33,7 @@ POLLUTANT_COLORS_DARK = {
 
 
 # ------------------- Page Config -------------------
-st.set_page_config(layout="wide", page_title="AuraVision AQI Dashboard", page_icon="🌬️")
+st.set_page_config(layout="wide", page_title="IIT KGP AQI Dashboard", page_icon="🌬️")
 
 
 # ------------------- Custom CSS Styling (Dark Theme) -------------------
@@ -243,7 +243,7 @@ def get_custom_plotly_layout_args(height: int = None, title_text: str = None) ->
 
 
 # ------------------- Title -------------------
-st.markdown("<h1 style='text-align: center; margin-bottom:0.5rem;'>🌬️ AuraVision AQI</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center; margin-bottom:0.5rem;'>🌬️ IIT KGP AQI</h1>", unsafe_allow_html=True)
 st.markdown(f"""
 <p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 1.1rem; margin-bottom: 2.5rem;'>
     Illuminating Air Quality Insights Across India
@@ -922,17 +922,17 @@ if export_data_list:
         st.download_button(
             label="📤 Download Filtered City Data (CSV)",
             data=csv_buffer_final.getvalue(),
-            file_name=f"AuraVision_filtered_aqi_{year}_{selected_month_name.replace(' ', '')}.csv",
+            file_name=f"IITKGP_filtered_aqi_{year}_{selected_month_name.replace(' ', '')}.csv",
             mime="text/csv"
         )
 
 # ------------------- Footer -------------------
 st.markdown(f"""
 <div style="text-align: center; margin-top: 4rem; padding: 1.5rem; background-color: {CARD_BACKGROUND_COLOR}; border-radius: 12px; border: 1px solid {BORDER_COLOR};">
-    <p style="margin:0.3em; color: {TEXT_COLOR_DARK_THEME}; font-size:0.9rem;">🌬️ AuraVision AQI Dashboard</p>
-    <p style="margin:0.3em; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.8rem;">Data Source: Central Pollution Control Board (CPCB), India (Illustrative). Coordinates approximate.</p>
+    <p style="margin:0.3em; color: {TEXT_COLOR_DARK_THEME}; font-size:0.9rem;">🌬️ IIT KGP AQI Dashboard</p>
+    <p style="margin:0.3em; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.8rem;">Data Source: Central Pollution Control Board (CPCB), India. Coordinates approximate.</p>
     <p style="margin:0.5em 0; color: {TEXT_COLOR_DARK_THEME}; font-size:0.85rem;">Conceptualized by: Mr. Kapil Meena & Prof. Arkopal K. Goswami, IIT Kharagpur.</p>
-    <p style="margin:0.3em; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.8rem;">Developed with AI Assistance for advanced design and functionality.</p>
+    <p style="margin:0.3em; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.8rem;">Made with ❤️.</p>
     <p style="margin-top:0.8em;">
         <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank" style="color:{ACCENT_COLOR}; text-decoration:none; font-weight:600;">
             🔗 View on GitHub
