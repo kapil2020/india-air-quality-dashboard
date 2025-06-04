@@ -761,32 +761,10 @@ with st.container():
                 # else: st.info("No city data matched with available coordinates for the selected period.")
             # else: st.info("Coordinates data from 'lat_long.txt' is available but could not be processed into a valid format for the map.")
         
-        if not scatter_map_rendered: # Fallback to bar chart if scatter map didn't render
-            if not city_coords_data:
-                 st.warning(f"Map Warning: Coordinates file '{coords_file_path}' not found or 'city_coords' variable issue. Scatter map cannot be displayed.")
-            elif latlong_map_df.empty:
-                 st.warning(f"Map Warning: Coordinates data from '{coords_file_path}' loaded but seems empty or malformed after processing.")
-            elif map_merged_df.empty :
-                 st.info("No city data from your dataset matched with the loaded coordinates for the scatter map.")
+        
 
 
-            st.markdown("##### City AQI Overview (Map Data Unavailable/Incomplete)")
-            if not map_grouped_data.empty: # map_grouped_data has city averages, even if coords failed
-                avg_aqi_cities_alt = map_grouped_data.sort_values(by='avg_aqi', ascending=True) # Show worst at top
-                fig_alt_bar = px.bar(
-                    avg_aqi_cities_alt.tail(20), # Show top 20 worst or all if less
-                    x='avg_aqi', y='city', orientation='h',
-                    color='avg_aqi', color_continuous_scale=px.colors.sequential.YlOrRd_r,
-                    labels={'avg_aqi': 'Average AQI', 'city': 'City'}
-                )
-                fig_alt_bar.update_layout(**get_custom_plotly_layout_args(height=max(400, len(avg_aqi_cities_alt.tail(20)) * 25), title_text=f"Top Cities by Average AQI - {selected_month_display_name}, {year} (Map Fallback)"))
-                fig_alt_bar.update_layout(yaxis={'categoryorder':'total ascending'}) # Ensure correct order
-                st.plotly_chart(fig_alt_bar, use_container_width=True)
-            else:
-                st.warning("No city AQI data available for the selected period to display fallback chart.")
-    else:
-        st.warning("No air quality data available for the selected filters to display on a map or chart.")
-st.markdown("---")
+            
 
 
 # ------------------- 📥 Download Filtered Data -------------------
