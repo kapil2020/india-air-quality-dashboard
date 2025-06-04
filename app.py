@@ -649,7 +649,7 @@ with st.container():
                 zoom=4.5, center={"lat": 22.8, "lon": 82.5}, height=700
             )
             fig_map_final.update_layout(
-                mapbox_style="carto-positron", mapbox_accesstoken=st.secrets.get("MAPBOX_TOKEN"), # Optional: if you have a Mapbox token
+                mapbox_style="carto-positron", mapbox_accesstoken=st.secrets.get("pk.eyJ1Ijoic2FkaXR5YTkyMTEiLCJhIjoiY2xidzNvcWQ2MXlrazNucW5rcGxnc2RncCJ9.1GMKNUsQUmXSxvrOqlDnsw"), # Optional: if you have a Mapbox token
                 legend_title="AQI Category", title_text=f"Average AQI by City ({selected_month_name}, {year})",
                 margin={"r": 0, "t": 40, "l": 0, "b": 0}
             )
