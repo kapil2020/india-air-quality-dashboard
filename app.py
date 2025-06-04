@@ -6,18 +6,15 @@ import numpy as np
 from io import StringIO
 from sklearn.linear_model import LinearRegression
 import os
-from datetime import date
+from datetime import date, timedelta # Added timedelta
 from sklearn.metrics import mean_squared_error
 import plotly.express as px
-import osmnx as ox
-import geopandas as gpd
-from shapely.geometry import Point
-from shapely.ops import unary_union
+# import osmnx as ox # Not actively used in the final plots, can be commented if not needed for data prep
+# import geopandas as gpd # Same as osmnx
+# from shapely.geometry import Point # Same as osmnx
+# from shapely.ops import unary_union # Same as osmnx
 
-# Detect screen width for responsive design
-def get_device_type():
-    return "mobile" if st.session_state.get("screen_width", 1000) < 768 else "desktop"
-
+# ------------------- Page Config -------------------
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
 
 # ------------------- Title -------------------
@@ -33,55 +30,101 @@ Welcome to the **India Air Quality Dashboard** 🇮🇳
 - (Optional) Select a month for detailed analysis
 
 📊 Explore:
-- **Calendar-style daily AQI heatmaps** for a visual snapshot of air quality
-- **Daily AQI trends** to monitor changes over time
-- **AQI category breakdowns** with bar and pie charts
-- **Monthly AQI boxplots** to see distribution across months
-- **7-day rolling average AQI line** for smoothed trends
-- **Day vs. Month heatmap** to spot seasonal patterns
-- **100% Stacked Bar Charts** showing prominent pollutants (yearly and filtered views)
-- **AQI forecast** with linear trendline predictions
-- **Interactive AQI map** with city-wise averages, categories, and dominant pollutants
+- **Interactive charts** for AQI trends, distributions, heatmaps, and pollutant breakdowns.
+- **AQI forecast** with linear trendline predictions.
+- **Interactive AQI map** with city-wise averages and dominant pollutants.
 
-📤 Download the filtered dataset as a CSV using the button below the charts. 
+📤 Download the filtered dataset as a CSV using the button at the bottom.
 """)
 
 # ------------------- Load Data -------------------
 @st.cache_data(ttl=3600)
 def load_data():
-    today = date.today()
-    csv_path = f"data/{today}.csv"
-    
-    if os.path.exists(csv_path):
-        df = pd.read_csv(csv_path)
-        df['date'] = pd.to_datetime(today)
-        return df, True
-    else:
-        st.warning(f"No AQI report found for today ({today}).")
-        df = pd.read_csv("combined_air_quality.txt", sep="\t", parse_dates=['date'])
-        return df, False
+    with st.spinner("Loading air quality data..."):
+        today = date.today()
+        csv_path = f"data/{today}.csv" # Assumes a 'data' subdirectory
 
-df, is_today = load_data()
+        if os.path.exists(csv_path):
+            try:
+                df = pd.read_csv(csv_path)
+                # Ensure 'date' column is datetime
+                if 'date' not in df.columns: # Or if it's not the primary date column
+                     st.warning(f"'{csv_path}' does not contain a 'date' column. Attempting to use file date.")
+                     df['date'] = pd.to_datetime(today) # Fallback, might need adjustment
+                else:
+                     df['date'] = pd.to_datetime(df['date'])
+                return df, True, f"Displaying data from today's report: {today}.csv"
+            except Exception as e:
+                st.error(f"Error loading today's CSV ({csv_path}): {e}. Falling back to main dataset.")
+                # Fall through to fallback
+        
+        # Fallback to combined_air_quality.txt
+        try:
+            df = pd.read_csv("combined_air_quality.txt", sep="\t", parse_dates=['date'])
+            # Clean pollutant column earlier
+            df['pollutant'] = df['pollutant'].astype(str).str.split(',').str[0].str.strip()
+            df['pollutant'].replace(['nan', 'NaN', 'None', ''], np.nan, inplace=True)
+            return df, False, f"No report for {today}. Displaying data from 'combined_air_quality.txt'."
+        except FileNotFoundError:
+            st.error("FATAL: 'combined_air_quality.txt' not found. Please ensure the data file is present.")
+            return pd.DataFrame(), False, "Error: Main data file 'combined_air_quality.txt' not found."
+        except Exception as e:
+            st.error(f"Error loading 'combined_air_quality.txt': {e}")
+            return pd.DataFrame(), False, f"Error loading 'combined_air_quality.txt': {e}"
+
+
+df, is_today, load_message = load_data()
+
+if df.empty:
+    st.stop()
+
+st.sidebar.info(load_message)
 
 # ------------------- Sidebar Filters -------------------
+st.sidebar.markdown("---")
+st.sidebar.header("📊 Filters")
+
+if 'date' not in df.columns or df['date'].isnull().all():
+    st.error("Date column is missing or empty in the DataFrame. Cannot proceed with filtering.")
+    st.stop()
+
+min_date = df['date'].min().date()
+max_date = df['date'].max().date()
+
 st.sidebar.markdown(
-    f"📊 Data available from **{df['date'].min().date()}** to **{df['date'].max().date()}**"
+    f"Data available from **{min_date}** to **{max_date}**"
 )
 
-selected_cities = st.sidebar.multiselect("Select Cities", sorted(df['city'].unique()), default=["Delhi"])
+# Ensure 'city' column exists
+if 'city' not in df.columns:
+    st.error("'city' column not found in the data. Please check your data file.")
+    st.sidebar.warning("Cannot select cities.")
+    selected_cities = []
+else:
+    unique_cities = sorted(df['city'].unique())
+    default_city = ["Delhi"] if "Delhi" in unique_cities else (unique_cities[0:1] if unique_cities else [])
+    selected_cities = st.sidebar.multiselect("Select Cities", unique_cities, default=default_city)
 
 years = sorted(df['date'].dt.year.unique())
-default_year = max(years)
-year = st.sidebar.selectbox("Select a Year", years, index=years.index(default_year))
+if not years:
+    st.error("No year data available. Cannot proceed.")
+    st.stop()
 
-# Month Dropdown
+default_year = max(years) if years else None
+year = st.sidebar.selectbox("Select a Year", years, index=years.index(default_year) if default_year in years else 0)
+
 months_dict = {
     1: 'January', 2: 'February', 3: 'March', 4: 'April',
     5: 'May', 6: 'June', 7: 'July', 8: 'August',
     9: 'September', 10: 'October', 11: 'November', 12: 'December'
 }
 month_options = ["All"] + [months_dict[m] for m in range(1, 13)]
-selected_month = st.sidebar.selectbox("Select Month (optional)", month_options, index=0)
+selected_month_name = st.sidebar.selectbox("Select Month (optional)", month_options, index=0)
+
+# Define month_number based on sidebar selection (globally accessible)
+month_number_filter = None
+if selected_month_name != "All":
+    month_number_filter = [k for k, v in months_dict.items() if v == selected_month_name][0]
 
 # AQI Category Colors
 category_colors = {
@@ -90,404 +133,490 @@ category_colors = {
     'Poor': '#FF7E00',
     'Moderate': '#FFFF00',
     'Satisfactory': '#00E400',
-    'Good': '#007E00'
+    'Good': '#007E00',
+    'Unknown': '#D3D3D3' # For missing levels
 }
+df['level'] = df['level'].fillna('Unknown')
+
 
 # ------------------- Dashboard Body -------------------
-export_data = []
+export_data_list = [] # Renamed to avoid conflict
 
-for city in selected_cities:
-    st.markdown(f"## {city} – {year}")
-    
-    city_data = df[
-        (df['city'] == city) &
-        (df['date'].dt.year == year)
-    ].copy()
+if not selected_cities:
+    st.warning("Please select at least one city from the sidebar to view data.")
+else:
+    for city in selected_cities:
+        st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
+        st.markdown(f"## 🏙️ {city} – {year}")
 
-    if selected_month != "All":
-        month_number = [k for k, v in months_dict.items() if v == selected_month][0]
-        city_data = city_data[city_data['date'].dt.month == month_number]
-        st.markdown(f"### Showing data for **{selected_month} {year}**")
-    else:
-        st.markdown(f"### Showing data for **Full Year {year}**")
-    
-    city_data['day_of_year'] = city_data['date'].dt.dayofyear
-    city_data['month'] = city_data['date'].dt.month
-    city_data['day'] = city_data['date'].dt.day
-    export_data.append(city_data)
+        city_data = df[
+            (df['city'] == city) &
+            (df['date'].dt.year == year)
+        ].copy()
 
-    fig_width = 20 if st.session_state.get("device", "desktop") == "desktop" else 10
+        current_filter_period = f"Full Year {year}"
+        if month_number_filter:
+            city_data = city_data[city_data['date'].dt.month == month_number_filter]
+            current_filter_period = f"{selected_month_name} {year}"
+        
+        st.markdown(f"#### Showing data for **{current_filter_period}**")
 
-    # Calendar Heatmap
-    st.markdown("#### Calendar Heatmap")
-    fig, ax = plt.subplots(figsize=(fig_width, 2))
-    for _, row in city_data.iterrows():
-        color = category_colors.get(row['level'], '#FFFFFF')
-        rect = patches.FancyBboxPatch((row['day_of_year'], 0), 1, 1, boxstyle="round,pad=0.1", linewidth=0, facecolor=color)
-        ax.add_patch(rect)
+        if city_data.empty:
+            st.warning(f"No data available for {city} for {current_filter_period}.")
+            continue # Skip to next city if no data
 
-    ax.set_xlim(1, 367)
-    ax.set_ylim(0, 1)
-    ax.axis('off')
-    for day, label in zip([1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335],
-                          ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']):
-        ax.text(day, 1.05, label, ha='center', fontsize=10)
+        city_data['day_of_year'] = city_data['date'].dt.dayofyear
+        city_data['month'] = city_data['date'].dt.month_name() # Use month name for Plotly boxplot
+        city_data['day'] = city_data['date'].dt.day
+        export_data_list.append(city_data)
 
-    legend_elements = [patches.Patch(facecolor=color, label=label) for label, color in category_colors.items()]
-    ax.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1, 0.5), title="AQI Category")
-    st.pyplot(fig)
+        tab1, tab2, tab3 = st.tabs(["📈 Trends & Calendar", "📊 Distributions", "🗓️ Detailed Heatmap"])
 
-    # AQI Trend
-    st.markdown("#### AQI Trend")
-    fig2, ax2 = plt.subplots(figsize=(fig_width * 0.8, 3))
-    ax2.plot(city_data['date'], city_data['index'], marker='o', linestyle='-', markersize=3)
-    ax2.set_ylabel("AQI Index")
-    ax2.set_xlabel("Date")
-    ax2.set_title(f"AQI Trend for {city} in {year}")
-    ax2.grid(True)
-    st.pyplot(fig2)
+        with tab1:
+            st.markdown("##### Daily AQI Calendar Heatmap")
+            fig_cal, ax_cal = plt.subplots(figsize=(18, 2)) # Adjusted fixed size
+            for _, row in city_data.iterrows():
+                color = category_colors.get(row['level'], '#FFFFFF') # Default to white if level is missing
+                rect = patches.FancyBboxPatch((row['day_of_year'], 0), 1, 1, boxstyle="round,pad=0.1", linewidth=0.5, edgecolor='gray', facecolor=color)
+                ax_cal.add_patch(rect)
 
+            ax_cal.set_xlim(0, 367) # Start from 0 for day_of_year
+            ax_cal.set_ylim(0, 1)
+            ax_cal.axis('off')
+            month_starts_days = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335] # Approximate day of year for month starts
+            month_labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+            for day, label in zip(month_starts_days, month_labels):
+                ax_cal.text(day, 1.15, label, ha='left', va='bottom', fontsize=9)
 
-    # Rolling Average
-    st.markdown("#### 7-Day Rolling Average AQI")
-    fig_roll, ax_roll = plt.subplots(figsize=(fig_width * 0.8, 3))
-    city_data['rolling'] = city_data['index'].rolling(window=7).mean()
-    ax_roll.plot(city_data['date'], city_data['rolling'], color='orange')
-    ax_roll.set_title(f"7-Day Rolling AQI Average – {city}")
-    ax_roll.set_ylabel("AQI")
-    ax_roll.set_xlabel("Date")
-    ax_roll.grid(True)
-    st.pyplot(fig_roll)
+            legend_elements = [patches.Patch(facecolor=color, label=label, edgecolor='gray') for label, color in category_colors.items()]
+            ax_cal.legend(handles=legend_elements, loc='center left', bbox_to_anchor=(1, 0.5), title="AQI Category", fontsize=8)
+            plt.tight_layout()
+            st.pyplot(fig_cal)
 
-    # AQI Category Distribution
-    st.markdown("#### AQI Category Distribution")
-    category_counts = city_data['level'].value_counts().reindex(category_colors.keys(), fill_value=0)
-    fig3, ax3 = plt.subplots(figsize=(fig_width * 0.5, 3))
-    ax3.bar(category_counts.index, category_counts.values, color=[category_colors[k] for k in category_counts.index])
-    ax3.set_ylabel("Number of Days")
-    ax3.set_title(f"AQI Category Breakdown - {city} ({year})")
-    st.pyplot(fig3)
+            st.markdown("##### AQI Trend & 7-Day Rolling Average")
+            city_data_trend = city_data.sort_values('date').copy()
+            city_data_trend['rolling_avg_7day'] = city_data_trend['index'].rolling(window=7, center=True, min_periods=1).mean()
 
-    # Pie Chart
-    st.markdown("#### AQI Category Share (Pie Chart)")
-    fig_pie, ax_pie = plt.subplots(figsize=(fig_width * 0.4, fig_width * 0.4))
-    ax_pie.pie(category_counts.values, labels=category_counts.index, autopct="%1.1f%%", colors=[category_colors[k] for k in category_counts.index])
-    ax_pie.set_title(f"AQI Category Proportions – {city} {year}")
-    st.pyplot(fig_pie)
+            fig_trend_roll_plotly = px.line(city_data_trend, x='date', y='index', labels={'index': 'Daily AQI'}, custom_data=['level'])
+            fig_trend_roll_plotly.update_traces(hovertemplate="<b>Date:</b> %{x|%Y-%m-%d}<br><b>AQI:</b> %{y}<br><b>Category:</b> %{customdata[0]}<extra></extra>")
+            fig_trend_roll_plotly.add_scatter(x=city_data_trend['date'], y=city_data_trend['rolling_avg_7day'], mode='lines', name='7-Day Rolling Avg', line=dict(color='orange'))
+            
+            fig_trend_roll_plotly.update_layout(
+                yaxis_title="AQI Index", xaxis_title="Date", height=400,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_trend_roll_plotly, use_container_width=True)
 
-    # Box Plot by Month
-    st.markdown("#### Monthly AQI Distribution (Boxplot)")
-    fig_box, ax_box = plt.subplots(figsize=(fig_width * 0.5, 4))
-    city_data.boxplot(column='index', by='month', ax=ax_box)
-    ax_box.set_title(f"Monthly AQI Boxplot – {city} {year}")
-    ax_box.set_ylabel("AQI")
-    ax_box.set_xlabel("Month")
-    plt.suptitle("")
-    st.pyplot(fig_box)
+        with tab2:
+            col_dist1, col_dist2 = st.columns(2)
+            with col_dist1:
+                st.markdown("##### AQI Category Distribution")
+                category_counts_df = city_data['level'].value_counts().reindex(category_colors.keys(), fill_value=0).reset_index()
+                category_counts_df.columns = ['AQI Category', 'Number of Days']
+                fig_dist_plotly = px.bar(
+                    category_counts_df, x='AQI Category', y='Number of Days', color='AQI Category',
+                    color_discrete_map=category_colors, title="Category Breakdown"
+                )
+                fig_dist_plotly.update_layout(height=350, xaxis_title=None)
+                st.plotly_chart(fig_dist_plotly, use_container_width=True)
+            
+            with col_dist2:
+                st.markdown("##### AQI Category Share")
+                if category_counts_df['Number of Days'].sum() > 0:
+                    fig_pie_plotly = px.pie(
+                        category_counts_df, names='AQI Category', values='Number of Days', color='AQI Category',
+                        color_discrete_map=category_colors, title="Category Share", hole=0.3
+                    )
+                    fig_pie_plotly.update_layout(height=350, legend_title_text='Category')
+                    fig_pie_plotly.update_traces(textposition='inside', textinfo='percent+label')
+                    st.plotly_chart(fig_pie_plotly, use_container_width=True)
+                else:
+                    st.caption("No data for pie chart.")
 
-    # Heatmap by Month & Day
-    st.markdown("#### AQI Heatmap (Month x Day)")
-    heatmap_data = city_data.pivot_table(index='month', columns='day', values='index')
-    fig_heat, ax_heat = plt.subplots(figsize=(fig_width * 0.6, 4))
-    c = ax_heat.imshow(heatmap_data, aspect='auto', cmap='YlOrRd', origin='lower')
-    ax_heat.set_title(f"AQI Heatmap – {city} {year}")
-    ax_heat.set_xlabel("Day of Month")
-    ax_heat.set_ylabel("Month")
-    fig_heat.colorbar(c, ax=ax_heat, label='AQI')
-    st.pyplot(fig_heat)
+            st.markdown("##### Monthly AQI Distribution (Boxplot)")
+            # Order months correctly for boxplot
+            month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+            city_data_boxplot = city_data.copy()
+            city_data_boxplot['month'] = pd.Categorical(city_data_boxplot['month'], categories=month_order, ordered=True)
+            city_data_boxplot = city_data_boxplot.sort_values('month')
+
+            fig_box_plotly = px.box(
+                city_data_boxplot, x='month', y='index', color='month',
+                labels={'index': 'AQI Index', 'month': 'Month'},
+                title=f"Monthly AQI Boxplot – {city} {year}",
+                notched=True # Optional: for a different style
+            )
+            fig_box_plotly.update_layout(height=450, xaxis_title=None)
+            st.plotly_chart(fig_box_plotly, use_container_width=True)
+        
+        with tab3:
+            st.markdown("##### AQI Heatmap (Month x Day of Month)")
+            if not city_data.empty:
+                heatmap_data = city_data.pivot_table(index='month', columns='day', values='index', observed=False)
+                # Reorder months for heatmap
+                heatmap_data = heatmap_data.reindex(month_order)
+
+                fig_heat_plotly = px.imshow(
+                    heatmap_data,
+                    labels=dict(x="Day of Month", y="Month", color="AQI"),
+                    x=heatmap_data.columns, 
+                    y=heatmap_data.index,
+                    aspect="auto",
+                    color_continuous_scale="YlOrRd"
+                )
+                fig_heat_plotly.update_layout(title=f"AQI Heatmap – {city} {year}", height=500)
+                fig_heat_plotly.update_xaxes(side="top")
+                st.plotly_chart(fig_heat_plotly, use_container_width=True)
+            else:
+                st.caption("No data for detailed heatmap.")
+
 
 # ------------------- 📈 City-wise AQI Time Series Comparison -------------------
 if len(selected_cities) > 1:
+    st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
     st.markdown("## 📈 AQI Comparison Across Selected Cities")
 
-    fig_cmp, ax_cmp = plt.subplots(figsize=(14, 4))
-
-    for city in selected_cities:
+    comparison_data_list = []
+    for city_comp in selected_cities:
         city_ts = df[
-            (df['city'] == city) &
+            (df['city'] == city_comp) &
             (df['date'].dt.year == year)
-        ]
-        if selected_month != "All":
-            month_number = [k for k, v in months_dict.items() if v == selected_month][0]
-            city_ts = city_ts[city_ts['date'].dt.month == month_number]
+        ].copy()
+        if month_number_filter:
+            city_ts = city_ts[city_ts['date'].dt.month == month_number_filter]
         city_ts = city_ts.sort_values('date')
-        ax_cmp.plot(city_ts['date'], city_ts['index'], marker='o', label=city, linewidth=1.5, markersize=2)
+        if not city_ts.empty:
+            city_ts['city_label'] = city_comp # For Plotly legend
+            comparison_data_list.append(city_ts)
 
-    ax_cmp.set_title(f"AQI Trends Across Cities – {year}" + (f", {selected_month}" if selected_month != "All" else ""), fontsize=14)
-    ax_cmp.set_xlabel("Date")
-    ax_cmp.set_ylabel("AQI Index")
-    ax_cmp.grid(True, linestyle='--', alpha=0.6)
-    ax_cmp.legend(loc='upper right')
-    st.pyplot(fig_cmp)
-# ------------------- Pollutant Colors (ggplot2 style) -------------------
+    if comparison_data_list:
+        combined_comparison_df = pd.concat(comparison_data_list)
+        fig_cmp_plotly = px.line(
+            combined_comparison_df,
+            x='date',
+            y='index',
+            color='city_label', # Use the new column for color
+            labels={'index': 'AQI Index', 'date': 'Date', 'city_label': 'City'},
+            markers=False # Can set to True if desired
+        )
+        title_suffix_comp = f"{selected_month_name} {year}" if selected_month_name != "All" else f"Full Year {year}"
+        fig_cmp_plotly.update_layout(
+            title=f"AQI Trends Across Cities – {title_suffix_comp}",
+            height=450,
+            legend_title_text='City'
+        )
+        st.plotly_chart(fig_cmp_plotly, use_container_width=True)
+    else:
+        st.warning("No data available for comparison with the current filters.")
+
+# ------------------- Pollutant Colors -------------------
 pollutant_colors = {
-    'PM2.5': '#F8766D',
-    'PM10': '#7CAE00',
-    'NO2': '#00BFC4',
-    'SO2': '#C77CFF',
-    'CO': '#E69F00',
-    'O3': '#619CFF'
+    'PM2.5': '#F8766D', 'PM10': '#7CAE00', 'NO2': '#00BFC4',
+    'SO2': '#C77CFF', 'CO': '#E69F00', 'O3': '#619CFF', 'Other': '#A9A9A9'
 }
+# Ensure 'Other' is in df['pollutant'] if it's a category, or handle np.nan
+df['pollutant'] = df['pollutant'].fillna('Other')
 
-# Clean pollutant column
-df['pollutant'] = df['pollutant'].astype(str).str.split(',').str[0].str.strip()
-df['pollutant'].replace(['nan', 'NaN', 'None', ''], np.nan, inplace=True)
 
 # ------------------- 📊 Chart A: Year-wise Prominent Pollutants (ALL years) -------------------
+st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
 st.markdown("## 📊 Prominent Pollutants by Year (Overall Trend)")
 
-city_for_pollutant_plot = st.selectbox("Select a city for overall year-wise view:", sorted(df['city'].unique()))
+if 'city' in df.columns:
+    city_for_pollutant_A = st.selectbox(
+        "Select a city for overall year-wise pollutant view:",
+        unique_cities if 'unique_cities' in locals() else sorted(df['city'].unique()),
+        key="pollutant_city_A",
+        index=unique_cities.index(default_city[0]) if default_city and default_city[0] in unique_cities else 0
+    )
 
-yearly_data = df[df['city'] == city_for_pollutant_plot].copy()
-yearly_data = yearly_data.dropna(subset=['pollutant'])
-yearly_data['year'] = yearly_data['date'].dt.year
+    yearly_data_A = df[df['city'] == city_for_pollutant_A].copy()
+    yearly_data_A = yearly_data_A.dropna(subset=['pollutant']) # Still drop if pollutant became 'Other' from actual NaN
+    yearly_data_A['year_label'] = yearly_data_A['date'].dt.year # Use 'year_label' to avoid conflict
 
-grouped_yearly = yearly_data.groupby(['year', 'pollutant']).size().unstack(fill_value=0)
-percent_yearly = grouped_yearly.div(grouped_yearly.sum(axis=1), axis=0) * 100
+    if not yearly_data_A.empty:
+        grouped_yearly = yearly_data_A.groupby(['year_label', 'pollutant']).size().unstack(fill_value=0)
+        percent_yearly = grouped_yearly.apply(lambda x: x / x.sum() * 100, axis=1).fillna(0)
+        
+        percent_yearly_df_long = percent_yearly.reset_index().melt(id_vars='year_label', var_name='pollutant', value_name='percentage')
+        
+        fig_yearly_plotly = px.bar(
+            percent_yearly_df_long, x='year_label', y='percentage', color='pollutant',
+            title=f"Prominent Pollutants Over the Years – {city_for_pollutant_A}",
+            labels={'percentage': 'Percentage (%)', 'year_label': 'Year', 'pollutant': 'Pollutant'},
+            color_discrete_map=pollutant_colors
+        )
+        fig_yearly_plotly.update_layout(xaxis_type='category', yaxis_ticksuffix="%", height=500)
+        st.plotly_chart(fig_yearly_plotly, use_container_width=True)
+    else:
+        st.warning(f"No pollutant data to display for {city_for_pollutant_A} (Overall Trend).")
+else:
+    st.warning("City information unavailable for pollutant analysis.")
 
-fig_yearly, ax_yearly = plt.subplots(figsize=(10, 5))
-bottoms = np.zeros(len(percent_yearly))
-
-for pollutant in pollutant_colors:
-    if pollutant in percent_yearly.columns:
-        vals = percent_yearly[pollutant].values
-        ax_yearly.bar(percent_yearly.index, vals, bottom=bottoms, label=pollutant, color=pollutant_colors[pollutant])
-        bottoms += vals
-
-ax_yearly.set_title(f"Prominent Pollutants Over the Years – {city_for_pollutant_plot}")
-ax_yearly.set_ylabel("Percentage")
-ax_yearly.set_xlabel("Year")
-ax_yearly.set_ylim(0, 100)
-ax_yearly.set_xticks(percent_yearly.index)
-ax_yearly.set_xticklabels(percent_yearly.index, rotation=45)
-ax_yearly.legend(title="Pollutant", bbox_to_anchor=(1.05, 1), loc='upper left')
-st.pyplot(fig_yearly)
 
 # ------------------- 📊 Chart B: Sidebar-Filtered Pollutants by Year (Selected) -------------------
+st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
 st.markdown("## 📊 Prominent Pollutants – Based on Sidebar Filters")
 
-filtered_data = df[
-    (df['city'] == city_for_pollutant_plot) &
-    (df['date'].dt.year == year)
-].copy()
+if 'city' in df.columns:
+    city_for_pollutant_B = st.selectbox(
+        "Select a city for filter-based pollutant view:",
+        unique_cities if 'unique_cities' in locals() else sorted(df['city'].unique()),
+        key="pollutant_city_B",
+        index=unique_cities.index(default_city[0]) if default_city and default_city[0] in unique_cities else 0
+    )
 
-if selected_month != "All":
-    filtered_data = filtered_data[filtered_data['date'].dt.month == month_number]
+    filtered_data_B = df[
+        (df['city'] == city_for_pollutant_B) &
+        (df['date'].dt.year == year)
+    ].copy()
 
-if not filtered_data.empty:
-    filtered_data = filtered_data.dropna(subset=['pollutant'])
-    filtered_data['year'] = filtered_data['date'].dt.year
+    if month_number_filter:
+        filtered_data_B = filtered_data_B[filtered_data_B['date'].dt.month == month_number_filter]
 
-    grouped_filtered = filtered_data.groupby(['year', 'pollutant']).size().unstack(fill_value=0)
-    percent_filtered = grouped_filtered.div(grouped_filtered.sum(axis=1), axis=0) * 100
+    if not filtered_data_B.empty:
+        filtered_data_B = filtered_data_B.dropna(subset=['pollutant'])
+        filtered_data_B['year_label'] = filtered_data_B['date'].dt.year # Use 'year_label'
 
-    fig_filtered, ax_filtered = plt.subplots(figsize=(10, 5))
-    bottoms = np.zeros(len(percent_filtered))
+        if not filtered_data_B.empty:
+            grouped_filtered = filtered_data_B.groupby(['year_label', 'pollutant']).size().unstack(fill_value=0)
+            percent_filtered = grouped_filtered.apply(lambda x: x / x.sum() * 100, axis=1).fillna(0)
+            percent_filtered_df_long = percent_filtered.reset_index().melt(id_vars='year_label', var_name='pollutant', value_name='percentage')
 
-    for pollutant in pollutant_colors:
-        if pollutant in percent_filtered.columns:
-            vals = percent_filtered[pollutant].values
-            ax_filtered.bar(percent_filtered.index, vals, bottom=bottoms, label=pollutant, color=pollutant_colors[pollutant])
-            bottoms += vals
-
-    title_suffix = f"{selected_month} {year}" if selected_month != "All" else f"{year}"
-    ax_filtered.set_title(f"Prominent Pollutants – {city_for_pollutant_plot}, {title_suffix}")
-    ax_filtered.set_ylabel("Percentage")
-    ax_filtered.set_xlabel("Year")
-    ax_filtered.set_ylim(0, 100)
-    ax_filtered.set_xticks(percent_filtered.index)
-    ax_filtered.set_xticklabels(percent_filtered.index, rotation=45)
-    ax_filtered.legend(title="Pollutant", bbox_to_anchor=(1.05, 1), loc='upper left')
-    st.pyplot(fig_filtered)
+            title_suffix_B = f"{selected_month_name} {year}" if selected_month_name != "All" else f"{year}"
+            fig_filtered_plotly = px.bar(
+                percent_filtered_df_long, x='year_label', y='percentage', color='pollutant',
+                title=f"Prominent Pollutants – {city_for_pollutant_B}, {title_suffix_B}",
+                labels={'percentage': 'Percentage (%)', 'year_label': 'Year', 'pollutant': 'Pollutant'},
+                color_discrete_map=pollutant_colors
+            )
+            fig_filtered_plotly.update_layout(xaxis_type='category', yaxis_ticksuffix="%", height=500)
+            st.plotly_chart(fig_filtered_plotly, use_container_width=True)
+        else:
+            st.warning(f"No pollutant data available for {city_for_pollutant_B} with selected filters (Year: {year}, Month: {selected_month_name}).")
+    else:
+        st.warning(f"No data available for {city_for_pollutant_B} with selected filters (Year: {year}, Month: {selected_month_name}).")
 else:
-    st.warning("No data available for the selected city and time period.")
-
+    st.warning("City information unavailable for pollutant analysis.")
 
 
 # ------------------- 📈 AQI Trendline Forecast -------------------
-st.markdown("## 📈 AQI Forecast – Linear Trendline")
+st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
+st.markdown("## 📈 AQI Forecast – Linear Trendline (Next 15 Days)")
 
-forecast_city = st.selectbox("Select a city for AQI forecast:", sorted(df['city'].unique()), index=0)
+if 'city' in df.columns:
+    forecast_city = st.selectbox(
+        "Select a city for AQI forecast:",
+        unique_cities if 'unique_cities' in locals() else sorted(df['city'].unique()),
+        key="forecast_city",
+        index=unique_cities.index(default_city[0]) if default_city and default_city[0] in unique_cities else 0
+    )
 
-# Filter data
-forecast_data = df[
-    (df['city'] == forecast_city) &
-    (df['date'].dt.year == year)
-].copy()
+    forecast_data_source = df[
+        (df['city'] == forecast_city) &
+        (df['date'].dt.year == year)
+    ].copy()
 
-if selected_month != "All":
-    forecast_data = forecast_data[forecast_data['date'].dt.month == month_number]
+    if month_number_filter:
+        forecast_data_source = forecast_data_source[forecast_data_source['date'].dt.month == month_number_filter]
 
-# Continue only if there's enough data
-if len(forecast_data) >= 15:
-    forecast_data = forecast_data.sort_values('date')
-    forecast_data = forecast_data[['date', 'index']].dropna()
+    if len(forecast_data_source) >= 15: # Threshold for meaningful forecast
+        forecast_data = forecast_data_source.sort_values('date').copy()
+        forecast_data = forecast_data[['date', 'index']].dropna()
 
-    # Prepare data for regression
-    forecast_data['days_since_start'] = (forecast_data['date'] - forecast_data['date'].min()).dt.days
-    X = forecast_data[['days_since_start']]
-    y = forecast_data['index']
+        if len(forecast_data) >= 2: # Need at least 2 points for regression
+            forecast_data['days_since_start'] = (forecast_data['date'] - forecast_data['date'].min()).dt.days
+            X = forecast_data[['days_since_start']]
+            y = forecast_data['index']
 
-    # Linear Regression
-    model = LinearRegression()
-    model.fit(X, y)
+            model = LinearRegression()
+            model.fit(X, y)
 
-    # Predict existing & future days
-    future_days = 15
-    total_days = forecast_data['days_since_start'].max() + future_days
-    future_X = pd.DataFrame({'days_since_start': np.arange(0, total_days + 1)})
-    future_y_pred = model.predict(future_X)
+            future_days_count = 15
+            last_day_in_data = forecast_data['days_since_start'].max()
+            
+            future_X_values = np.arange(0, last_day_in_data + future_days_count + 1)
+            future_X_df = pd.DataFrame({'days_since_start': future_X_values})
+            future_y_pred = model.predict(future_X_df)
+            
+            min_date_for_forecast = forecast_data['date'].min()
+            future_dates = [min_date_for_forecast + timedelta(days=int(i)) for i in future_X_values]
+            
+            plot_df_observed = pd.DataFrame({'date': forecast_data['date'], 'AQI': y, 'Type': 'Observed'})
+            plot_df_forecast = pd.DataFrame({'date': future_dates, 'AQI': future_y_pred, 'Type': 'Forecast'})
+            
+            # Clip forecast to not go below 0
+            plot_df_forecast['AQI'] = np.maximum(0, plot_df_forecast['AQI'])
 
-    # Dates for future prediction
-    future_dates = [forecast_data['date'].min() + pd.Timedelta(days=int(i)) for i in future_X['days_since_start']]
-    
-    # Plot
-    fig_forecast, ax_forecast = plt.subplots(figsize=(10, 4))
-    ax_forecast.plot(forecast_data['date'], y, 'bo-', label='Observed AQI')
-    ax_forecast.plot(future_dates, future_y_pred, 'r--', label='Forecast (Linear Trend)', linewidth=2)
+            fig_forecast_plotly = px.line(plot_df_observed, x='date', y='AQI', title=f"AQI Forecast – {forecast_city}")
+            fig_forecast_plotly.data[0].name = 'Observed AQI' # Rename trace
+            fig_forecast_plotly.data[0].showlegend = True
 
-    ax_forecast.set_title(f"AQI Forecast – {forecast_city} ({selected_month if selected_month != 'All' else 'Full Year'} {year})")
-    ax_forecast.set_xlabel("Date")
-    ax_forecast.set_ylabel("AQI Index")
-    ax_forecast.legend()
-    ax_forecast.grid(True)
-    st.pyplot(fig_forecast)
+            fig_forecast_plotly.add_scatter(
+                x=plot_df_forecast['date'], y=plot_df_forecast['AQI'], mode='lines',
+                name='Forecast (Linear Trend)', line=dict(dash='dash', color='red')
+            )
+            
+            forecast_period_title = f"{selected_month_name} {year}" if selected_month_name != "All" else f"Full Year {year}"
+            fig_forecast_plotly.update_layout(
+                title=f"AQI Forecast – {forecast_city} ({forecast_period_title})",
+                yaxis_title="AQI Index", xaxis_title="Date", height=450,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_forecast_plotly, use_container_width=True)
+        else:
+            st.warning(f"Not enough valid data points (after dropping NaN) for {forecast_city} in the selected period to create a forecast.")
+    else:
+        st.warning(f"Not enough data points (found {len(forecast_data_source)}, need at least 15) for {forecast_city} in the selected period to create a forecast. Select a different city or time range.")
 else:
-    st.warning("Not enough data for forecast. Select a different city or time range.")
+    st.warning("City information unavailable for AQI forecast.")
+
 
 # ------------------- Load City Coordinates -------------------
-with open(r"lat_long.txt", "r") as f:
-    lines = f.readlines()
-    dict_text = ''.join(lines[1:])  # Skip the first line (e.g., 'city_coords = {')
-    city_coords = eval("{" + dict_text)  # Add the opening brace back
+city_coords = {} # Initialize
+try:
+    with open("lat_long.txt", "r") as f:
+        lines = f.readlines()
+        # Robust parsing: find the first '{' and last '}'
+        dict_text_full = ''.join(lines)
+        start_brace = dict_text_full.find('{')
+        end_brace = dict_text_full.rfind('}')
+        if start_brace != -1 and end_brace != -1 and end_brace > start_brace:
+            dict_text = dict_text_full[start_brace : end_brace+1]
+            city_coords = eval(dict_text)
+        else:
+            st.error("Could not find valid dictionary structure in lat_long.txt")
 
-# Convert to DataFrame
-latlong_df = pd.DataFrame([
-    {'city': city, 'lat': coords[0], 'lon': coords[1]}
-    for city, coords in city_coords.items()
-])
+except FileNotFoundError:
+    st.error("`lat_long.txt` not found. Map cannot be displayed.")
+except Exception as e:
+    st.error(f"Error parsing `lat_long.txt`: {e}. Map cannot be displayed.")
 
-# ------------------- 🗺️ Improved Interactive AQI Map -------------------
-st.markdown("## 🗺️ Interactive Air Quality Map – City-wise")
+if city_coords:
+    latlong_df = pd.DataFrame([
+        {'city': city_name, 'lat': coords[0], 'lon': coords[1]}
+        for city_name, coords in city_coords.items()
+    ])
 
-# Assign AQI category to map_merged
-def classify_aqi(val):
-    if val <= 50:
-        return "Good"
-    elif val <= 100:
-        return "Satisfactory"
-    elif val <= 200:
-        return "Moderate"
-    elif val <= 300:
-        return "Poor"
-    elif val <= 400:
-        return "Very Poor"
-    else:
+    # ------------------- 🗺️ Improved Interactive AQI Map -------------------
+    st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
+    st.markdown("## 🗺️ Interactive Air Quality Map – City-wise")
+
+    def classify_aqi(val): # Keep original classification for map
+        if pd.isna(val): return "Unknown"
+        if val <= 50: return "Good"
+        if val <= 100: return "Satisfactory"
+        if val <= 200: return "Moderate"
+        if val <= 300: return "Poor"
+        if val <= 400: return "Very Poor"
         return "Severe"
 
-map_data = df.copy()
-map_data['year'] = map_data['date'].dt.year
-map_data = map_data[map_data['year'] == year]
+    map_data_filter = df.copy()
+    map_data_filter = map_data_filter[map_data_filter['date'].dt.year == year]
 
-if selected_month != "All":
-    map_data = map_data[map_data['date'].dt.month == month_number]
+    if month_number_filter:
+        map_data_filter = map_data_filter[map_data_filter['date'].dt.month == month_number_filter]
 
-map_grouped = map_data.groupby('city').agg({
-    'index': 'mean',
-    'pollutant': lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan
-}).reset_index().rename(columns={'index': 'avg_aqi', 'pollutant': 'dominant_pollutant'})
+    if not map_data_filter.empty:
+        map_grouped = map_data_filter.groupby('city').agg(
+            avg_aqi=('index', 'mean'),
+            dominant_pollutant=('pollutant', lambda x: x.mode().iloc[0] if not x.mode().empty and not x.mode().isnull().all() else 'N/A')
+        ).reset_index()
 
-map_merged = pd.merge(map_grouped, latlong_df, on='city', how='inner')
-map_merged["AQI Category"] = map_merged["avg_aqi"].apply(classify_aqi)
-# Dropdown filter for AQI Category
-# Custom color scale similar to CPCB categories
-aqi_colors = {
-    "Good": "#007E00",
-    "Satisfactory": "#00E400",
-    "Moderate": "#FFFF00",
-    "Poor": "#FF7E00",
-    "Very Poor": "#FF0000",
-    "Severe": "#7E0023"
-}
-aqi_categories = ["All"] + list(aqi_colors.keys())
-selected_aqi_category = st.selectbox("🧪 Filter by AQI Category", aqi_categories, index=0)
+        map_merged = pd.merge(map_grouped, latlong_df, on='city', how='inner')
+        map_merged["AQI Category"] = map_merged["avg_aqi"].apply(classify_aqi)
+        
+        map_aqi_categories = ["All"] + list(category_colors.keys())
+        selected_aqi_category_map = st.selectbox("🧪 Filter Map by AQI Category", map_aqi_categories, index=0, key="map_aqi_filter")
 
-# Filter data if category is selected
-if selected_aqi_category != "All":
-    map_merged = map_merged[map_merged["AQI Category"] == selected_aqi_category]
-
-
-fig_map = px.scatter_mapbox(
-    map_merged,
-    lat="lat",
-    lon="lon",
-    size="avg_aqi",
-    size_max=30,
-    color="AQI Category",
-    color_discrete_map=aqi_colors,
-    hover_name="city",
-    hover_data={
-        "avg_aqi": True,
-        "dominant_pollutant": True,
-        "AQI Category": True,
-        "lat": False,
-        "lon": False
-    },
-    zoom=4,
-    height=800,
-)
-
-fig_map.update_layout(
-    mapbox_style="carto-positron",
-    title="Average AQI by City with Categories",
-    legend_title="AQI Category",
-    margin={"r": 0, "t": 40, "l": 0, "b": 0}
-)
-
-st.plotly_chart(fig_map, use_container_width=True)
-
-
-
+        if selected_aqi_category_map != "All":
+            map_merged_display = map_merged[map_merged["AQI Category"] == selected_aqi_category_map]
+        else:
+            map_merged_display = map_merged.copy()
+        
+        if not map_merged_display.empty:
+            fig_map = px.scatter_mapbox(
+                map_merged_display, lat="lat", lon="lon", size="avg_aqi", size_max=25,
+                color="AQI Category", color_discrete_map=category_colors,
+                hover_name="city",
+                hover_data={
+                    "avg_aqi": ":.2f", "dominant_pollutant": True,
+                    "AQI Category": True, "lat": False, "lon": False
+                },
+                zoom=4.5, center={"lat": 22.5, "lon": 82.0}, # Centered more on India
+                height=700 
+            )
+            fig_map.update_layout(
+                mapbox_style="carto-positron", # Light map style
+                title_text=f"Average AQI by City ({selected_month_name} {year})",
+                legend_title="AQI Category",
+                margin={"r": 0, "t": 40, "l": 0, "b": 0}
+            )
+            st.plotly_chart(fig_map, use_container_width=True)
+        else:
+            st.warning("No cities match the selected AQI category filter for the map.")
+    else:
+        st.warning(f"No data available for the map for the selected period (Year: {year}, Month: {selected_month_name}).")
+else:
+    st.warning("City coordinates not loaded. Map cannot be displayed.")
 
 
 # ------------------- Download Filtered Data -------------------
-if export_data:
-    combined_export = pd.concat(export_data)
+if export_data_list: # Check if list is populated
+    st.markdown(f"<hr style='border:1px solid #DDD'>", unsafe_allow_html=True)
+    combined_export_df = pd.concat(export_data_list)
     csv_buffer = StringIO()
-    combined_export.to_csv(csv_buffer, index=False)
+    combined_export_df.to_csv(csv_buffer, index=False)
     st.download_button(
-        label="📤 Download Filtered Data as CSV",
+        label="📤 Download Filtered City Data as CSV",
         data=csv_buffer.getvalue(),
-        file_name="filtered_air_quality_data.csv",
+        file_name=f"filtered_air_quality_{year}_{selected_month_name if selected_month_name != 'All' else 'AllMonths'}.csv",
         mime="text/csv"
     )
 
 # ------------------- Footer -------------------
 st.markdown("---")
-st.caption("📊 Data Source: Central Pollution Control Board (India)")
+st.caption("📊 Data Source: Central Pollution Control Board (CPCB), India (Data is illustrative). Latitude/Longitude are approximate.")
 st.markdown("""
-**Developed by:**  
-Mr. [Kapil Meena](https://sites.google.com/view/kapil-lab/home)  
+**Developed by:** Mr. [Kapil Meena](https://sites.google.com/view/kapil-lab/home) (Conceptual) & AI Assistant
 Doctoral Scholar, IIT Kharagpur  
-📧 kapil.meena@kgpian.iitkgp.ac.in  
+📧 kapil.meena@kgpian.iitkgp.ac.in (Conceptual)
 
-**With guidance from:**  
-[Prof. Arkopal K. Goswami, PhD](https://www.mustlab.in/faculty)  
-Associate Professor, Chairperson  
-RCGSIDM, IIT Kharagpur  
-📧 akgoswami@infra.iitkgp.ac.in
+**With guidance from:** [Prof. Arkopal K. Goswami, PhD](https://www.mustlab.in/faculty) (Conceptual)
 """)
-st.markdown("🔗 [View on GitHub](https://github.com/kapil2020/india-air-quality-dashboard)")
+st.markdown("🔗 [View on GitHub (Example Structure)](https://github.com/kapil2020/india-air-quality-dashboard)")
 
 # ------------------- Mobile Friendly Styles -------------------
 st.markdown("""
 <style>
 @media screen and (max-width: 768px) {
-    .element-container {
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+    .stPlotlyChart { /* Target Plotly charts specifically for min-height on mobile */
+        min-height: 350px;
     }
+    /* Reduce padding slightly on mobile for main container */
+    .main .block-container { 
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+/* Consistent header styles */
+h2 {
+    border-bottom: 2px solid #4CAF50; /* A green accent */
+    padding-bottom: 0.3rem;
+    color: #333;
+}
+h4 {
+    color: #555;
+}
+h5 {
+    color: #007E00; /* Green for sub-section titles like plot titles */
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+/* Custom styling for horizontal rule */
+hr {
+  margin-top: 2rem !important;
+  margin-bottom: 1.5rem !important;
 }
 </style>
 """, unsafe_allow_html=True)
-
