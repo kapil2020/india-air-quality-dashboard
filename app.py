@@ -14,12 +14,12 @@ import geopandas as gpd
 from shapely.geometry import Point
 from shapely.ops import unary_union
 
-
 # Detect screen width for responsive design
 def get_device_type():
     return "mobile" if st.session_state.get("screen_width", 1000) < 768 else "desktop"
 
 st.set_page_config(layout="wide", initial_sidebar_state="expanded")
+
 # ------------------- Title -------------------
 st.title("🇮🇳 India Air Quality Dashboard")
 
@@ -44,9 +44,9 @@ Welcome to the **India Air Quality Dashboard** 🇮🇳
 - **Interactive AQI map** with city-wise averages, categories, and dominant pollutants
 
 📤 Download the filtered dataset as a CSV using the button below the charts. 
-        """)
+""")
 
-
+# ------------------- Load Data -------------------
 @st.cache_data(ttl=3600)
 def load_data():
     today = date.today()
@@ -55,18 +55,24 @@ def load_data():
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         df['date'] = pd.to_datetime(today)
-        return df
+        return df, True
     else:
         st.warning(f"No AQI report found for today ({today}).")
-        return pd.read_csv("combined_air_quality.txt", sep="\t", parse_dates=['date'])
+        df = pd.read_csv("combined_air_quality.txt", sep="\t", parse_dates=['date'])
+        return df, False
 
-df = load_data()
+df, is_today = load_data()
 
 # ------------------- Sidebar Filters -------------------
+st.sidebar.markdown(
+    f"📊 Data available from **{df['date'].min().date()}** to **{df['date'].max().date()}**"
+)
+
 selected_cities = st.sidebar.multiselect("Select Cities", sorted(df['city'].unique()), default=["Delhi"])
 
 years = sorted(df['date'].dt.year.unique())
-year = st.sidebar.selectbox("Select a Year", years, index=years.index(2024) if 2024 in years else 0)
+default_year = max(years)
+year = st.sidebar.selectbox("Select a Year", years, index=years.index(default_year))
 
 # Month Dropdown
 months_dict = {
