@@ -54,7 +54,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------- Custom CSS Styling (Dark Theme + Sidebar Fixes) -------------------
+# ------------------- Custom CSS Styling (Dark Theme + Mobile Responsive) -------------------
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -323,70 +323,235 @@ st.markdown(f"""
         background: linear-gradient(45deg, #00BFA5, {ACCENT_COLOR});
     }}
     
-    /* Responsive adjustments */
+    /* ====================
+       MOBILE RESPONSIVENESS
+       ==================== */
     @media (max-width: 768px) {{
+        /* Main layout adjustments */
         .main .block-container {{
-            padding: 1rem;
+            padding: 1rem !important;
         }}
         
-        .stMetric > div:nth-child(2) {{
-            font-size: 2rem;
-        }}
-        
-        .stTabs [data-baseweb="tab"] {{
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
-        }}
-        
+        /* Heading sizes */
         h1 {{
-            font-size: 2.2rem;
+            font-size: 2.2rem !important;
+            line-height: 1.2;
+            padding: 0 0.5rem;
         }}
         
         h2 {{
-            font-size: 1.5rem;
+            font-size: 1.5rem !important;
+            padding-bottom: 0.4rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
         }}
         
+        h2:after {{
+            width: 80px;
+        }}
+        
+        h3 {{
+            font-size: 1.2rem !important;
+            margin-bottom: 1rem;
+        }}
+        
+        /* Sidebar becomes full-width drawer */
         .stSidebar {{
             width: 100% !important;
             min-width: 100% !important;
+            position: fixed;
+            z-index: 1001;
+            height: auto;
+            max-height: 90vh;
+            overflow-y: auto;
+            bottom: 0;
+            top: auto !important;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            border-right: none;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
         }}
         
-        .col1, .col2, .col3 {{
-            flex: 0 0 100% !important;
-            max-width: 100% !important;
+        .stSidebar[data-is-open="true"] {{
+            transform: translateY(0);
         }}
         
-        .status-col1, .status-col2, .status-col3 {{
+        /* Hide desktop sidebar toggle */
+        .st-emotion-cache-1oe5cao {{
+            display: none !important;
+        }}
+        
+        /* Column layouts */
+        [data-testid="column"] {{
             flex: 0 0 100% !important;
             max-width: 100% !important;
             margin-bottom: 1rem;
         }}
         
-        .health-col1, .health-col2 {{
-            flex: 0 0 100% !important;
-            max-width: 100% !important;
+        /* Metric adjustments */
+        .stMetric > div:nth-child(2) {{
+            font-size: 1.8rem !important;
         }}
         
-        .map-col1, .map-col2 {{
-            flex: 0 0 100% !important;
-            max-width: 100% !important;
+        /* Tab adjustments */
+        .stTabs [data-baseweb="tab"] {{
+            padding: 0.6rem 0.8rem !important;
+            font-size: 0.9rem !important;
+            margin-right: 0.3rem;
         }}
         
-        .forecast-col1, .forecast-col2 {{
-            flex: 0 0 100% !important;
-            max-width: 100% !important;
+        /* Card padding reduction */
+        .stPlotlyChart, .stDataFrame, .stAlert, .stMetric,
+        div[data-testid="stExpander"], div[data-testid="stForm"] {{
+            padding: 1rem !important;
+            border-radius: 12px;
         }}
         
-        .poll-col1, .poll-col2 {{
-            flex: 0 0 100% !important;
-            max-width: 100% !important;
+        /* Status cards stack vertically */
+        .status-container {{
+            flex-direction: column !important;
         }}
         
-        .insight-card {{
+        .status-container > [data-testid="column"] {{
             margin-bottom: 1rem;
+        }}
+        
+        /* Footer adjustments */
+        .footer-container {{
+            padding: 1.5rem 1rem !important;
+        }}
+        
+        .footer-info {{
+            flex-direction: column;
+            gap: 1rem;
+        }}
+        
+        /* Map section adjustments */
+        .map-container {{
+            flex-direction: column !important;
+        }}
+        
+        /* Hide complex charts on mobile */
+        .hide-on-mobile {{
+            display: none !important;
+        }}
+        
+        /* Mobile menu toggle button */
+        .mobile-menu-toggle {{
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: {ACCENT_COLOR};
+            color: {BACKGROUND_COLOR};
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 24px;
         }}
     }}
     
+    /* ====================
+       SIDEBAR SELECTBOX IMPROVEMENTS
+       ==================== */
+    /* 1) Closed‐state "button" background & text */
+    div[data-baseweb="select"] > div:first-child {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      border: 1px solid #555555 !important;
+      border-radius: 10px !important;
+      padding: 0.4rem 0.8rem !important;
+    }}
+
+    /* 2) Placeholder text color */
+    div[data-baseweb="select"] > div:first-child span {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      opacity: 0.7;
+    }}
+
+    /* 3) Opened dropdown menu */
+    div[data-baseweb="select"] [role="menu"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      border: 1px solid #555555 !important;
+      border-radius: 8px !important;
+      z-index: 1002 !important; /* Ensure dropdown is above other elements */
+      max-height: 300px;
+      overflow-y: auto;
+    }}
+
+    /* 4) Dropdown options */
+    div[data-baseweb="select"] [role="option"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      padding: 0.6rem 1rem !important;
+    }}
+
+    /* 5) Hover highlight */
+    div[data-baseweb="select"] [role="option"]:hover {{
+      background-color: #333333 !important;
+      color: #FFFFFF !important;
+    }}
+
+    /* 6) Arrow icon color */
+    div[data-baseweb="select"] svg {{
+      stroke: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* 7) Selected value text */
+    div[data-baseweb="select"] .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      opacity: 1 !important;
+    }}
+
+    /* 8) Multi-select tokens */
+    div[data-baseweb="select"] .css-1rhbuit-multiValue {{
+      background-color: #333333 !important;
+    }}
+    div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* 9) Placeholder in React-Select */
+    div[data-baseweb="select"] .css-1wa3eu0-placeholder {{
+      color: #B0B0B0 !important;
+      opacity: 1 !important;
+    }}
+
+    /* 10) Focus border */
+    div[data-baseweb="select"] .css-1pahdxg-control {{
+      border-color: {ACCENT_COLOR} !important;
+    }}
+
+    /* Sidebar header */
+    .stSidebar h2 {{
+      position: relative;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      color: {ACCENT_COLOR} !important;
+      padding-bottom: 0.3rem;
+    }}
+    .stSidebar h2:after {{
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 3rem;
+      height: 3px;
+      background-color: {ACCENT_COLOR};
+    }}
+
+    /* Status cards container */
+    .status-container {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }}
+
     /* Custom badge styling */
     .badge {{
         display: inline-block;
@@ -434,125 +599,17 @@ st.markdown(f"""
         border: 1px solid #2a3a4a;
     }}
 
-    /* Mobile menu */
-    @media (max-width: 480px) {{
-        .stSelectbox, .stMultiselect, .stButton, .stSlider {{
-            width: 100% !important;
-        }}
-        
-        .stMetric > div:nth-child(2) {{
-            font-size: 1.8rem !important;
-        }}
-        
-        .stTabs {{
-            overflow-x: auto;
-        }}
-        
-        .stPlotlyChart {{
-            height: 300px !important;
-        }}
-    }}
-    
-    /* Dark background for all elements */
-    html, body, #root, .block-container, .stApp {{
-        background-color: {BACKGROUND_COLOR} !important;
-        color: {TEXT_COLOR_DARK_THEME} !important;
+    /* Mobile menu toggle */
+    .mobile-menu-toggle {{
+        display: none;
     }}
 
-    /* ============================
-       SIDEBAR SELECTBOX IMPROVEMENTS
-       ============================ */
-
-    /* 1) Closed‐state “button” background & text (BaseWeb) */
-    div[data-baseweb="select"] > div:first-child {{
-      background-color: {CARD_BACKGROUND_COLOR} !important;   /* Dark card */
-      color: {TEXT_COLOR_DARK_THEME} !important;              /* Light text */
-      border: 1px solid #555555 !important;
-      border-radius: 10px !important;
-      padding: 0.4rem 0.8rem !important;
+    /* Map columns container */
+    .map-container {{
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
     }}
-
-    /* 2) Placeholder text color inside the select */
-    div[data-baseweb="select"] > div:first-child span {{
-      color: {TEXT_COLOR_DARK_THEME} !important;
-      opacity: 0.7;  /* Slightly translucent placeholder */
-    }}
-
-    /* 3) Opened dropdown menu container */
-    div[data-baseweb="select"] [role="menu"] {{
-      background-color: {CARD_BACKGROUND_COLOR} !important;
-      border: 1px solid #555555 !important;
-      border-radius: 8px !important;
-    }}
-
-    /* 4) Each option in the opened dropdown menu */
-    div[data-baseweb="select"] [role="option"] {{
-      background-color: {CARD_BACKGROUND_COLOR} !important;
-      color: {TEXT_COLOR_DARK_THEME} !important;
-      padding: 0.6rem 1rem !important;
-    }}
-
-    /* 5) Hover highlight for each option */
-    div[data-baseweb="select"] [role="option"]:hover {{
-      background-color: #333333 !important;
-      color: #FFFFFF !important;
-    }}
-
-    /* 6) Arrow icon’s color inside the select */
-    div[data-baseweb="select"] svg {{
-      stroke: {TEXT_COLOR_DARK_THEME} !important;
-    }}
-
-    /* 
-       === React‐Select Internals (Streamlit uses react-select classes) ===
-       The “singleValue” span that appears once you pick something must be light.
-    */
-
-    /* 7) The chosen text itself (react-select’s “singleValue”) */
-    div[data-baseweb="select"] .css-1uccc91-singleValue {{
-      color: {TEXT_COLOR_DARK_THEME} !important;
-      opacity: 1 !important;
-    }}
-
-    /* 8) In case of a multi‐select, style the “pill” tokens */
-    div[data-baseweb="select"] .css-1rhbuit-multiValue {{
-      background-color: #333333 !important;
-    }}
-    div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {{
-      color: {TEXT_COLOR_DARK_THEME} !important;
-    }}
-
-    /* 9) The placeholder inside React-Select (before selecting) */
-    div[data-baseweb="select"] .css-1wa3eu0-placeholder {{
-      color: #B0B0B0 !important;
-      opacity: 1 !important;
-    }}
-
-    /* 10) Blue accent border on focus (if desired) */
-    div[data-baseweb="select"] .css-1pahdxg-control {{
-      border-color: {ACCENT_COLOR} !important;
-    }}
-
-    /* ================
-       SIDEBAR HEADER UPDATE
-       ================ */
-    .stSidebar h2 {{
-      position: relative;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      color: {ACCENT_COLOR} !important;
-      padding-bottom: 0.3rem;
-    }}
-    .stSidebar h2:after {{
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 3rem;
-      height: 3px;
-      background-color: {ACCENT_COLOR};
-    }}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -605,6 +662,18 @@ st.markdown("""
         Real-time Air Quality Monitoring and Predictive Analysis for Indian Cities
     </p>
 </div>
+""", unsafe_allow_html=True)
+
+# Mobile menu toggle button
+st.markdown("""
+<button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+<script>
+    function toggleSidebar() {{
+        const sidebar = document.querySelector('.stSidebar');
+        const isOpen = sidebar.getAttribute('data-is-open') === 'true';
+        sidebar.setAttribute('data-is-open', !isOpen);
+    }}
+</script>
 """, unsafe_allow_html=True)
 
 # ------------------- Load Data -------------------
@@ -881,7 +950,8 @@ else:
         # Health recommendation
         health_msg = HEALTH_RECOMMENDATIONS.get(current_level, "No specific health recommendations available")
         
-        # Status card
+        # Status card - using flex container for responsive layout
+        st.markdown('<div class="status-container">', unsafe_allow_html=True)
         status_col1, status_col2, status_col3 = st.columns([1,2,1])
         with status_col1:
             st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}'>", unsafe_allow_html=True)
@@ -904,6 +974,7 @@ else:
             st.markdown(f"<div style='font-size:2rem; color:{POLLUTANT_COLORS_DARK.get(current_pollutant, '#FFFFFF')}; margin:1rem 0;'>{current_pollutant}</div>", unsafe_allow_html=True)
             st.markdown(f"<p style='font-size:0.9rem;'>Primary air quality concern</p>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)  # Close status-container
         
         city_data_full["day_of_year"] = city_data_full["date"].dt.dayofyear
         city_data_full["month_name"] = city_data_full["date"].dt.month_name()
@@ -1498,6 +1569,7 @@ with forecast_col2:
 # ========================================================
 st.markdown("## 📍 AIR QUALITY HOTSPOTS MAP")
 
+st.markdown('<div class="map-container">', unsafe_allow_html=True)
 map_col1, map_col2 = st.columns([3,1])
 
 with map_col1:
@@ -1656,7 +1728,7 @@ with map_col2:
             """, unsafe_allow_html=True)
     
     st.markdown("</div>", unsafe_allow_html=True)
-
+st.markdown('</div>', unsafe_allow_html=True)  # Close map-container
 
 # ========================================================
 # ========   DOWNLOAD FILTERED DATA (Enhanced)   =========
@@ -1687,8 +1759,6 @@ if export_data_list:
 # ======================
 # =====  FOOTER  =======
 # ======================
-# … (any code/charts above)
-
 st.markdown(f"""
 <style>
 @keyframes fadeIn {{
@@ -1865,4 +1935,3 @@ st.markdown(f"""
 </p>
 </div>
 """, unsafe_allow_html=True)
-
