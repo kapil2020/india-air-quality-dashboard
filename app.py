@@ -1743,7 +1743,7 @@ st.markdown(f"""
     animation: fadeIn 1s ease forwards;
   }}
 
-  /* Flex container for Data Source / Developed By / Last Updated */
+  /* Flex container for Data Source / Principal Investigator / Developed By / Last Updated */
   .footer-info {{
     display: flex;
     justify-content: center;
@@ -1824,7 +1824,7 @@ st.markdown(f"""
 
   <!-- Data Source / Principal Investigator / Developed By / Last Updated -->
   <div class="footer-info">
-    <!-- Data Source (unchanged) -->
+    <!-- Data Source -->
     <div>
       <p class="label">Data Source</p>
       <p class="value">Central Pollution Control Board (CPCB)</p>
@@ -1837,7 +1837,7 @@ st.markdown(f"""
         <a href="https://www.mustlab.in/faculty" target="_blank">
           Prof. Arkopal Kishore Goswami
         </a>,
-        Chairperson and Associate Professor, RCGSIDM, IIT Kharagpur
+        Chairperson & Associate Professor, RCGSIDM, IIT Kharagpur
       </p>
     </div>
 
@@ -1852,14 +1852,14 @@ st.markdown(f"""
       </p>
     </div>
 
-    <!-- Last Updated (unchanged) -->
+    <!-- Last Updated -->
     <div>
       <p class="label">Last Updated</p>
       <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
     </div>
   </div>
 
-  <!-- “View on GitHub” Link (unchanged) -->
+  <!-- “View on GitHub” Link -->
   <div class="footer-links">
     <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
       <!-- GitHub Icon -->
