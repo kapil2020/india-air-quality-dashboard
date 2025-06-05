@@ -20,7 +20,6 @@ CARD_BACKGROUND_COLOR = "#1E1E1E"        # Slightly lighter for cards
 BORDER_COLOR = "#333333"                 # Dark border
 HIGHLIGHT_COLOR = "#FF6B6B"              # For alerts and highlights
 
-# === Python dictionaries use SINGLE braces ===
 CATEGORY_COLORS_DARK = {
     "Severe": "#F44336",      # Vivid Red
     "Very Poor": "#FF7043",   # Vivid Orange-Red
@@ -55,7 +54,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------- Custom CSS Styling (Dark Theme) -------------------
+# ------------------- Custom CSS Styling (Dark Theme + Sidebar Fixes) -------------------
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -67,8 +66,8 @@ st.markdown(f"""
     
     body {{
         font-family: 'Inter', sans-serif;
-        background-color: {{BACKGROUND_COLOR}};
-        color: {{TEXT_COLOR_DARK_THEME}};
+        background-color: {BACKGROUND_COLOR};
+        color: {TEXT_COLOR_DARK_THEME};
         line-height: 1.6;
     }}
 
@@ -85,8 +84,8 @@ st.markdown(f"""
     .stDownloadButton > button, .stButton > button,
     div[data-testid="stExpander"], div[data-testid="stForm"] {{
         border-radius: 16px;
-        border: 1px solid {{BORDER_COLOR}};
-        background-color: {{CARD_BACKGROUND_COLOR}};
+        border: 1px solid {BORDER_COLOR};
+        background-color: {CARD_BACKGROUND_COLOR};
         padding: 1.5rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
@@ -102,8 +101,8 @@ st.markdown(f"""
     
     .stpyplot {{
         border-radius: 12px;
-        border: 1px solid {{BORDER_COLOR}};
-        background-color: {{CARD_BACKGROUND_COLOR}};
+        border: 1px solid {BORDER_COLOR};
+        background-color: {CARD_BACKGROUND_COLOR};
         padding: 1rem;
         margin-bottom: 2rem;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -111,7 +110,7 @@ st.markdown(f"""
 
     .stTabs [data-baseweb="tab-list"] {{
          box-shadow: none;
-         border-bottom: 2px solid {{BORDER_COLOR}};
+         border-bottom: 2px solid {BORDER_COLOR};
          padding-bottom: 0;
          background-color: transparent;
     }}
@@ -119,7 +118,7 @@ st.markdown(f"""
     .stTabs [data-baseweb="tab"] {{
         padding: 0.8rem 1.5rem;
         font-weight: 600;
-        color: {{SUBTLE_TEXT_COLOR_DARK_THEME}};
+        color: {SUBTLE_TEXT_COLOR_DARK_THEME};
         background-color: transparent;
         border-radius: 8px 8px 0 0;
         margin-right: 0.5rem;
@@ -127,26 +126,26 @@ st.markdown(f"""
         border: none;
     }}
     
-    .stTabs [aria-selected="true"] {{
-        background: linear-gradient(90deg, {{BACKGROUND_COLOR}}, {{CARD_BACKGROUND_COLOR}});
-        color: {{ACCENT_COLOR}} !important;
-        border-bottom: 3px solid {{ACCENT_COLOR}};
+     .stTabs [aria-selected="true"] {{
+        background: linear-gradient(90deg, {BACKGROUND_COLOR}, {CARD_BACKGROUND_COLOR});
+        color: {ACCENT_COLOR} !important;
+        border-bottom: 3px solid {ACCENT_COLOR};
         box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
-    }}
+     }}
      
-    .stTabs [aria-selected="true"]:hover {{
-        background: linear-gradient(90deg, {{BACKGROUND_COLOR}}, #232323);
-    }}
+     .stTabs [aria-selected="true"]:hover {{
+        background: linear-gradient(90deg, {BACKGROUND_COLOR}, #232323);
+     }}
 
     /* Headings */
     h1 {{
         font-family: 'Inter', sans-serif;
-        color: {{TEXT_COLOR_DARK_THEME}};
+        color: {TEXT_COLOR_DARK_THEME};
         text-align: center;
         margin-bottom: 0.5rem;
         font-weight: 800;
         letter-spacing: -0.5px;
-        background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00E5FF);
+        background: linear-gradient(90deg, {ACCENT_COLOR}, #00E5FF);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.8rem;
@@ -154,8 +153,8 @@ st.markdown(f"""
     
     h2 {{
         font-family: 'Inter', sans-serif;
-        color: {{ACCENT_COLOR}};
-        border-bottom: 2px solid {{BORDER_COLOR}};
+        color: {ACCENT_COLOR};
+        border-bottom: 2px solid {BORDER_COLOR};
         padding-bottom: 0.6rem;
         margin-top: 2.5rem;
         margin-bottom: 1.5rem;
@@ -172,12 +171,12 @@ st.markdown(f"""
         left: 0;
         width: 120px;
         height: 3px;
-        background: linear-gradient(90deg, {{ACCENT_COLOR}}, transparent);
+        background: linear-gradient(90deg, {ACCENT_COLOR}, transparent);
     }}
     
     h3 {{
         font-family: 'Inter', sans-serif;
-        color: {{TEXT_COLOR_DARK_THEME}};
+        color: {TEXT_COLOR_DARK_THEME};
         margin-top: 0rem;
         margin-bottom: 1.2rem;
         font-weight: 600;
@@ -186,7 +185,7 @@ st.markdown(f"""
     
     h4, h5 {{
         font-family: 'Inter', sans-serif;
-        color: {{TEXT_COLOR_DARK_THEME}};
+        color: {TEXT_COLOR_DARK_THEME};
         margin-top: 0.2rem;
         margin-bottom: 1rem;
         font-weight: 500;
@@ -194,8 +193,8 @@ st.markdown(f"""
 
     /* Sidebar styling */
     .stSidebar {{
-        background-color: {{CARD_BACKGROUND_COLOR}};
-        border-right: 1px solid {{BORDER_COLOR}};
+        background-color: {CARD_BACKGROUND_COLOR};
+        border-right: 1px solid {BORDER_COLOR};
         padding: 1.5rem;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
         min-width: 300px !important;
@@ -203,21 +202,21 @@ st.markdown(f"""
     }}
     
     .stSidebar .stMarkdown h2, .stSidebar .stMarkdown h3, .stSidebar .stMarkdown p {{
-        color: {{TEXT_COLOR_DARK_THEME}};
+        color: {TEXT_COLOR_DARK_THEME};
         text-align: left;
         border-bottom: none;
     }}
     
     .stSidebar .stSelectbox label, .stSidebar .stMultiselect label {{
-        color: {{ACCENT_COLOR}} !important;
+        color: {ACCENT_COLOR} !important;
         font-weight: 600;
         font-size: 1.05rem;
     }}
 
     /* Metric styling */
     .stMetric {{
-        background-color: {{BACKGROUND_COLOR}};
-        border: 1px solid {{BORDER_COLOR}};
+        background-color: {BACKGROUND_COLOR};
+        border: 1px solid {BORDER_COLOR};
         border-radius: 12px;
         padding: 1.2rem;
         text-align: center;
@@ -226,7 +225,7 @@ st.markdown(f"""
     
     .stMetric > div:nth-child(1) {{
         font-size: 1rem;
-        color: {{SUBTLE_TEXT_COLOR_DARK_THEME}};
+        color: {SUBTLE_TEXT_COLOR_DARK_THEME};
         font-weight: 500;
         letter-spacing: 0.5px;
     }}
@@ -234,7 +233,7 @@ st.markdown(f"""
     .stMetric > div:nth-child(2) {{
         font-size: 2.4rem;
         font-weight: 700;
-        background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00E5FF);
+        background: linear-gradient(90deg, {ACCENT_COLOR}, #00E5FF);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0.5rem 0;
@@ -242,7 +241,7 @@ st.markdown(f"""
     
     .stMetric > div:nth-child(3) {{
         font-size: 0.9rem;
-        color: {{SUBTLE_TEXT_COLOR_DARK_THEME}};
+        color: {SUBTLE_TEXT_COLOR_DARK_THEME};
         font-weight: 400;
         font-style: italic;
     }}
@@ -251,18 +250,18 @@ st.markdown(f"""
     div[data-testid="stExpander"] summary {{
         font-size: 1.2rem;
         font-weight: 600;
-        color: {{ACCENT_COLOR}};
+        color: {ACCENT_COLOR};
         padding: 0.8rem 1.2rem;
     }}
     
     div[data-testid="stExpander"] svg {{
-        fill: {{ACCENT_COLOR}};
+        fill: {ACCENT_COLOR};
     }}
 
     /* Download button styling */
     .stDownloadButton button {{
-        background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00BFA5);
-        color: {{BACKGROUND_COLOR}};
+        background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
+        color: {BACKGROUND_COLOR};
         border: none;
         font-weight: 600;
         padding: 0.85rem 2rem;
@@ -284,16 +283,16 @@ st.markdown(f"""
     /* Input Widgets */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div:first-child,
     .stMultiselect div[data-baseweb="select"] > div:first-child {{
-        background-color: {{BACKGROUND_COLOR}};
-        color: {{TEXT_COLOR_DARK_THEME}};
-        border-color: {{BORDER_COLOR}} !important;
+        background-color: {BACKGROUND_COLOR};
+        color: {TEXT_COLOR_DARK_THEME};
+        border-color: {BORDER_COLOR} !important;
         border-radius: 10px;
         padding: 0.5rem 1rem;
     }}
     
     .stDateInput input {{
-         background-color: {{BACKGROUND_COLOR}};
-         color: {{TEXT_COLOR_DARK_THEME}};
+         background-color: {BACKGROUND_COLOR};
+         color: {TEXT_COLOR_DARK_THEME};
          border-radius: 10px;
          padding: 0.5rem 1rem;
     }}
@@ -301,7 +300,7 @@ st.markdown(f"""
     /* Hover effects for inputs */
     .stTextInput input:hover, .stSelectbox div[data-baseweb="select"] > div:first-child:hover,
     .stMultiselect div[data-baseweb="select"] > div:first-child:hover {{
-        border-color: {{ACCENT_COLOR}} !important;
+        border-color: {ACCENT_COLOR} !important;
         box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
     }}
 
@@ -311,219 +310,84 @@ st.markdown(f"""
     }}
     
     ::-webkit-scrollbar-track {{
-        background: {{BACKGROUND_COLOR}};
+        background: {BACKGROUND_COLOR};
         border-radius: 10px;
     }}
     
     ::-webkit-scrollbar-thumb {{
-        background: linear-gradient(45deg, {{ACCENT_COLOR}}, #00BFA5);
+        background: linear-gradient(45deg, {ACCENT_COLOR}, #00BFA5);
         border-radius: 10px;
     }}
     
     ::-webkit-scrollbar-thumb:hover {{
-        background: linear-gradient(45deg, #00BFA5, {{ACCENT_COLOR}});
+        background: linear-gradient(45deg, #00BFA5, {ACCENT_COLOR});
     }}
     
     /* Responsive adjustments */
     @media (max-width: 768px) {{
         .main .block-container {{
-            padding: 1rem !important;
+            padding: 1rem;
+        }}
+        
+        .stMetric > div:nth-child(2) {{
+            font-size: 2rem;
+        }}
+        
+        .stTabs [data-baseweb="tab"] {{
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
         }}
         
         h1 {{
-            font-size: 2.2rem !important;
-            line-height: 1.2;
-            padding: 0 0.5rem;
+            font-size: 2.2rem;
         }}
         
         h2 {{
-            font-size: 1.5rem !important;
-            padding-bottom: 0.4rem;
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-        }}
-        
-        h2:after {{
-            width: 80px;
-        }}
-        
-        h3 {{
-            font-size: 1.2rem !important;
-            margin-bottom: 1rem;
+            font-size: 1.5rem;
         }}
         
         .stSidebar {{
             width: 100% !important;
             min-width: 100% !important;
-            position: fixed;
-            z-index: 1001;
-            height: auto;
-            max-height: 90vh;
-            overflow-y: auto;
-            bottom: 0;
-            top: auto !important;
-            transform: translateY(100%);
-            transition: transform 0.3s ease;
-            border-right: none;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
         }}
         
-        .stSidebar[data-is-open="true"] {{
-            transform: translateY(0);
+        .col1, .col2, .col3 {{
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
         }}
         
-        .st-emotion-cache-1oe5cao {{
-            display: none !important;
-        }}
-        
-        [data-testid="column"] {{
+        .status-col1, .status-col2, .status-col3 {{
             flex: 0 0 100% !important;
             max-width: 100% !important;
             margin-bottom: 1rem;
         }}
         
-        .stMetric > div:nth-child(2) {{
-            font-size: 1.8rem !important;
+        .health-col1, .health-col2 {{
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
         }}
         
-        .stTabs [data-baseweb="tab"] {{
-            padding: 0.6rem 0.8rem !important;
-            font-size: 0.9rem !important;
-            margin-right: 0.3rem;
+        .map-col1, .map-col2 {{
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
         }}
         
-        .stPlotlyChart, .stDataFrame, .stAlert, .stMetric,
-        div[data-testid="stExpander"], div[data-testid="stForm"] {{
-            padding: 1rem !important;
-            border-radius: 12px;
+        .forecast-col1, .forecast-col2 {{
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
         }}
         
-        .status-container {{
-            flex-direction: column !important;
+        .poll-col1, .poll-col2 {{
+            flex: 0 0 100% !important;
+            max-width: 100% !important;
         }}
         
-        .status-container > [data-testid="column"] {{
+        .insight-card {{
             margin-bottom: 1rem;
-        }}
-        
-        .footer-container {{
-            padding: 1.5rem 1rem !important;
-        }}
-        
-        .footer-info {{
-            flex-direction: column;
-            gap: 1rem;
-        }}
-        
-        .map-container {{
-            flex-direction: column !important;
-        }}
-        
-        .hide-on-mobile {{
-            display: none !important;
-        }}
-        
-        .mobile-menu-toggle {{
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: {{ACCENT_COLOR}};
-            color: {{BACKGROUND_COLOR}};
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            font-size: 24px;
         }}
     }}
     
-    /* Sidebar selectbox improvements */
-    div[data-baseweb="select"] > div:first-child {{
-      background-color: {{CARD_BACKGROUND_COLOR}} !important;
-      color: {{TEXT_COLOR_DARK_THEME}} !important;
-      border: 1px solid #555555 !important;
-      border-radius: 10px !important;
-      padding: 0.4rem 0.8rem !important;
-    }}
-
-    div[data-baseweb="select"] > div:first-child span {{
-      color: {{TEXT_COLOR_DARK_THEME}} !important;
-      opacity: 0.7;
-    }}
-
-    div[data-baseweb="select"] [role="menu"] {{
-      background-color: {{CARD_BACKGROUND_COLOR}} !important;
-      border: 1px solid #555555 !important;
-      border-radius: 8px !important;
-      z-index: 1002 !important;
-      max-height: 300px;
-      overflow-y: auto;
-    }}
-
-    div[data-baseweb="select"] [role="option"] {{
-      background-color: {{CARD_BACKGROUND_COLOR}} !important;
-      color: {{TEXT_COLOR_DARK_THEME}} !important;
-      padding: 0.6rem 1rem !important;
-    }}
-
-    div[data-baseweb="select"] [role="option"]:hover {{
-      background-color: #333333 !important;
-      color: #FFFFFF !important;
-    }}
-
-    div[data-baseweb="select"] svg {{
-      stroke: {{TEXT_COLOR_DARK_THEME}} !important;
-    }}
-
-    div[data-baseweb="select"] .css-1uccc91-singleValue {{
-      color: {{TEXT_COLOR_DARK_THEME}} !important;
-      opacity: 1 !important;
-    }}
-
-    div[data-baseweb="select"] .css-1rhbuit-multiValue {{
-      background-color: #333333 !important;
-    }}
-    div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {{
-      color: {{TEXT_COLOR_DARK_THEME}} !important;
-    }}
-
-    div[data-baseweb="select"] .css-1wa3eu0-placeholder {{
-      color: #B0B0B0 !important;
-      opacity: 1 !important;
-    }}
-
-    div[data-baseweb="select"] .css-1pahdxg-control {{
-      border-color: {{ACCENT_COLOR}} !important;
-    }}
-
-    .stSidebar h2 {{
-      position: relative;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      color: {{ACCENT_COLOR}} !important;
-      padding-bottom: 0.3rem;
-    }}
-    .stSidebar h2:after {{
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 3rem;
-      height: 3px;
-      background-color: {{ACCENT_COLOR}};
-    }}
-
-    .status-container {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }}
-
+    /* Custom badge styling */
     .badge {{
         display: inline-block;
         padding: 0.25rem 0.75rem;
@@ -533,6 +397,7 @@ st.markdown(f"""
         margin: 0.2rem;
     }}
     
+    /* Health recommendation cards */
     .health-card {{
         border-left: 4px solid;
         border-radius: 8px;
@@ -541,15 +406,17 @@ st.markdown(f"""
         background-color: rgba(30, 30, 30, 0.7);
     }}
     
+    /* Key insight cards */
     .insight-card {{
         background: linear-gradient(145deg, #1a1a1a, #232323);
         border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        border: 1px solid {{BORDER_COLOR}};
+        border: 1px solid {BORDER_COLOR};
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }}
     
+    /* Gradient animation for header */
     @keyframes gradientAnimation {{
         0% {{ background-position: 0% 50%; }}
         50% {{ background-position: 100% 50%; }}
@@ -557,7 +424,7 @@ st.markdown(f"""
     }}
     
     .gradient-header {{
-        background: linear-gradient(270deg, {{BACKGROUND_COLOR}}, #1a2a3a, {{BACKGROUND_COLOR}});
+        background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
         background-size: 300% 300%;
         animation: gradientAnimation 12s ease infinite;
         padding: 2rem 1rem;
@@ -567,15 +434,125 @@ st.markdown(f"""
         border: 1px solid #2a3a4a;
     }}
 
-    .mobile-menu-toggle {{
-        display: none;
+    /* Mobile menu */
+    @media (max-width: 480px) {{
+        .stSelectbox, .stMultiselect, .stButton, .stSlider {{
+            width: 100% !important;
+        }}
+        
+        .stMetric > div:nth-child(2) {{
+            font-size: 1.8rem !important;
+        }}
+        
+        .stTabs {{
+            overflow-x: auto;
+        }}
+        
+        .stPlotlyChart {{
+            height: 300px !important;
+        }}
+    }}
+    
+    /* Dark background for all elements */
+    html, body, #root, .block-container, .stApp {{
+        background-color: {BACKGROUND_COLOR} !important;
+        color: {TEXT_COLOR_DARK_THEME} !important;
     }}
 
-    .map-container {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
+    /* ============================
+       SIDEBAR SELECTBOX IMPROVEMENTS
+       ============================ */
+
+    /* 1) Closed‐state “button” background & text (BaseWeb) */
+    div[data-baseweb="select"] > div:first-child {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;   /* Dark card */
+      color: {TEXT_COLOR_DARK_THEME} !important;              /* Light text */
+      border: 1px solid #555555 !important;
+      border-radius: 10px !important;
+      padding: 0.4rem 0.8rem !important;
     }}
+
+    /* 2) Placeholder text color inside the select */
+    div[data-baseweb="select"] > div:first-child span {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      opacity: 0.7;  /* Slightly translucent placeholder */
+    }}
+
+    /* 3) Opened dropdown menu container */
+    div[data-baseweb="select"] [role="menu"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      border: 1px solid #555555 !important;
+      border-radius: 8px !important;
+    }}
+
+    /* 4) Each option in the opened dropdown menu */
+    div[data-baseweb="select"] [role="option"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      padding: 0.6rem 1rem !important;
+    }}
+
+    /* 5) Hover highlight for each option */
+    div[data-baseweb="select"] [role="option"]:hover {{
+      background-color: #333333 !important;
+      color: #FFFFFF !important;
+    }}
+
+    /* 6) Arrow icon’s color inside the select */
+    div[data-baseweb="select"] svg {{
+      stroke: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* 
+       === React‐Select Internals (Streamlit uses react-select classes) ===
+       The “singleValue” span that appears once you pick something must be light.
+    */
+
+    /* 7) The chosen text itself (react-select’s “singleValue”) */
+    div[data-baseweb="select"] .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      opacity: 1 !important;
+    }}
+
+    /* 8) In case of a multi‐select, style the “pill” tokens */
+    div[data-baseweb="select"] .css-1rhbuit-multiValue {{
+      background-color: #333333 !important;
+    }}
+    div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* 9) The placeholder inside React-Select (before selecting) */
+    div[data-baseweb="select"] .css-1wa3eu0-placeholder {{
+      color: #B0B0B0 !important;
+      opacity: 1 !important;
+    }}
+
+    /* 10) Blue accent border on focus (if desired) */
+    div[data-baseweb="select"] .css-1pahdxg-control {{
+      border-color: {ACCENT_COLOR} !important;
+    }}
+
+    /* ================
+       SIDEBAR HEADER UPDATE
+       ================ */
+    .stSidebar h2 {{
+      position: relative;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      color: {ACCENT_COLOR} !important;
+      padding-bottom: 0.3rem;
+    }}
+    .stSidebar h2:after {{
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 3rem;
+      height: 3px;
+      background-color: {ACCENT_COLOR};
+    }}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -628,18 +605,6 @@ st.markdown("""
         Real-time Air Quality Monitoring and Predictive Analysis for Indian Cities
     </p>
 </div>
-""", unsafe_allow_html=True)
-
-# Mobile menu toggle button
-st.markdown("""
-<button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
-<script>
-    function toggleSidebar() {
-        const sidebar = document.querySelector('.stSidebar');
-        const isOpen = sidebar.getAttribute('data-is-open') === 'true';
-        sidebar.setAttribute('data-is-open', !isOpen);
-    }
-</script>
 """, unsafe_allow_html=True)
 
 # ------------------- Load Data -------------------
@@ -916,8 +881,7 @@ else:
         # Health recommendation
         health_msg = HEALTH_RECOMMENDATIONS.get(current_level, "No specific health recommendations available")
         
-        # Status card - using flex container for responsive layout
-        st.markdown('<div class="status-container">', unsafe_allow_html=True)
+        # Status card
         status_col1, status_col2, status_col3 = st.columns([1,2,1])
         with status_col1:
             st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}'>", unsafe_allow_html=True)
@@ -940,7 +904,6 @@ else:
             st.markdown(f"<div style='font-size:2rem; color:{POLLUTANT_COLORS_DARK.get(current_pollutant, '#FFFFFF')}; margin:1rem 0;'>{current_pollutant}</div>", unsafe_allow_html=True)
             st.markdown(f"<p style='font-size:0.9rem;'>Primary air quality concern</p>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)  # Close status-container
         
         city_data_full["day_of_year"] = city_data_full["date"].dt.dayofyear
         city_data_full["month_name"] = city_data_full["date"].dt.month_name()
@@ -1173,7 +1136,7 @@ else:
 
             fig_heat_detail = px.imshow(
                 heatmap_pivot, 
-                labels={"x": "Day of Month", "y": "Month", "color": "AQI"},
+                labels=dict(x="Day of Month", y="Month", color="AQI"),
                 aspect="auto", 
                 color_continuous_scale="Inferno",
                 text_auto=".0f"
@@ -1229,7 +1192,7 @@ else:
                     "Severe": "Health impacts even on light physical activity"
                 }
                 
-                # We already have category_counts_df in this scope
+                # Re-use category_counts_df from above in this city-specific scope
                 category_counts_df = (
                     city_data_full["level"]
                     .value_counts()
@@ -1535,7 +1498,6 @@ with forecast_col2:
 # ========================================================
 st.markdown("## 📍 AIR QUALITY HOTSPOTS MAP")
 
-st.markdown('<div class="map-container">', unsafe_allow_html=True)
 map_col1, map_col2 = st.columns([3,1])
 
 with map_col1:
@@ -1594,7 +1556,7 @@ with map_col1:
                     # Calculate scaled bubble size (smaller bubbles)
                     min_aqi = map_merged_df["avg_aqi"].min()
                     max_aqi = map_merged_df["avg_aqi"].max()
-                    size_range = (3, 9)  # Smaller size range
+                    size_range = 3, 9  # Smaller size range
                     
                     # Scale the size
                     map_merged_df["scaled_size"] = (
@@ -1622,22 +1584,26 @@ with map_col1:
                         title_text=f"Average AQI Hotspots - {selected_month_name}, {year}"
                     )
                     scatter_map_layout_args['mapbox_style'] = "carto-darkmatter"
-                    scatter_map_layout_args['margin'] = {"r": 10, "t": 60, "l": 10, "b": 10}
+                    scatter_map_layout_args['margin'] = {"r":10,"t":60,"l":10,"b":10}
                     scatter_map_layout_args['legend']['y'] = 0.98
                     scatter_map_layout_args['legend']['x'] = 0.98
                     scatter_map_layout_args['legend']['xanchor'] = 'right'
 
-                    fig_scatter_map.update_traces(
-                        marker=dict(sizemin=size_range[0], opacity=0.85, sizemode='diameter'),
-                        hovertemplate=(
-                            "<b style='font-size:1.1em;'>%{customdata[0]}</b><br>"
-                            "Avg. AQI: %{customdata[1]:.1f} (%{customdata[3]})<br>"
-                            "Dominant Pollutant: %{customdata[2]}<extra></extra>"
-                        )
-                    )
-                    fig_scatter_map.update_layout(**scatter_map_layout_args)
-                    st.plotly_chart(fig_scatter_map, use_container_width=True)
-                    scatter_map_rendered = True
+        fig_scatter_map.update_traces(
+            marker=dict(
+                sizemin=size_range[0],
+                opacity=0.85,
+                sizemode='diameter'
+            ),
+            hovertemplate=(
+                "<b style='font-size:1.1em;'>%{customdata[0]}</b><br>"
+                "Avg. AQI: %{customdata[1]:.1f} (%{customdata[3]})<br>"
+                "Dominant Pollutant: %{customdata[2]}<extra></extra>"
+            )
+        )
+        fig_scatter_map.update_layout(**scatter_map_layout_args)
+        st.plotly_chart(fig_scatter_map, use_container_width=True)
+        scatter_map_rendered = True
 
         if not scatter_map_rendered:
             st.warning("Map data incomplete. Showing alternative visualization.")
@@ -1685,12 +1651,12 @@ with map_col2:
             st.markdown(f"""
             <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
                 <div style="width: 15px; height: 15px; background-color: {color}; border-radius: 3px; margin-right: 10px;"></div>
-                <span>{category}</span>
+                <span style="color: {TEXT_COLOR_DARK_THEME};">{category}</span>
             </div>
             """, unsafe_allow_html=True)
     
     st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("</div>", unsafe_allow_html=True)  # close map-container
+
 
 # ========================================================
 # ========   DOWNLOAD FILTERED DATA (Enhanced)   =========
@@ -1718,198 +1684,185 @@ if export_data_list:
         
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ========================================================
-# ====================== FOOTER ===========================
-# ========================================================
+# ======================
+# =====  FOOTER  =======
+# ======================
+# … (any code/charts above)
+
 st.markdown(f"""
 <style>
-  /* ==============================
-     FOOTER: ANIMATIONS & STYLING
-     ============================== */
+@keyframes fadeIn {{
+  0%   {{ opacity: 0; }}
+  100% {{ opacity: 1; }}
+}}
 
-  @keyframes fadeIn {{
-    0%   {{ opacity: 0; }}
-    100% {{ opacity: 1; }}
-  }}
+@keyframes footerGradient {{
+  0%   {{ background-position: 0% 50%; }}
+  50%  {{ background-position: 100% 50%; }}
+  100% {{ background-position: 0% 50%; }}
+}}
 
-  @keyframes footerGradient {{
-    0%   {{ background-position: 0% 50%; }}
-    50%  {{ background-position: 100% 50%; }}
-    100% {{ background-position: 0% 50%; }}
-  }}
+@keyframes iconPulse {{
+  0%   {{ transform: scale(1); opacity: 1; }}
+  50%  {{ transform: scale(1.1); opacity: 0.8; }}
+  100% {{ transform: scale(1); opacity: 1; }}
+}}
 
-  @keyframes iconPulse {{
-    0%   {{ transform: scale(1); opacity: 1; }}
-    50%  {{ transform: scale(1.1); opacity: 0.8; }}
-    100% {{ transform: scale(1); opacity: 1; }}
-  }}
+.footer-container {{
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  margin-top: 4rem;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
+  background-size: 300% 300%;
+  animation: footerGradient 8s ease infinite;
+  border: 1px solid #2a3a4a;
+}}
 
+.footer-top-bar {{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
+  background-size: 200% 200%;
+  animation: footerGradient 5s ease infinite;
+}}
+
+.footer-container h3 {{
+  color: {ACCENT_COLOR};
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+}}
+
+.footer-info {{
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.3s forwards;
+}}
+.footer-info p {{
+  margin: 0;
+}}
+.footer-info .label {{
+  font-size: 0.9rem;
+  color: #B0B0B0;
+}}
+.footer-info .value {{
+  font-weight: 500;
+  color: {TEXT_COLOR_DARK_THEME};
+}}
+
+.footer-links {{
+  text-align: center;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.6s forwards;
+}}
+.footer-links a {{
+  color: {ACCENT_COLOR};
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s ease;
+}}
+.footer-links a:hover {{
+  color: #00E5FF;
+}}
+.footer-links a:hover svg {{
+  animation: iconPulse 1.5s infinite;
+}}
+
+.footer-container .copyright {{
+  font-size: 0.85rem;
+  color: #707070;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.9s forwards;
+}}
+
+@media (max-width: 480px) {{
   .footer-container {{
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    margin-top: 4rem;
-    padding: 3rem 2rem;
-    border-radius: 16px;
-    background: linear-gradient(270deg, {{BACKGROUND_COLOR}}, #1a2a3a, {{BACKGROUND_COLOR}});
-    background-size: 300% 300%;
-    animation: footerGradient 8s ease infinite;
-    border: 1px solid #2a3a4a;
+    padding: 2rem 1rem;
   }}
-
-  .footer-top-bar {{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00BFA5);
-    background-size: 200% 200%;
-    animation: footerGradient 5s ease infinite;
-  }}
-
   .footer-container h3 {{
-    color: {{ACCENT_COLOR}};
-    font-size: 1.8rem;
-    margin-bottom: 1.2rem;
-    opacity: 0;
-    animation: fadeIn 1s ease forwards;
+    font-size: 1.5rem;
   }}
-
-  .footer-info {{
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.3s forwards;
-  }}
-  .footer-info p {{
-    margin: 0;
-  }}
-  .footer-info .label {{
-    font-size: 0.9rem;
-    color: #B0B0B0;
-  }}
-  .footer-info .value {{
-    font-weight: 500;
-    color: {{TEXT_COLOR_DARK_THEME}};
-  }}
-
-  .footer-links {{
-    text-align: center;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.6s forwards;
-  }}
-  .footer-links a {{
-    color: {{ACCENT_COLOR}};
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.3s ease;
-  }}
-  .footer-links a:hover {{
-    color: #00E5FF;
-  }}
-  .footer-links a:hover svg {{
-    animation: iconPulse 1.5s infinite;
-  }}
-
-  .footer-container .copyright {{
-    font-size: 0.85rem;
-    color: #707070;
-    text-align: center;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.9s forwards;
-  }}
-
-  @media (max-width: 480px) {{
-    .footer-container {{
-      padding: 2rem 1rem;
-    }}
-    .footer-container h3 {{
-      font-size: 1.5rem;
-    }}
-  }}
+}}
 </style>
 
 <div class="footer-container">
-  <!-- Animated top stripe -->
-  <div class="footer-top-bar"></div>
+<div class="footer-top-bar"></div>
 
-  <!-- Footer Title -->
-  <h3>IIT KGP Air Quality Dashboard</h3>
+<h3>IIT KGP Air Quality Dashboard</h3>
 
-  <!-- Four-column info row -->
-  <div class="footer-info">
-    <!-- Data Source -->
-    <div>
-      <p class="label">Data Source</p>
-      <p class="value">Central Pollution Control Board (CPCB)</p>
-    </div>
-
-    <!-- Principal Investigator -->
-    <div>
-      <p class="label">Principal Investigator</p>
-      <p class="value">
-        <a href="https://www.mustlab.in/faculty" target="_blank">
-          Prof. Arkopal Kishore Goswami
-        </a>,
-        Chairperson &amp; Associate Professor,<br>
-        RCGSIDM, IIT Kharagpur
-      </p>
-    </div>
-
-    <!-- Developed By -->
-    <div>
-      <p class="label">Developed By</p>
-      <p class="value">
-        <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
-          Kapil Meena
-        </a>,
-        PhD Student,<br>
-        RCGSIDM, IIT Kharagpur
-      </p>
-    </div>
-
-    <!-- Last Updated -->
-    <div>
-      <p class="label">Last Updated</p>
-      <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
-    </div>
+<div class="footer-info">
+  <div>
+    <p class="label">Data Source</p>
+    <p class="value">Central Pollution Control Board (CPCB)</p>
   </div>
-
-  <!-- “View on GitHub” link with pulsing icon -->
-  <div class="footer-links">
-    <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-           viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}"
-           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 19c-5 1.5-5-2.5-7-3 
-                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
-                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
-                 5.07 5.07 0 0 0 19.91 1 
-                 S18.73.65 16 2.48 
-                 a13.38 13.38 0 0 0-7 0 
-                 C6.27.65 5.09 1 5.09 1 
-                 A5.07 5.07 0 0 0 5 4.77 
-                 a5.44 5.44 0 0 0-1.5 3.78 
-                 c0 5.42 3.3 6.61 6.44 7 
-                 A3.37 3.37 0 0 0 9 18.13V22">
-        </path>
-      </svg>
-      View on GitHub
-    </a>
+  <div>
+    <p class="label">Principal Investigator</p>
+    <p class="value">
+      <a href="https://www.mustlab.in/faculty" target="_blank">
+        Prof. Arkopal Kishore Goswami
+      </a>,
+      Chairperson &amp; Associate Professor,<br>
+      RCGSIDM, IIT Kharagpur
+    </p>
   </div>
+  <div>
+    <p class="label">Developed By</p>
+    <p class="value">
+      <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
+        Kapil Meena
+      </a>,
+      PhD Student,<br>
+      RCGSIDM, IIT Kharagpur
+    </p>
+  </div>
+  <div>
+    <p class="label">Last Updated</p>
+    <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
+  </div>
+</div>
 
-  <!-- Copyright line -->
-  <p class="copyright">
-    © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
-  </p>
+<div class="footer-links">
+  <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+         viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 19c-5 1.5-5-2.5-7-3 
+               m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
+               c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
+               5.07 5.07 0 0 0 19.91 1 
+               S18.73.65 16 2.48 
+               a13.38 13.38 0 0 0-7 0 
+               C6.27.65 5.09 1 5.09 1 
+               A5.07 5.07 0 0 0 5 4.77 
+               a5.44 5.44 0 0 0-1.5 3.78 
+               c0 5.42 3.3 6.61 6.44 7 
+               A3.37 3.37 0 0 0 9 18.13V22">
+      </path>
+    </svg>
+    View on GitHub
+  </a>
+</div>
+
+<p class="copyright">
+© {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
+</p>
 </div>
 """, unsafe_allow_html=True)
+
