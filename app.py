@@ -1589,14 +1589,18 @@ with map_col1:
                     scatter_map_layout_args['legend']['x'] = 0.98
                     scatter_map_layout_args['legend']['xanchor'] = 'right'
 
-                    fig_scatter_map.update_traces(
-        marker=dict(sizemin=size_range[0], opacity=0.85, sizemode='diameter'),
-                hovertemplate=(
+                   fig_scatter_map.update_traces(
+    marker=dict(
+        sizemin=size_range[0],
+        opacity=0.85,
+        sizemode='diameter'
+    ),
+    hovertemplate=(
         "<b style='font-size:1.1em;'>%{customdata[0]}</b><br>"
-            "Avg. AQI: %{customdata[1]:.1f} (%{customdata[3]})<br>"
+        "Avg. AQI: %{customdata[1]:.1f} (%{customdata[3]})<br>"
         "Dominant Pollutant: %{customdata[2]}<extra></extra>"
-                )
-                )
+    )
+)
                     fig_scatter_map.update_layout(**scatter_map_layout_args)
                     st.plotly_chart(fig_scatter_map, use_container_width=True)
                     scatter_map_rendered = True
