@@ -7,7 +7,6 @@ import plotly.graph_objects as go
 import plotly.io as pio
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-#from statsmodels.tsa.seasonal import seasonal_decompose
 from io import StringIO
 
 # --- Global Theme & Style Setup ---
@@ -55,7 +54,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------- Custom CSS Styling (Dark Theme) -------------------
+# ------------------- Custom CSS Styling (Dark Theme + Sidebar Fixes) -------------------
 st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -434,7 +433,7 @@ st.markdown(f"""
         text-align: center;
         border: 1px solid #2a3a4a;
     }}
-    
+
     /* Mobile menu */
     @media (max-width: 480px) {{
         .stSelectbox, .stMultiselect, .stButton, .stSlider {{
@@ -459,6 +458,78 @@ st.markdown(f"""
         background-color: {BACKGROUND_COLOR} !important;
         color: {TEXT_COLOR_DARK_THEME} !important;
     }}
+
+    /* ============================
+       SIDEBAR SELECTBOX IMPROVEMENTS
+       ============================ */
+
+    /* 1) Style the closed‐state select box background & text */
+    div[data-baseweb="select"] > div:first-child {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      border: 1px solid #555555 !important;
+      border-radius: 10px !important;
+      padding: 0.4rem 0.8rem !important;
+    }}
+
+    /* 2) Placeholder text color inside the select */
+    div[data-baseweb="select"] > div:first-child span {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* 3) Opened dropdown menu container */
+    div[data-baseweb="select"] [role="menu"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      border: 1px solid #555555 !important;
+      border-radius: 8px !important;
+    }}
+
+    /* 4) Each option in the opened dropdown */
+    div[data-baseweb="select"] [role="option"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      padding: 0.6rem 1rem !important;
+    }}
+
+    /* 5) Hover state for each option */
+    div[data-baseweb="select"] [role="option"]:hover {{
+      background-color: #333333 !important;
+      color: #FFFFFF !important;
+    }}
+
+    /* 6) Arrow icon color inside select */
+    div[data-baseweb="select"] svg {{
+      stroke: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* Optional: React‐select styling if used */
+    div[data-baseweb="select"] [id^="react-select-"] {{ 
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+    }}
+    div[data-baseweb="select"] [id^="react-select-"] .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+    }}
+
+    /* ================
+       SIDEBAR HEADER UPDATE
+       ================ */
+    .stSidebar h2 {{
+      position: relative;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      color: {ACCENT_COLOR} !important;
+      padding-bottom: 0.3rem;
+    }}
+    .stSidebar h2:after {{
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 3rem;
+      height: 3px;
+      background-color: {ACCENT_COLOR};
+    }}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -1543,7 +1614,7 @@ with map_col2:
             st.markdown(f"""
             <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
                 <div style="width: 15px; height: 15px; background-color: {color}; border-radius: 3px; margin-right: 10px;"></div>
-                <span>{category}</span>
+                <span style="color: {TEXT_COLOR_DARK_THEME};">{category}</span>
             </div>
             """, unsafe_allow_html=True)
     
@@ -1608,7 +1679,7 @@ st.markdown(f"""
     margin-top: 4rem;
     padding: 3rem 2rem;
     border-radius: 16px;
-    background: linear-gradient(270deg, #121212, #1a2a3a, #121212);
+    background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
     background-size: 300% 300%;
     animation: footerGradient 8s ease infinite;
     border: 1px solid #2a3a4a;
@@ -1621,14 +1692,14 @@ st.markdown(f"""
     left: 0;
     width: 100%;
     height: 4px;
-    background: linear-gradient(90deg, #00BCD4, #00BFA5);
+    background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
     background-size: 200% 200%;
     animation: footerGradient 5s ease infinite;
   }}
 
   /* Main footer heading */
   .footer-container h3 {{
-    color: #00BCD4;
+    color: {ACCENT_COLOR};
     font-size: 1.8rem;
     margin-bottom: 1.2rem;
     opacity: 0;
@@ -1657,7 +1728,7 @@ st.markdown(f"""
 
   .footer-info .value {{
     font-weight: 500;
-    color: #EAEAEA;
+    color: {TEXT_COLOR_DARK_THEME};
   }}
 
   /* Centered GitHub link + icon */
@@ -1669,7 +1740,7 @@ st.markdown(f"""
   }}
 
   .footer-links a {{
-    color: #00BCD4;
+    color: {ACCENT_COLOR};
     text-decoration: none;
     font-weight: 600;
     display: inline-flex;
@@ -1693,7 +1764,7 @@ st.markdown(f"""
     color: #707070;
     text-align: center;
     opacity: 0;
-    animation: fadeIn 1s ease 0.9s forwards;
+    animation: fadeIn 1s ease 0.9s forwards; 
   }}
 
   /* Responsive tweaks */
@@ -1738,7 +1809,7 @@ st.markdown(f"""
            width="20" height="20"
            viewBox="0 0 24 24"
            fill="none"
-           stroke="#00BCD4"
+           stroke="{ACCENT_COLOR}"
            stroke-width="2"
            stroke-linecap="round"
            stroke-linejoin="round">
@@ -1760,9 +1831,8 @@ st.markdown(f"""
   </div>
 
   <!-- Copyright -->
-  <p class="copyright">
+  <p class "copyright">
     © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
   </p>
 </div>
 """, unsafe_allow_html=True)
-
