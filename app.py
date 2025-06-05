@@ -1687,195 +1687,182 @@ if export_data_list:
 # ======================
 # =====  FOOTER  =======
 # ======================
+# … (any code/charts above)
+
 st.markdown(f"""
 <style>
-  /* ==============================
-     FOOTER: ANIMATIONS & STYLING
-     ============================== */
+@keyframes fadeIn {{
+  0%   {{ opacity: 0; }}
+  100% {{ opacity: 1; }}
+}}
 
-  @keyframes fadeIn {{
-    0%   {{ opacity: 0; }}
-    100% {{ opacity: 1; }}
-  }}
+@keyframes footerGradient {{
+  0%   {{ background-position: 0% 50%; }}
+  50%  {{ background-position: 100% 50%; }}
+  100% {{ background-position: 0% 50%; }}
+}}
 
-  @keyframes footerGradient {{
-    0%   {{ background-position: 0% 50%; }}
-    50%  {{ background-position: 100% 50%; }}
-    100% {{ background-position: 0% 50%; }}
-  }}
+@keyframes iconPulse {{
+  0%   {{ transform: scale(1); opacity: 1; }}
+  50%  {{ transform: scale(1.1); opacity: 0.8; }}
+  100% {{ transform: scale(1); opacity: 1; }}
+}}
 
-  @keyframes iconPulse {{
-    0%   {{ transform: scale(1); opacity: 1; }}
-    50%  {{ transform: scale(1.1); opacity: 0.8; }}
-    100% {{ transform: scale(1); opacity: 1; }}
-  }}
+.footer-container {{
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  margin-top: 4rem;
+  padding: 3rem 2rem;
+  border-radius: 16px;
+  background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
+  background-size: 300% 300%;
+  animation: footerGradient 8s ease infinite;
+  border: 1px solid #2a3a4a;
+}}
 
+.footer-top-bar {{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
+  background-size: 200% 200%;
+  animation: footerGradient 5s ease infinite;
+}}
+
+.footer-container h3 {{
+  color: {ACCENT_COLOR};
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: fadeIn 1s ease forwards;
+}}
+
+.footer-info {{
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.3s forwards;
+}}
+.footer-info p {{
+  margin: 0;
+}}
+.footer-info .label {{
+  font-size: 0.9rem;
+  color: #B0B0B0;
+}}
+.footer-info .value {{
+  font-weight: 500;
+  color: {TEXT_COLOR_DARK_THEME};
+}}
+
+.footer-links {{
+  text-align: center;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.6s forwards;
+}}
+.footer-links a {{
+  color: {ACCENT_COLOR};
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.3s ease;
+}}
+.footer-links a:hover {{
+  color: #00E5FF;
+}}
+.footer-links a:hover svg {{
+  animation: iconPulse 1.5s infinite;
+}}
+
+.footer-container .copyright {{
+  font-size: 0.85rem;
+  color: #707070;
+  text-align: center;
+  opacity: 0;
+  animation: fadeIn 1s ease 0.9s forwards;
+}}
+
+@media (max-width: 480px) {{
   .footer-container {{
-    position: relative;
-    width: 100%;
-    box-sizing: border-box;
-    overflow-x: hidden;
-    margin-top: 4rem;
-    padding: 3rem 2rem;
-    border-radius: 16px;
-    background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
-    background-size: 300% 300%;
-    animation: footerGradient 8s ease infinite;
-    border: 1px solid #2a3a4a;
+    padding: 2rem 1rem;
   }}
-
-  .footer-top-bar {{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
-    background-size: 200% 200%;
-    animation: footerGradient 5s ease infinite;
-  }}
-
   .footer-container h3 {{
-    color: {ACCENT_COLOR};
-    font-size: 1.8rem;
-    margin-bottom: 1.2rem;
-    opacity: 0;
-    animation: fadeIn 1s ease forwards;
+    font-size: 1.5rem;
   }}
-
-  .footer-info {{
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.3s forwards;
-  }}
-  .footer-info p {{
-    margin: 0;
-  }}
-  .footer-info .label {{
-    font-size: 0.9rem;
-    color: #B0B0B0;
-  }}
-  .footer-info .value {{
-    font-weight: 500;
-    color: {TEXT_COLOR_DARK_THEME};
-  }}
-
-  .footer-links {{
-    text-align: center;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.6s forwards;
-  }}
-  .footer-links a {{
-    color: {ACCENT_COLOR};
-    text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.3s ease;
-  }}
-  .footer-links a:hover {{
-    color: #00E5FF;
-  }}
-  .footer-links a:hover svg {{
-    animation: iconPulse 1.5s infinite;
-  }}
-
-  .footer-container .copyright {{
-    font-size: 0.85rem;
-    color: #707070;
-    text-align: center;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.9s forwards;
-  }}
-
-  @media (max-width: 480px) {{
-    .footer-container {{
-      padding: 2rem 1rem;
-    }}
-    .footer-container h3 {{
-      font-size: 1.5rem;
-    }}
-  }}
+}}
 </style>
 
 <div class="footer-container">
-  <!-- Animated top stripe -->
-  <div class="footer-top-bar"></div>
+<div class="footer-top-bar"></div>
 
-  <!-- Footer Title -->
-  <h3>IIT KGP Air Quality Dashboard</h3>
+<h3>IIT KGP Air Quality Dashboard</h3>
 
-  <!-- Four-column info row -->
-  <div class="footer-info">
-    <!-- Data Source -->
-    <div>
-      <p class="label">Data Source</p>
-      <p class="value">Central Pollution Control Board (CPCB)</p>
-    </div>
-
-    <!-- Principal Investigator -->
-    <div>
-      <p class="label">Principal Investigator</p>
-      <p class="value">
-        <a href="https://www.mustlab.in/faculty" target="_blank">
-          Prof. Arkopal Kishore Goswami
-        </a>,
-        Chairperson &amp; Associate Professor,<br>
-        RCGSIDM, IIT Kharagpur
-      </p>
-    </div>
-
-    <!-- Developed By -->
-    <div>
-      <p class="label">Developed By</p>
-      <p class="value">
-        <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
-          Kapil Meena
-        </a>,
-        PhD Student,<br>
-        RCGSIDM, IIT Kharagpur
-      </p>
-    </div>
-
-    <!-- Last Updated -->
-    <div>
-      <p class="label">Last Updated</p>
-      <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
-    </div>
+<div class="footer-info">
+  <div>
+    <p class="label">Data Source</p>
+    <p class="value">Central Pollution Control Board (CPCB)</p>
   </div>
-
-  <!-- “View on GitHub” link with pulsing icon -->
-  <div class="footer-links">
-    <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
-      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-           viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}"
-           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 19c-5 1.5-5-2.5-7-3 
-                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
-                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
-                 5.07 5.07 0 0 0 19.91 1 
-                 S18.73.65 16 2.48 
-                 a13.38 13.38 0 0 0-7 0 
-                 C6.27.65 5.09 1 5.09 1 
-                 A5.07 5.07 0 0 0 5 4.77 
-                 a5.44 5.44 0 0 0-1.5 3.78 
-                 c0 5.42 3.3 6.61 6.44 7 
-                 A3.37 3.37 0 0 0 9 18.13V22">
-        </path>
-      </svg>
-      View on GitHub
-    </a>
+  <div>
+    <p class="label">Principal Investigator</p>
+    <p class="value">
+      <a href="https://www.mustlab.in/faculty" target="_blank">
+        Prof. Arkopal Kishore Goswami
+      </a>,
+      Chairperson &amp; Associate Professor,<br>
+      RCGSIDM, IIT Kharagpur
+    </p>
   </div>
+  <div>
+    <p class="label">Developed By</p>
+    <p class="value">
+      <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
+        Kapil Meena
+      </a>,
+      PhD Student,<br>
+      RCGSIDM, IIT Kharagpur
+    </p>
+  </div>
+  <div>
+    <p class="label">Last Updated</p>
+    <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
+  </div>
+</div>
 
-  <!-- Copyright line -->
-  <p class="copyright">
-    © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
-  </p>
+<div class="footer-links">
+  <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+         viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 19c-5 1.5-5-2.5-7-3 
+               m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
+               c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
+               5.07 5.07 0 0 0 19.91 1 
+               S18.73.65 16 2.48 
+               a13.38 13.38 0 0 0-7 0 
+               C6.27.65 5.09 1 5.09 1 
+               A5.07 5.07 0 0 0 5 4.77 
+               a5.44 5.44 0 0 0-1.5 3.78 
+               c0 5.42 3.3 6.61 6.44 7 
+               A3.37 3.37 0 0 0 9 18.13V22">
+      </path>
+    </svg>
+    View on GitHub
+  </a>
+</div>
+
+<p class="copyright">
+© {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
+</p>
 </div>
 """, unsafe_allow_html=True)
+
