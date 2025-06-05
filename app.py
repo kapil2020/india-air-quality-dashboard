@@ -1684,30 +1684,32 @@ if export_data_list:
         
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ------------------- Footer (MODERN & ANIMATED) -------------------
+# ======================
+# =====  FOOTER  =======
+# ======================
 st.markdown(f"""
 <style>
-  /* Fade‐in utility */
+  /* Fade-in animation */
   @keyframes fadeIn {{
     0%   {{ opacity: 0; }}
     100% {{ opacity: 1; }}
   }}
 
-  /* Footer background gradient animation */
+  /* Animated gradient for footer background */
   @keyframes footerGradient {{
     0%   {{ background-position: 0% 50%; }}
     50%  {{ background-position: 100% 50%; }}
     100% {{ background-position: 0% 50%; }}
   }}
 
-  /* Pulse animation for the GitHub icon on hover */
+  /* Pulse effect for GitHub icon on hover */
   @keyframes iconPulse {{
     0%   {{ transform: scale(1);   opacity: 1;   }}
     50%  {{ transform: scale(1.1); opacity: 0.8; }}
     100% {{ transform: scale(1);   opacity: 1;   }}
   }}
 
-  /* Container resets to avoid horizontal overflow */
+  /* Main footer container */
   .footer-container {{
     position: relative;
     width: 100%;
@@ -1722,7 +1724,7 @@ st.markdown(f"""
     border: 1px solid #2a3a4a;
   }}
 
-  /* Thin animated bar at the top of the footer */
+  /* Thin animated bar at the top */
   .footer-top-bar {{
     position: absolute;
     top: 0;
@@ -1734,7 +1736,7 @@ st.markdown(f"""
     animation: footerGradient 5s ease infinite;
   }}
 
-  /* Main footer heading */
+  /* Footer headline */
   .footer-container h3 {{
     color: {ACCENT_COLOR};
     font-size: 1.8rem;
@@ -1743,7 +1745,7 @@ st.markdown(f"""
     animation: fadeIn 1s ease forwards;
   }}
 
-  /* Flex container for Data Source / Principal Investigator / Developed By / Last Updated */
+  /* Flex container for the four columns */
   .footer-info {{
     display: flex;
     justify-content: center;
@@ -1753,29 +1755,25 @@ st.markdown(f"""
     opacity: 0;
     animation: fadeIn 1s ease 0.3s forwards;
   }}
-
   .footer-info p {{
     margin: 0;
   }}
-
   .footer-info .label {{
     font-size: 0.9rem;
     color: #B0B0B0;
   }}
-
   .footer-info .value {{
     font-weight: 500;
     color: {TEXT_COLOR_DARK_THEME};
   }}
 
-  /* Centered GitHub link + icon */
+  /* Centered GitHub link */
   .footer-links {{
     text-align: center;
     margin-bottom: 1.5rem;
     opacity: 0;
     animation: fadeIn 1s ease 0.6s forwards;
   }}
-
   .footer-links a {{
     color: {ACCENT_COLOR};
     text-decoration: none;
@@ -1785,12 +1783,9 @@ st.markdown(f"""
     gap: 0.5rem;
     transition: color 0.3s ease;
   }}
-
   .footer-links a:hover {{
     color: #00E5FF;
   }}
-
-  /* Pulse animation on the SVG when hovered */
   .footer-links a:hover svg {{
     animation: iconPulse 1.5s infinite;
   }}
@@ -1801,10 +1796,10 @@ st.markdown(f"""
     color: #707070;
     text-align: center;
     opacity: 0;
-    animation: fadeIn 1s ease 0.9s forwards; 
+    animation: fadeIn 1s ease 0.9s forwards;
   }}
 
-  /* Responsive tweaks */
+  /* Responsiveness */
   @media (max-width: 480px) {{
     .footer-container {{
       padding: 2rem 1rem;
@@ -1816,13 +1811,13 @@ st.markdown(f"""
 </style>
 
 <div class="footer-container">
-  <!-- Animated gradient bar -->
+  <!-- Top animated bar -->
   <div class="footer-top-bar"></div>
 
-  <!-- Main Title -->
+  <!-- Footer Title -->
   <h3>IIT KGP Air Quality Dashboard</h3>
 
-  <!-- Data Source / Principal Investigator / Developed By / Last Updated -->
+  <!-- Four columns: Data Source, PI, Developed By, Last Updated -->
   <div class="footer-info">
     <!-- Data Source -->
     <div>
@@ -1830,7 +1825,7 @@ st.markdown(f"""
       <p class="value">Central Pollution Control Board (CPCB)</p>
     </div>
 
-    <!-- Principal Investigator (NEW) -->
+    <!-- Principal Investigator -->
     <div>
       <p class="label">Principal Investigator</p>
       <p class="value">
@@ -1841,7 +1836,7 @@ st.markdown(f"""
       </p>
     </div>
 
-    <!-- Developed By (UPDATED) -->
+    <!-- Developed By -->
     <div>
       <p class="label">Developed By</p>
       <p class="value">
@@ -1862,7 +1857,7 @@ st.markdown(f"""
   <!-- “View on GitHub” Link -->
   <div class="footer-links">
     <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
-      <!-- GitHub Icon -->
+      <!-- GitHub Icon SVG -->
       <svg xmlns="http://www.w3.org/2000/svg"
            width="20" height="20"
            viewBox="0 0 24 24"
@@ -1871,16 +1866,16 @@ st.markdown(f"""
            stroke-width="2"
            stroke-linecap="round"
            stroke-linejoin="round">
-        <path d="M9 19c-5 1.5-5-2.5-7-3 
-                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
-                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
-                 5.07 5.07 0 0 0 19.91 1 
-                 S18.73.65 16 2.48 
-                 a13.38 13.38 0 0 0-7 0 
-                 C6.27.65 5.09 1 5.09 1 
-                 A5.07 5.07 0 0 0 5 4.77 
-                 a5.44 5.44 0 0 0-1.5 3.78 
-                 c0 5.42 3.3 6.61 6.44 7 
+        <path d="M9 19c-5 1.5-5-2.5-7-3
+                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61
+                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77
+                 5.07 5.07 0 0 0 19.91 1
+                 S18.73.65 16 2.48
+                 a13.38 13.38 0 0 0-7 0
+                 C6.27.65 5.09 1 5.09 1
+                 A5.07 5.07 0 0 0 5 4.77
+                 a5.44 5.44 0 0 0-1.5 3.78
+                 c0 5.42 3.3 6.61 6.44 7
                  A3.37 3.37 0 0 0 9 18.13V22">
         </path>
       </svg>
