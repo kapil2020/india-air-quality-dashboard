@@ -1,21 +1,128 @@
-# 🇮🇳 India Air Quality Dashboard
+# 🌬️ IIT KGP AQI Dashboard
 
-A real-time, interactive dashboard built with **Streamlit** to visualize and analyze daily air quality data across major Indian cities using **CPCB AQI Bulletins**.
+A dark‐themed, interactive Streamlit application that visualizes and analyzes air quality data (AQI) across major Indian cities. Built with Plotly, Pandas, and Scikit‐Learn, the dashboard provides:
 
-[![Streamlit App](https://img.shields.io/badge/🚀%20Launch%20App-Click%20Here-brightgreen)](https://kapil2020-india-air-quality-dashboard.streamlit.app/)
-[![GitHub Workflow](https://github.com/kapil2020/india-air-quality-dashboard/actions/workflows/fetch_aqi.yml/badge.svg)](https://github.com/kapil2020/india-air-quality-dashboard/actions)
+- **National Key Insights**: Aggregate AQI metrics for major metros and overall trends.
+- **City Deep Dives**: Calendar heatmaps, daily trends, rolling averages, category distributions, and monthly heatmaps for each city.
+- **City‐to‐City Comparisons**: Side‐by‐side AQI trend lines and seasonal radar charts.
+- **Pollutant Analysis**: Yearly and period‐specific dominant pollutant breakdowns.
+- **Linear AQI Forecasts**: Simple linear regression forecasts for selected cities.
+- **Interactive AQI Hotspots Map**: Scatter‐map of average AQI by city (with fallback bar charts if coordinates are unavailable).
+- **Downloadable CSV**: Export filtered city data for offline analysis.
+
+<br />
 
 ---
 
-## 📊 Features
+## 📋 Table of Contents
 
-- **📆 Calendar Heatmap**: Daily AQI levels color-coded by CPCB categories
-- **📈 AQI Trends**: Daily, monthly, and 7-day rolling averages
-- **📊 Category Distributions**: Bar + pie charts by AQI level
-- **📦 Pollutant Composition**: 100% stacked bar plots of PM2.5, PM10, NO₂, etc.
-- **🗺️ Interactive Map**: City-wise average AQI and dominant pollutants
-- **📉 Forecasting**: Linear AQI trendline for near-term projections
-- **🧠 Automation**: GitHub Actions fetch daily CPCB bulletins at 5:45 PM IST
+1. [Project Overview](#project-overview)  
+2. [Features](#features)  
+3. [Demo Screenshot](#demo-screenshot)  
+4. [Tech Stack](#tech-stack)  
+5. [Data Sources](#data-sources)  
+6. [Installation & Setup](#installation--setup)  
+7. [Running Locally](#running-locally)  
+8. [Project Structure](#project-structure)  
+9. [Usage](#usage)  
+10. [Contributing](#contributing)  
+11. [License](#license)  
+12. [Acknowledgments](#acknowledgments)  
+
+---
+
+## 📖 Project Overview
+
+Air quality is a critical public health metric. The **IIT KGP AQI Dashboard** (“AuraVision”) was conceptualized by Mr. Kapil Meena & Prof. Arkopal K. Goswami (IIT Kharagpur) and developed to:
+
+- Aggregate and visualize historical AQI data from the Central Pollution Control Board (CPCB), India.
+- Provide intuitive, interactive charts and maps to explore air quality at both national and city levels.
+- Offer pollutant breakdowns and simple forecasting to highlight trends and areas of concern.
+- Empower users to download filtered data for their own analyses.
+
+This repository contains the complete Streamlit application (`final_app.py`), auxiliary data files, and instructions to reproduce and customize the dashboard.
+
+---
+
+## ⚙️ Features
+
+1. **National Key Insights**  
+   - **Annual Average AQI** for eight major metros (Delhi, Mumbai, Kolkata, Bengaluru, Chennai, Hyderabad, Pune, Ahmedabad).  
+   - **General Period Insights**: Overall average AQI, best‐performing city, and worst‐performing city during the selected year/month.
+
+2. **City Deep Dive**  
+   - **Calendar Heatmap**: Daily AQI levels displayed on a full‐year calendar.  
+   - **Trend & Rolling Average**: Daily AQI line plot + 7‐day rolling average band.  
+   - **Category Distribution**: Bar chart & sunburst showing number/proportion of “Good”, “Moderate”, “Poor”, etc., days.  
+   - **Monthly Violin Plot**: AQI distribution per month (with overlaid boxplots and outliers).  
+   - **Monthly Heatmap**: Grid visualization of day‐by‐month AQI values.
+
+3. **City‐to‐City Comparisons**  
+   - **Trend Comparison**: Overlayed line charts for selected cities, highlighting relative AQI trajectories.  
+   - **Seasonal Radar Chart**: Monthly average AQI by city (full‐year), enabling visual comparison of seasonal patterns.
+
+4. **Prominent Pollutant Analysis**  
+   - **Yearly Pollutant Trends**: Stacked‐bar percentages of dominant pollutants (PM2.5, PM10, NO₂, SO₂, CO, O₃, etc.) over multiple years.  
+   - **Filtered Period Pollutant Breakdown**: Bar chart showing the proportion of days dominated by each pollutant in the selected period.
+
+5. **AQI Forecast (Linear Trend)**  
+   - Simple linear regression forecast using historical AQI data for the selected city.  
+   - Overlay of observed vs. predicted AQI values for the next 15 days.
+
+6. **City AQI Hotspots (Map)**  
+   - **Scatter‐Mapbox**: Plots each city’s latitude/longitude with circle size proportional to average AQI and color coded by AQI category.  
+   - **Hover Info**: City name, average AQI, AQI category, and dominant pollutant.  
+   - **Fallback Bar Chart**: If latitude/longitude data is missing or malformed, a horizontal bar chart of top‐20 average‐AQI cities is shown.
+
+7. **Download Filtered Data**  
+   - Single‐click CSV download of the concatenated, filtered city‐level data for offline use.
+
+<br />
+
+---
+
+
+
+---
+
+## 🛠️ Tech Stack
+
+- **Language**: Python 3.x  
+- **Framework**: [Streamlit](https://streamlit.io/)  
+- **Visualization**: [Plotly](https://plotly.com/python/), [Matplotlib](https://matplotlib.org/)  
+- **Data**: [Pandas](https://pandas.pydata.org/), [NumPy](https://numpy.org/)  
+- **Machine Learning**: [scikit-learn](https://scikit-learn.org/) (LinearRegression)  
+- **Dependencies**: Listed in `requirements.txt` (see below)
+
+---
+
+## 🌐 Data Sources
+
+1. **Central Pollution Control Board (CPCB), India**  
+   - Historical AQI data (daily city‐level) stored in `combined_air_quality.txt` (tab‐separated).  
+   - The app automatically attempts to load a “today’s CSV” named `data/YYYY-MM-DD.csv` if it exists; otherwise, it falls back to `combined_air_quality.txt`.
+
+2. **City Coordinates**  
+   - `lat_long.txt` must define a Python dictionary named `city_coords` mapping each city name (string) to a `[latitude, longitude]` pair.  
+   - Example format inside `lat_long.txt`:
+     ```python
+     city_coords = {
+         "Delhi": [28.7041, 77.1025],
+         "Mumbai": [19.0760, 72.8777],
+         "Kolkata": [22.5726, 88.3639],
+         # …additional cities
+     }
+     ```
+
+---
+
+## ⚙️ Installation & Setup
+
+1. **Clone the repository**  
+   ```bash
+   git clone https://github.com/yourusername/iitkgp-aqi-dashboard.git
+   cd iitkgp-aqi-dashboard
+
 
 ---
 
