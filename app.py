@@ -1576,63 +1576,164 @@ if export_data_list:
         
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ------------------- Footer (UPDATED) -------------------
+# ------------------- Footer (MODERN & ANIMATED) -------------------
 st.markdown(f"""
-<div style="
-     position: relative;
-     width: 100%;
-     box-sizing: border-box;
-     overflow-x: hidden;
-     margin-top: 4rem;
-     padding: 2.5rem;
-     background: linear-gradient(90deg, #121212, #1a2a3a, #121212);
-     border-radius: 16px;
-     border: 1px solid #2a3a4a;
-">
-  <!-- Gradient bar at the top of the footer -->
-  <div style="
-       position: absolute;
-       top: 0;
-       left: 0;
-       width: 100%;
-       height: 4px;
-       background: linear-gradient(90deg, #00BCD4, #00BFA5);
-  "></div>
+<style>
+  /* Fade‐in utility */
+  @keyframes fadeIn {{
+    0%   {{ opacity: 0; }}
+    100% {{ opacity: 1; }}
+  }}
 
-  <h3 style="color: #00BCD4; margin-bottom: 1.5rem;">IIT KGP Air Quality Dashboard</h3>
+  /* Footer background gradient animation */
+  @keyframes footerGradient {{
+    0%   {{ background-position: 0% 50%; }}
+    50%  {{ background-position: 100% 50%; }}
+    100% {{ background-position: 0% 50%; }}
+  }}
 
-  <div style="
-       display: flex;
-       justify-content: center;
-       gap: 2rem;
-       margin-bottom: 1.5rem;
-       flex-wrap: wrap;
-  ">
+  /* Pulse animation for the GitHub icon on hover */
+  @keyframes iconPulse {{
+    0%   {{ transform: scale(1);   opacity: 1;   }}
+    50%  {{ transform: scale(1.1); opacity: 0.8; }}
+    100% {{ transform: scale(1);   opacity: 1;   }}
+  }}
+
+  /* Container resets to avoid horizontal overflow */
+  .footer-container {{
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    margin-top: 4rem;
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    background: linear-gradient(270deg, #121212, #1a2a3a, #121212);
+    background-size: 300% 300%;
+    animation: footerGradient 8s ease infinite;
+    border: 1px solid #2a3a4a;
+  }}
+
+  /* Thin animated bar at the top of the footer */
+  .footer-top-bar {{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #00BCD4, #00BFA5);
+    background-size: 200% 200%;
+    animation: footerGradient 5s ease infinite;
+  }}
+
+  /* Main footer heading */
+  .footer-container h3 {{
+    color: #00BCD4;
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+  }}
+
+  /* Flex container for Data Source / Developed By / Last Updated */
+  .footer-info {{
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.3s forwards;
+  }}
+
+  .footer-info p {{
+    margin: 0;
+  }}
+
+  .footer-info .label {{
+    font-size: 0.9rem;
+    color: #B0B0B0;
+  }}
+
+  .footer-info .value {{
+    font-weight: 500;
+    color: #EAEAEA;
+  }}
+
+  /* Centered GitHub link + icon */
+  .footer-links {{
+    text-align: center;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.6s forwards;
+  }}
+
+  .footer-links a {{
+    color: #00BCD4;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+  }}
+
+  .footer-links a:hover {{
+    color: #00E5FF;
+  }}
+
+  /* Pulse animation on the SVG when hovered */
+  .footer-links a:hover svg {{
+    animation: iconPulse 1.5s infinite;
+  }}
+
+  /* Copyright text */
+  .footer-container .copyright {{
+    font-size: 0.85rem;
+    color: #707070;
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.9s forwards;
+  }}
+
+  /* Responsive tweaks */
+  @media (max-width: 480px) {{
+    .footer-container {{
+      padding: 2rem 1rem;
+    }}
+    .footer-container h3 {{
+      font-size: 1.5rem;
+    }}
+  }}
+</style>
+
+<div class="footer-container">
+  <!-- Animated gradient bar -->
+  <div class="footer-top-bar"></div>
+
+  <!-- Main Title -->
+  <h3>IIT KGP Air Quality Dashboard</h3>
+
+  <!-- Data Source / Developed By / Last Updated -->
+  <div class="footer-info">
     <div>
-      <p style="font-size: 0.9rem; color: #B0B0B0;">Data Source</p>
-      <p style="font-weight: 500;">Central Pollution Control Board (CPCB)</p>
+      <p class="label">Data Source</p>
+      <p class="value">Central Pollution Control Board (CPCB)</p>
     </div>
     <div>
-      <p style="font-size: 0.9rem; color: #B0B0B0;">Developed By</p>
-      <p style="font-weight: 500;">IIT Kharagpur Research Team</p>
+      <p class="label">Developed By</p>
+      <p class="value">IIT Kharagpur Research Team</p>
     </div>
     <div>
-      <p style="font-size: 0.9rem; color: #B0B0B0;">Last Updated</p>
-      <p style="font-weight: 500;">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
+      <p class="label">Last Updated</p>
+      <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
     </div>
   </div>
 
-  <div style="margin-top: 1.5rem;">
-    <a href="https://github.com/kapil2020/india-air-quality-dashboard"
-       target="_blank"
-       style="
-         color: #00BCD4;
-         text-decoration: none;
-         font-weight: 600;
-         display: inline-flex;
-         align-items: center;
-         gap: 0.5rem;
-       ">
+  <!-- “View on GitHub” Link -->
+  <div class="footer-links">
+    <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
+      <!-- GitHub Icon -->
       <svg xmlns="http://www.w3.org/2000/svg"
            width="20" height="20"
            viewBox="0 0 24 24"
@@ -1641,16 +1742,16 @@ st.markdown(f"""
            stroke-width="2"
            stroke-linecap="round"
            stroke-linejoin="round">
-        <path d="M9 19c-5 1.5-5-2.5-7-3
-                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61
-                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77
-                 5.07 5.07 0 0 0 19.91 1
-                 S18.73.65 16 2.48
-                 a13.38 13.38 0 0 0-7 0
-                 C6.27.65 5.09 1 5.09 1
-                 A5.07 5.07 0 0 0 5 4.77
-                 a5.44 5.44 0 0 0-1.5 3.78
-                 c0 5.42 3.3 6.61 6.44 7
+        <path d="M9 19c-5 1.5-5-2.5-7-3 
+                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
+                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
+                 5.07 5.07 0 0 0 19.91 1 
+                 S18.73.65 16 2.48 
+                 a13.38 13.38 0 0 0-7 0 
+                 C6.27.65 5.09 1 5.09 1 
+                 A5.07 5.07 0 0 0 5 4.77 
+                 a5.44 5.44 0 0 0-1.5 3.78 
+                 c0 5.42 3.3 6.61 6.44 7 
                  A3.37 3.37 0 0 0 9 18.13V22">
         </path>
       </svg>
@@ -1658,8 +1759,10 @@ st.markdown(f"""
     </a>
   </div>
 
-  <p style="margin-top: 2rem; font-size: 0.85rem; color: #707070;">
+  <!-- Copyright -->
+  <p class="copyright">
     © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
   </p>
 </div>
 """, unsafe_allow_html=True)
+
