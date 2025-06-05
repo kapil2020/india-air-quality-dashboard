@@ -20,7 +20,7 @@ CARD_BACKGROUND_COLOR = "#1E1E1E"        # Slightly lighter for cards
 BORDER_COLOR = "#333333"                 # Dark border
 HIGHLIGHT_COLOR = "#FF6B6B"              # For alerts and highlights
 
-CATEGORY_COLORS_DARK = {
+CATEGORY_COLORS_DARK = {{
     "Severe": "#F44336",      # Vivid Red
     "Very Poor": "#FF7043",   # Vivid Orange-Red
     "Poor": "#FFA726",        # Vivid Orange
@@ -28,15 +28,15 @@ CATEGORY_COLORS_DARK = {
     "Satisfactory": "#9CCC65",# Vivid Light Green
     "Good": "#4CAF50",        # Vivid Green
     "Unknown": "#444444"      # Dark gray for unknown days
-}
+}}
 
-POLLUTANT_COLORS_DARK = {
+POLLUTANT_COLORS_DARK = {{
     "PM2.5": "#FF6B6B", "PM10": "#4ECDC4", "NO2": "#45B7D1",
     "SO2": "#F9C74F", "CO": "#F8961E", "O3": "#90BE6D", "Other": "#B0BEC5"
-}
+}}
 
 # Health recommendations based on AQI levels
-HEALTH_RECOMMENDATIONS = {
+HEALTH_RECOMMENDATIONS = {{
     "Good": "Perfect day for outdoor activities!",
     "Satisfactory": "Sensitive individuals should consider reducing prolonged/heavy exertion",
     "Moderate": "Sensitive groups should reduce outdoor activities",
@@ -44,7 +44,7 @@ HEALTH_RECOMMENDATIONS = {
     "Very Poor": "Avoid outdoor activities, especially for sensitive groups",
     "Severe": "Avoid all outdoor activities, keep windows closed",
     "Unknown": "Air quality data unavailable - take precautions"
-}
+}}
 
 # ------------------- Page Config -------------------
 st.set_page_config(
@@ -66,8 +66,8 @@ st.markdown(f"""
     
     body {{
         font-family: 'Inter', sans-serif;
-        background-color: {BACKGROUND_COLOR};
-        color: {TEXT_COLOR_DARK_THEME};
+        background-color: {{BACKGROUND_COLOR}};
+        color: {{TEXT_COLOR_DARK_THEME}};
         line-height: 1.6;
     }}
 
@@ -84,8 +84,8 @@ st.markdown(f"""
     .stDownloadButton > button, .stButton > button,
     div[data-testid="stExpander"], div[data-testid="stForm"] {{
         border-radius: 16px;
-        border: 1px solid {BORDER_COLOR};
-        background-color: {CARD_BACKGROUND_COLOR};
+        border: 1px solid {{BORDER_COLOR}};
+        background-color: {{CARD_BACKGROUND_COLOR}};
         padding: 1.5rem;
         margin-bottom: 1.5rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
@@ -101,8 +101,8 @@ st.markdown(f"""
     
     .stpyplot {{
         border-radius: 12px;
-        border: 1px solid {BORDER_COLOR};
-        background-color: {CARD_BACKGROUND_COLOR};
+        border: 1px solid {{BORDER_COLOR}};
+        background-color: {{CARD_BACKGROUND_COLOR}};
         padding: 1rem;
         margin-bottom: 2rem;
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -110,7 +110,7 @@ st.markdown(f"""
 
     .stTabs [data-baseweb="tab-list"] {{
          box-shadow: none;
-         border-bottom: 2px solid {BORDER_COLOR};
+         border-bottom: 2px solid {{BORDER_COLOR}};
          padding-bottom: 0;
          background-color: transparent;
     }}
@@ -118,7 +118,7 @@ st.markdown(f"""
     .stTabs [data-baseweb="tab"] {{
         padding: 0.8rem 1.5rem;
         font-weight: 600;
-        color: {SUBTLE_TEXT_COLOR_DARK_THEME};
+        color: {{SUBTLE_TEXT_COLOR_DARK_THEME}};
         background-color: transparent;
         border-radius: 8px 8px 0 0;
         margin-right: 0.5rem;
@@ -127,25 +127,25 @@ st.markdown(f"""
     }}
     
      .stTabs [aria-selected="true"] {{
-        background: linear-gradient(90deg, {BACKGROUND_COLOR}, {CARD_BACKGROUND_COLOR});
-        color: {ACCENT_COLOR} !important;
-        border-bottom: 3px solid {ACCENT_COLOR};
+        background: linear-gradient(90deg, {{BACKGROUND_COLOR}}, {{CARD_BACKGROUND_COLOR}});
+        color: {{ACCENT_COLOR}} !important;
+        border-bottom: 3px solid {{ACCENT_COLOR}};
         box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
      }}
      
      .stTabs [aria-selected="true"]:hover {{
-        background: linear-gradient(90deg, {BACKGROUND_COLOR}, #232323);
+        background: linear-gradient(90deg, {{BACKGROUND_COLOR}}, #232323);
      }}
 
     /* Headings */
     h1 {{
         font-family: 'Inter', sans-serif;
-        color: {TEXT_COLOR_DARK_THEME};
+        color: {{TEXT_COLOR_DARK_THEME}};
         text-align: center;
         margin-bottom: 0.5rem;
         font-weight: 800;
         letter-spacing: -0.5px;
-        background: linear-gradient(90deg, {ACCENT_COLOR}, #00E5FF);
+        background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00E5FF);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-size: 2.8rem;
@@ -153,8 +153,8 @@ st.markdown(f"""
     
     h2 {{
         font-family: 'Inter', sans-serif;
-        color: {ACCENT_COLOR};
-        border-bottom: 2px solid {BORDER_COLOR};
+        color: {{ACCENT_COLOR}};
+        border-bottom: 2px solid {{BORDER_COLOR}};
         padding-bottom: 0.6rem;
         margin-top: 2.5rem;
         margin-bottom: 1.5rem;
@@ -171,12 +171,12 @@ st.markdown(f"""
         left: 0;
         width: 120px;
         height: 3px;
-        background: linear-gradient(90deg, {ACCENT_COLOR}, transparent);
+        background: linear-gradient(90deg, {{ACCENT_COLOR}}, transparent);
     }}
     
     h3 {{
         font-family: 'Inter', sans-serif;
-        color: {TEXT_COLOR_DARK_THEME};
+        color: {{TEXT_COLOR_DARK_THEME}};
         margin-top: 0rem;
         margin-bottom: 1.2rem;
         font-weight: 600;
@@ -185,7 +185,7 @@ st.markdown(f"""
     
     h4, h5 {{
         font-family: 'Inter', sans-serif;
-        color: {TEXT_COLOR_DARK_THEME};
+        color: {{TEXT_COLOR_DARK_THEME}};
         margin-top: 0.2rem;
         margin-bottom: 1rem;
         font-weight: 500;
@@ -193,8 +193,8 @@ st.markdown(f"""
 
     /* Sidebar styling */
     .stSidebar {{
-        background-color: {CARD_BACKGROUND_COLOR};
-        border-right: 1px solid {BORDER_COLOR};
+        background-color: {{CARD_BACKGROUND_COLOR}};
+        border-right: 1px solid {{BORDER_COLOR}};
         padding: 1.5rem;
         box-shadow: 5px 0 15px rgba(0, 0, 0, 0.2);
         min-width: 300px !important;
@@ -202,21 +202,21 @@ st.markdown(f"""
     }}
     
     .stSidebar .stMarkdown h2, .stSidebar .stMarkdown h3, .stSidebar .stMarkdown p {{
-        color: {TEXT_COLOR_DARK_THEME};
+        color: {{TEXT_COLOR_DARK_THEME}};
         text-align: left;
         border-bottom: none;
     }}
     
     .stSidebar .stSelectbox label, .stSidebar .stMultiselect label {{
-        color: {ACCENT_COLOR} !important;
+        color: {{ACCENT_COLOR}} !important;
         font-weight: 600;
         font-size: 1.05rem;
     }}
 
     /* Metric styling */
     .stMetric {{
-        background-color: {BACKGROUND_COLOR};
-        border: 1px solid {BORDER_COLOR};
+        background-color: {{BACKGROUND_COLOR}};
+        border: 1px solid {{BORDER_COLOR}};
         border-radius: 12px;
         padding: 1.2rem;
         text-align: center;
@@ -225,7 +225,7 @@ st.markdown(f"""
     
     .stMetric > div:nth-child(1) {{
         font-size: 1rem;
-        color: {SUBTLE_TEXT_COLOR_DARK_THEME};
+        color: {{SUBTLE_TEXT_COLOR_DARK_THEME}};
         font-weight: 500;
         letter-spacing: 0.5px;
     }}
@@ -233,7 +233,7 @@ st.markdown(f"""
     .stMetric > div:nth-child(2) {{
         font-size: 2.4rem;
         font-weight: 700;
-        background: linear-gradient(90deg, {ACCENT_COLOR}, #00E5FF);
+        background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00E5FF);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin: 0.5rem 0;
@@ -241,7 +241,7 @@ st.markdown(f"""
     
     .stMetric > div:nth-child(3) {{
         font-size: 0.9rem;
-        color: {SUBTLE_TEXT_COLOR_DARK_THEME};
+        color: {{SUBTLE_TEXT_COLOR_DARK_THEME}};
         font-weight: 400;
         font-style: italic;
     }}
@@ -250,18 +250,18 @@ st.markdown(f"""
     div[data-testid="stExpander"] summary {{
         font-size: 1.2rem;
         font-weight: 600;
-        color: {ACCENT_COLOR};
+        color: {{ACCENT_COLOR}};
         padding: 0.8rem 1.2rem;
     }}
     
     div[data-testid="stExpander"] svg {{
-        fill: {ACCENT_COLOR};
+        fill: {{ACCENT_COLOR}};
     }}
 
     /* Download button styling */
     .stDownloadButton button {{
-        background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
-        color: {BACKGROUND_COLOR};
+        background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00BFA5);
+        color: {{BACKGROUND_COLOR}};
         border: none;
         font-weight: 600;
         padding: 0.85rem 2rem;
@@ -283,16 +283,16 @@ st.markdown(f"""
     /* Input Widgets */
     .stTextInput input, .stSelectbox div[data-baseweb="select"] > div:first-child,
     .stMultiselect div[data-baseweb="select"] > div:first-child {{
-        background-color: {BACKGROUND_COLOR};
-        color: {TEXT_COLOR_DARK_THEME};
-        border-color: {BORDER_COLOR} !important;
+        background-color: {{BACKGROUND_COLOR}};
+        color: {{TEXT_COLOR_DARK_THEME}};
+        border-color: {{BORDER_COLOR}} !important;
         border-radius: 10px;
         padding: 0.5rem 1rem;
     }}
     
     .stDateInput input {{
-         background-color: {BACKGROUND_COLOR};
-         color: {TEXT_COLOR_DARK_THEME};
+         background-color: {{BACKGROUND_COLOR}};
+         color: {{TEXT_COLOR_DARK_THEME}};
          border-radius: 10px;
          padding: 0.5rem 1rem;
     }}
@@ -300,7 +300,7 @@ st.markdown(f"""
     /* Hover effects for inputs */
     .stTextInput input:hover, .stSelectbox div[data-baseweb="select"] > div:first-child:hover,
     .stMultiselect div[data-baseweb="select"] > div:first-child:hover {{
-        border-color: {ACCENT_COLOR} !important;
+        border-color: {{ACCENT_COLOR}} !important;
         box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.2);
     }}
 
@@ -310,17 +310,17 @@ st.markdown(f"""
     }}
     
     ::-webkit-scrollbar-track {{
-        background: {BACKGROUND_COLOR};
+        background: {{BACKGROUND_COLOR}};
         border-radius: 10px;
     }}
     
     ::-webkit-scrollbar-thumb {{
-        background: linear-gradient(45deg, {ACCENT_COLOR}, #00BFA5);
+        background: linear-gradient(45deg, {{ACCENT_COLOR}}, #00BFA5);
         border-radius: 10px;
     }}
     
     ::-webkit-scrollbar-thumb:hover {{
-        background: linear-gradient(45deg, #00BFA5, {ACCENT_COLOR});
+        background: linear-gradient(45deg, #00BFA5, {{ACCENT_COLOR}});
     }}
     
     /* ====================
@@ -442,8 +442,8 @@ st.markdown(f"""
             bottom: 20px;
             right: 20px;
             z-index: 1000;
-            background: {ACCENT_COLOR};
-            color: {BACKGROUND_COLOR};
+            background: {{ACCENT_COLOR}};
+            color: {{BACKGROUND_COLOR}};
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -460,8 +460,8 @@ st.markdown(f"""
        ==================== */
     /* 1) Closed‐state "button" background & text */
     div[data-baseweb="select"] > div:first-child {{
-      background-color: {CARD_BACKGROUND_COLOR} !important;
-      color: {TEXT_COLOR_DARK_THEME} !important;
+      background-color: {{CARD_BACKGROUND_COLOR}} !important;
+      color: {{TEXT_COLOR_DARK_THEME}} !important;
       border: 1px solid #555555 !important;
       border-radius: 10px !important;
       padding: 0.4rem 0.8rem !important;
@@ -469,13 +469,13 @@ st.markdown(f"""
 
     /* 2) Placeholder text color */
     div[data-baseweb="select"] > div:first-child span {{
-      color: {TEXT_COLOR_DARK_THEME} !important;
+      color: {{TEXT_COLOR_DARK_THEME}} !important;
       opacity: 0.7;
     }}
 
     /* 3) Opened dropdown menu */
     div[data-baseweb="select"] [role="menu"] {{
-      background-color: {CARD_BACKGROUND_COLOR} !important;
+      background-color: {{CARD_BACKGROUND_COLOR}} !important;
       border: 1px solid #555555 !important;
       border-radius: 8px !important;
       z-index: 1002 !important; /* Ensure dropdown is above other elements */
@@ -485,8 +485,8 @@ st.markdown(f"""
 
     /* 4) Dropdown options */
     div[data-baseweb="select"] [role="option"] {{
-      background-color: {CARD_BACKGROUND_COLOR} !important;
-      color: {TEXT_COLOR_DARK_THEME} !important;
+      background-color: {{CARD_BACKGROUND_COLOR}} !important;
+      color: {{TEXT_COLOR_DARK_THEME}} !important;
       padding: 0.6rem 1rem !important;
     }}
 
@@ -498,12 +498,12 @@ st.markdown(f"""
 
     /* 6) Arrow icon color */
     div[data-baseweb="select"] svg {{
-      stroke: {TEXT_COLOR_DARK_THEME} !important;
+      stroke: {{TEXT_COLOR_DARK_THEME}} !important;
     }}
 
     /* 7) Selected value text */
     div[data-baseweb="select"] .css-1uccc91-singleValue {{
-      color: {TEXT_COLOR_DARK_THEME} !important;
+      color: {{TEXT_COLOR_DARK_THEME}} !important;
       opacity: 1 !important;
     }}
 
@@ -512,7 +512,7 @@ st.markdown(f"""
       background-color: #333333 !important;
     }}
     div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {{
-      color: {TEXT_COLOR_DARK_THEME} !important;
+      color: {{TEXT_COLOR_DARK_THEME}} !important;
     }}
 
     /* 9) Placeholder in React-Select */
@@ -523,7 +523,7 @@ st.markdown(f"""
 
     /* 10) Focus border */
     div[data-baseweb="select"] .css-1pahdxg-control {{
-      border-color: {ACCENT_COLOR} !important;
+      border-color: {{ACCENT_COLOR}} !important;
     }}
 
     /* Sidebar header */
@@ -531,7 +531,7 @@ st.markdown(f"""
       position: relative;
       margin-top: 1rem;
       margin-bottom: 1rem;
-      color: {ACCENT_COLOR} !important;
+      color: {{ACCENT_COLOR}} !important;
       padding-bottom: 0.3rem;
     }}
     .stSidebar h2:after {{
@@ -541,7 +541,7 @@ st.markdown(f"""
       left: 0;
       width: 3rem;
       height: 3px;
-      background-color: {ACCENT_COLOR};
+      background-color: {{ACCENT_COLOR}};
     }}
 
     /* Status cards container */
@@ -577,7 +577,7 @@ st.markdown(f"""
         border-radius: 12px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        border: 1px solid {BORDER_COLOR};
+        border: 1px solid {{BORDER_COLOR}};
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }}
     
@@ -589,7 +589,7 @@ st.markdown(f"""
     }}
     
     .gradient-header {{
-        background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
+        background: linear-gradient(270deg, {{BACKGROUND_COLOR}}, #1a2a3a, {{BACKGROUND_COLOR}});
         background-size: 300% 300%;
         animation: gradientAnimation 12s ease infinite;
         padding: 2rem 1rem;
@@ -618,40 +618,40 @@ def get_custom_plotly_layout_args(height: int = None, title_text: str = None) ->
     """
     Returns a dict of common Plotly layout arguments for dark-themed charts
     """
-    layout_args = {
-        "font": {"family": "Inter", "color": TEXT_COLOR_DARK_THEME, "size": 14},
+    layout_args = {{
+        "font": {{"family": "Inter", "color": TEXT_COLOR_DARK_THEME, "size": 14}},
         "paper_bgcolor": CARD_BACKGROUND_COLOR,
         "plot_bgcolor": CARD_BACKGROUND_COLOR,
-        "legend": {
+        "legend": {{
             "orientation": "h", 
             "yanchor": "bottom", 
             "y": 1.02, 
             "xanchor": "right", 
             "x": 1,
             "bgcolor": "rgba(0,0,0,0)",
-            "font": {"size": 12}
-        },
-        "margin": {"l": 40, "r": 20, "t": 60, "b": 40},
-        "hoverlabel": {
+            "font": {{"size": 12}}
+        }},
+        "margin": {{"l": 40, "r": 20, "t": 60, "b": 40}},
+        "hoverlabel": {{
             "bgcolor": "#2A2A2A",
             "font_size": 12,
             "font_family": "Inter"
-        }
-    }
+        }}
+    }}
     if height:
         layout_args["height"] = height
     if title_text:
         layout_args["title_text"] = title_text
-        layout_args["title_font"] = {"color": ACCENT_COLOR, "size": 18, "family": "Inter"}
+        layout_args["title_font"] = {{"color": ACCENT_COLOR, "size": 18, "family": "Inter"}}
         layout_args["title_x"] = 0.03
         layout_args["title_y"] = 0.95
     return layout_args
 
 def format_number(num):
     if num > 1000000:
-        return f"{num/1000000:.1f}M"
+        return f"{{num/1000000:.1f}}M"
     if num > 1000:
-        return f"{num/1000:.1f}K"
+        return f"{{num/1000:.1f}}K"
     return str(num)
 
 # ------------------- Title Header -------------------
@@ -684,7 +684,7 @@ def load_data_and_metadata():
     Returns: (df_loaded, load_msg, last_update_time)
     """
     today = pd.to_datetime("today").date()
-    csv_path = f"data/{today}.csv"
+    csv_path = f"data/{{today}}.csv"
     fallback_file = "combined_air_quality.txt"
     df_loaded = None
     is_today_data = False
@@ -698,26 +698,26 @@ def load_data_and_metadata():
             if "date" in df_loaded.columns:
                 df_loaded["date"] = pd.to_datetime(df_loaded["date"])
                 is_today_data = True
-                load_msg = f"Live data from: **{today}.csv**"
+                load_msg = f"Live data from: **{{today}}.csv**"
                 last_update_time = pd.Timestamp(os.path.getmtime(csv_path), unit="s")
             else:
-                load_msg = f"Warning: '{csv_path}' found but missing 'date' column. Using fallback."
+                load_msg = f"Warning: '{{csv_path}}' found but missing 'date' column. Using fallback."
         except Exception as e:
-            load_msg = f"Error loading '{csv_path}': {e}. Using fallback."
+            load_msg = f"Error loading '{{csv_path}}': {{e}}. Using fallback."
 
     # 2) If today's CSV is missing or invalid, load fallback
     if df_loaded is None or not is_today_data:
         try:
             if not os.path.exists(fallback_file):
-                st.error(f"FATAL: Main data file '{fallback_file}' not found.")
+                st.error(f"FATAL: Main data file '{{fallback_file}}' not found.")
                 return pd.DataFrame(), "Error: Main data file not found.", None
             df_loaded = pd.read_csv(fallback_file, sep="\t", parse_dates=["date"])
-            base_load_msg = f"Displaying archive data from: **{fallback_file}**"
+            base_load_msg = f"Displaying archive data from: **{{fallback_file}}**"
             load_msg = base_load_msg if not load_msg or is_today_data else load_msg + " " + base_load_msg
             last_update_time = pd.Timestamp(os.path.getmtime(fallback_file), unit="s")
         except Exception as e:
-            st.error(f"FATAL: Error loading '{fallback_file}': {e}.")
-            return pd.DataFrame(), f"Error loading fallback: {e}", None
+            st.error(f"FATAL: Error loading '{{fallback_file}}': {{e}}.")
+            return pd.DataFrame(), f"Error loading fallback: {{e}}", None
 
     # Common post-processing
     for col, default_val in [("pollutant", np.nan), ("level", "Unknown")]:
@@ -742,8 +742,8 @@ if df.empty:
 
 if data_last_updated:
     st.caption(
-        f"<p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 0.9rem;'>"
-        f"📅 Last data update: {data_last_updated.strftime('%Y-%m-%d %H:%M:%S')}"
+        f"<p style='text-align: center; color: {{SUBTLE_TEXT_COLOR_DARK_THEME}}; font-size: 0.9rem;'>"
+        f"📅 Last data update: {{data_last_updated.strftime('%Y-%m-%d %H:%M:%S')}}"
         "</p>",
         unsafe_allow_html=True
     )
@@ -768,10 +768,10 @@ with st.sidebar:
     year = st.selectbox("🗓️ Select Year", years, index=year_index if years else 0,
                       help="Select the year for analysis")
 
-    months_map_dict = {
+    months_map_dict = {{
         1: "January", 2: "February", 3: "March", 4: "April", 5: "May", 6: "June",
         7: "July", 8: "August", 9: "September", 10: "October", 11: "November", 12: "December"
-    }
+    }}
     month_options_list = ["All Months"] + list(months_map_dict.values())
     selected_month_name = st.selectbox("🌙 Select Month", month_options_list, index=0,
                                      help="Optionally select a specific month")
@@ -817,7 +817,7 @@ with col1:
         st.markdown(f"<div class='insight-card'><h3>🌆 Coverage</h3>", unsafe_allow_html=True)
         cities_count = df_period_filtered["city"].nunique()
         st.metric(label="Cities Monitored", value=cities_count)
-        st.markdown(f"<p style='color:{SUBTLE_TEXT_COLOR_DARK_THEME}; font-size:0.9rem;'>Across India in {year}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='color:{{SUBTLE_TEXT_COLOR_DARK_THEME}}; font-size:0.9rem;'>Across India in {{year}}</p>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 with col2:
@@ -825,7 +825,7 @@ with col2:
         st.markdown(f"<div class='insight-card'><h3>📈 National Average</h3>", unsafe_allow_html=True)
         if not df_period_filtered.empty:
             avg_aqi_national = df_period_filtered["index"].mean()
-            st.metric(label="Average AQI", value=f"{avg_aqi_national:.1f}")
+            st.metric(label="Average AQI", value=f"{{avg_aqi_national:.1f}}")
             # Determine national AQI category
             if avg_aqi_national <= 50:
                 category = "Good"
@@ -839,7 +839,7 @@ with col2:
                 category = "Very Poor"
             else:
                 category = "Severe"
-            st.markdown(f"<p style='color:{CATEGORY_COLORS_DARK.get(category)}; font-weight:600;'>{category} Air Quality</p>", unsafe_allow_html=True)
+            st.markdown(f"<p style='color:{{CATEGORY_COLORS_DARK.get(category)}}; font-weight:600;'>{{category}} Air Quality</p>", unsafe_allow_html=True)
         else:
             st.info("No data available")
         st.markdown("</div>", unsafe_allow_html=True)
@@ -847,10 +847,10 @@ with col2:
 with col3:
     with st.container():
         st.markdown(f"<div class='insight-card'><h3>📅 Time Period</h3>", unsafe_allow_html=True)
-        period = f"{selected_month_name} {year}" if selected_month_name != "All Months" else f"Full Year {year}"
+        period = f"{{selected_month_name}} {{year}}" if selected_month_name != "All Months" else f"Full Year {{year}}"
         st.markdown(f"<p style='font-size:1.8rem; text-align:center; margin:1rem 0;'>{period}</p>", unsafe_allow_html=True)
         days_count = df_period_filtered["date"].nunique()
-        st.markdown(f"<p style='text-align:center; color:{SUBTLE_TEXT_COLOR_DARK_THEME};'>{days_count} days of data</p>", unsafe_allow_html=True)
+        st.markdown(f"<p style='text-align:center; color:{{SUBTLE_TEXT_COLOR_DARK_THEME}};'>{{days_count}} days of data</p>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
 # Top and bottom cities
@@ -868,7 +868,7 @@ if not df_period_filtered.empty:
             top_cities.columns = ["City", "Avg AQI"]
             top_cities["Rank"] = range(1, 6)
             top_cities = top_cities[["Rank", "City", "Avg AQI"]]
-            st.dataframe(top_cities.style.format({"Avg AQI": "{:.1f}"}), height=250)
+            st.dataframe(top_cities.style.format({{"Avg AQI": "{{:.1f}}"}}), height=250)
         
         with col2:
             st.markdown("##### ⚠️ Most Polluted Cities")
@@ -877,7 +877,7 @@ if not df_period_filtered.empty:
             bottom_cities.columns = ["City", "Avg AQI"]
             bottom_cities["Rank"] = range(1, 6)
             bottom_cities = bottom_cities[["Rank", "City", "Avg AQI"]]
-            st.dataframe(bottom_cities.style.format({"Avg AQI": "{:.1f}"}), height=250)
+            st.dataframe(bottom_cities.style.format({{"Avg AQI": "{{:.1f}}"}}), height=250)
     else:
         st.info("No city averages available for the selected period.")
 else:
@@ -911,9 +911,9 @@ if not major_cities_data.empty:
                 color = CATEGORY_COLORS_DARK["Severe"]
                 
             with cols[i]:
-                st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}'>", unsafe_allow_html=True)
+                st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{{CARD_BACKGROUND_COLOR}}; border:1px solid {{BORDER_COLOR}}'>", unsafe_allow_html=True)
                 st.markdown(f"<div style='font-size:1.2rem; font-weight:600;'>{city_name}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='font-size:1.8rem; font-weight:700; color:{color};'>{aqi_val:.1f}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:1.8rem; font-weight:700; color:{{color}};'>{aqi_val:.1f}</div>", unsafe_allow_html=True)
                 st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.info("No AQI data available for major cities in the selected period.")
@@ -931,14 +931,14 @@ if not selected_cities:
     st.info("✨ Select one or more cities from the sidebar to dive into detailed analysis.")
 else:
     for city in selected_cities:
-        st.markdown(f"## 🏙️ {city.upper()} DEEP DIVE – {year}")
+        st.markdown(f"## 🏙️ {{city.upper()}} DEEP DIVE – {{year}}")
         
         # Health status card
         city_data_full = df_period_filtered[df_period_filtered["city"] == city].copy()
         
         if city_data_full.empty:
             with st.container():
-                st.warning(f"😔 No data available for {city} for {selected_month_name}, {year}. Try different filter settings.")
+                st.warning(f"😔 No data available for {{city}} for {{selected_month_name}}, {{year}}. Try different filter settings.")
             continue
             
         # Calculate current AQI status
@@ -954,24 +954,24 @@ else:
         st.markdown('<div class="status-container">', unsafe_allow_html=True)
         status_col1, status_col2, status_col3 = st.columns([1,2,1])
         with status_col1:
-            st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}'>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{{CARD_BACKGROUND_COLOR}}; border:1px solid {{BORDER_COLOR}}'>", unsafe_allow_html=True)
             st.markdown("🔴 Live Status", unsafe_allow_html=True)
-            st.markdown(f"<div style='font-size:2.5rem; font-weight:700; color:{CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')};'>{current_aqi:.0f}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='font-size:1.1rem;'>{current_level}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size:2.5rem; font-weight:700; color:{{CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')}};'>{{current_aqi:.0f}}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size:1.1rem;'>{{current_level}}</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
         
         with status_col2:
-            st.markdown(f"<div style='padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}; height:100%;'>", unsafe_allow_html=True)
+            st.markdown(f"<div style='padding:1rem; border-radius:12px; background:{{CARD_BACKGROUND_COLOR}}; border:1px solid {{BORDER_COLOR}}; height:100%;'>", unsafe_allow_html=True)
             st.markdown("#### Health Recommendations")
-            st.markdown(f"<div class='health-card' style='border-left-color: {CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')};'>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-size:1.1rem;'>{health_msg}</p>", unsafe_allow_html=True)
+            st.markdown(f"<div class='health-card' style='border-left-color: {{CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')}};'>", unsafe_allow_html=True)
+            st.markdown(f"<p style='font-size:1.1rem;'>{{health_msg}}</p>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
         
         with status_col3:
-            st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}; height:100%;'>", unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{{CARD_BACKGROUND_COLOR}}; border:1px solid {{BORDER_COLOR}}; height:100%;'>", unsafe_allow_html=True)
             st.markdown("#### Dominant Pollutant")
-            st.markdown(f"<div style='font-size:2rem; color:{POLLUTANT_COLORS_DARK.get(current_pollutant, '#FFFFFF')}; margin:1rem 0;'>{current_pollutant}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size:2rem; color:{{POLLUTANT_COLORS_DARK.get(current_pollutant, '#FFFFFF')}}; margin:1rem 0;'>{{current_pollutant}}</div>", unsafe_allow_html=True)
             st.markdown(f"<p style='font-size:0.9rem;'>Primary air quality concern</p>", unsafe_allow_html=True)
             st.markdown("</div>", unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)  # Close status-container
@@ -990,7 +990,7 @@ else:
             end_date = pd.to_datetime(f"{year}-12-31")
             full_year_dates = pd.date_range(start_date, end_date, freq="D")
 
-            calendar_df = pd.DataFrame({"date": full_year_dates})
+            calendar_df = pd.DataFrame({{"date": full_year_dates}})
             calendar_df["week"] = calendar_df["date"].dt.isocalendar().week
             calendar_df["day_of_week"] = calendar_df["date"].dt.dayofweek
             
@@ -1005,7 +1005,7 @@ else:
                 how="left"
             )
             merged_cal_df["level"] = merged_cal_df["level"].fillna("Unknown")
-            merged_cal_df["aqi_text"] = merged_cal_df["index"].apply(lambda x: f"{x:.1f}" if pd.notna(x) else "N/A")
+            merged_cal_df["aqi_text"] = merged_cal_df["index"].apply(lambda x: f"{{x:.1f}}" if pd.notna(x) else "N/A")
 
             day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             
@@ -1018,15 +1018,15 @@ else:
                 data=go.Heatmap(
                     x=merged_cal_df["week"],
                     y=merged_cal_df["day_of_week"],
-                    z=merged_cal_df["level"].map({k: i for i, k in enumerate(CATEGORY_COLORS_DARK.keys())}),
+                    z=merged_cal_df["level"].map({{k: i for i, k in enumerate(CATEGORY_COLORS_DARK.keys())}}),
                     customdata=pd.DataFrame(
-                        {
+                        {{
                             "date": merged_cal_df["date"].dt.strftime("%Y-%m-%d"),
                             "level": merged_cal_df["level"],
                             "aqi": merged_cal_df["aqi_text"]
-                        }
+                        }}
                     ),
-                    hovertemplate="<b>%{customdata[0]}</b><br>AQI: %{customdata[2]} (%{customdata[1]})<extra></extra>",
+                    hovertemplate="<b>%{{customdata[0]}}</b><br>AQI: %{{customdata[2]}} (%{{customdata[1]}})<extra></extra>",
                     colorscale=[[i / (len(CATEGORY_COLORS_DARK) - 1), color] for i, color in enumerate(CATEGORY_COLORS_DARK.values())],
                     showscale=False,
                     xgap=2, ygap=2
@@ -1051,7 +1051,7 @@ else:
             for i, (level, color) in enumerate(CATEGORY_COLORS_DARK.items()):
                 annotations.append(
                     go.layout.Annotation(
-                        text=f"█ <span style='color:{TEXT_COLOR_DARK_THEME};'>{level}</span>",
+                        text=f"█ <span style='color:{{TEXT_COLOR_DARK_THEME}};'>{{level}}</span>",
                         align="left",
                         showarrow=False,
                         xref="paper", yref="paper",
@@ -1093,7 +1093,7 @@ else:
                     marker=dict(size=4, opacity=0.7, color=SUBTLE_TEXT_COLOR_DARK_THEME),
                     line=dict(width=1.5, color=SUBTLE_TEXT_COLOR_DARK_THEME),
                     customdata=city_data_trend[["level"]],
-                    hovertemplate="<b>%{x|%Y-%m-%d}</b><br>AQI: %{y}<br>Category: %{customdata[0]}<extra></extra>"
+                    hovertemplate="<b>%{{x|%Y-%m-%d}}</b><br>AQI: %{{y}}<br>Category: %{{customdata[0]}}<extra></extra>"
                 )
             )
             fig_trend_roll.add_trace(
@@ -1101,7 +1101,7 @@ else:
                     x=city_data_trend["date"], y=city_data_trend["rolling_avg_7day"],
                     mode="lines", name="7-Day Rolling Avg",
                     line=dict(color=ACCENT_COLOR, width=2.5, dash="dash"),
-                    hovertemplate="<b>%{x|%Y-%m-%d}</b><br>7-Day Avg AQI: %{y}<extra></extra>"
+                    hovertemplate="<b>%{{x|%Y-%m-%d}}</b><br>7-Day Avg AQI: %{{y}}<extra></extra>"
                 )
             )
             fig_trend_roll.update_layout(
@@ -1186,7 +1186,7 @@ else:
                 color_discrete_sequence=px.colors.qualitative.Vivid,
                 box=True, 
                 points="outliers",
-                labels={"index": "AQI Index", "month_name": "Month"},
+                labels={{"index": "AQI Index", "month_name": "Month"}},
                 hover_data=["date", "level"]
             )
             fig_violin.update_layout(
@@ -1207,7 +1207,7 @@ else:
 
             fig_heat_detail = px.imshow(
                 heatmap_pivot, 
-                labels=dict(x="Day of Month", y="Month", color="AQI"),
+                labels={{"x": "Day of Month", "y": "Month", "color": "AQI"}},
                 aspect="auto", 
                 color_continuous_scale="Inferno",
                 text_auto=".0f"
@@ -1219,7 +1219,7 @@ else:
                 plot_bgcolor=BACKGROUND_COLOR, 
                 font_color=TEXT_COLOR_DARK_THEME
             )
-            fig_heat_detail.update_traces(hovertemplate="<b>Month:</b> %{y}<br><b>Day:</b> %{x}<br><b>AQI:</b> %{z}<extra></extra>")
+            fig_heat_detail.update_traces(hovertemplate="<b>Month:</b> %{{y}}<br><b>Day:</b> %{{x}}<br><b>AQI:</b> %{{z}}<extra></extra>")
             st.plotly_chart(fig_heat_detail, use_container_width=True)
             
         with tab_health:
@@ -1231,18 +1231,18 @@ else:
             with health_col1:
                 st.markdown("###### 🚶‍♂️ Activity Recommendations")
                 st.markdown(f"""
-                <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}">
-                    <p style="font-size:1.1rem; margin-bottom:1rem;"><b>Current AQI: {current_aqi:.0f} ({current_level})</b></p>
-                    <p style="font-size:1.05rem; margin-bottom:1rem;">{health_msg}</p>
-                    <p style="font-size:0.95rem; color:{SUBTLE_TEXT_COLOR_DARK_THEME};">
-                        Based on latest data from {latest_data['date'].strftime('%Y-%m-%d')}
+                <div style="background:{{CARD_BACKGROUND_COLOR}}; border-radius:12px; padding:1.5rem; border:1px solid {{BORDER_COLOR}}">
+                    <p style="font-size:1.1rem; margin-bottom:1rem;"><b>Current AQI: {{current_aqi:.0f}} ({{current_level}})</b></p>
+                    <p style="font-size:1.05rem; margin-bottom:1rem;">{{health_msg}}</p>
+                    <p style="font-size:0.95rem; color:{{SUBTLE_TEXT_COLOR_DARK_THEME}};">
+                        Based on latest data from {{latest_data['date'].strftime('%Y-%m-%d')}}
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
                 
                 st.markdown("###### 📖 General Guidelines")
                 st.markdown(f"""
-                <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
+                <div style="background:{{CARD_BACKGROUND_COLOR}}; border-radius:12px; padding:1.5rem; border:1px solid {{BORDER_COLOR}}; margin-top:1.5rem;">
                     <ul style="padding-left:1.5rem;">
                         <li>Sensitive groups include children, elderly, and people with respiratory issues</li>
                         <li>Consider wearing N95 masks when AQI &gt; 200</li>
@@ -1254,14 +1254,14 @@ else:
             
             with health_col2:
                 st.markdown("###### 📊 Pollution Health Effects")
-                health_effects = {
+                health_effects = {{
                     "Good": "No health impacts expected",
                     "Satisfactory": "Minor discomfort to sensitive individuals",
                     "Moderate": "Breathing discomfort to people with lung disease",
                     "Poor": "Breathing discomfort to most people on prolonged exposure",
                     "Very Poor": "Respiratory illness on prolonged exposure",
                     "Severe": "Health impacts even on light physical activity"
-                }
+                }}
                 
                 # Re-use category_counts_df from above in this city-specific scope
                 category_counts_df = (
@@ -1286,7 +1286,7 @@ else:
                         orientation='h',
                         marker_color=CATEGORY_COLORS_DARK.get(level),
                         hoverinfo="text",
-                        hovertext=f"<b>{level}</b><br>{effect}<br>{days} days in {year}"
+                        hovertext=f"<b>{{level}}</b><br>{{effect}}<br>{{days}} days in {{year}}"
                     ))
                 
                 fig_health.update_layout(
@@ -1328,13 +1328,13 @@ if len(selected_cities) > 1:
                 x="date", 
                 y="index", 
                 color="city_label",
-                labels={"index": "AQI Index", "date": "Date", "city_label": "City"},
+                labels={{"index": "AQI Index", "date": "Date", "city_label": "City"}},
                 markers=True, 
                 line_shape="spline", 
                 color_discrete_sequence=px.colors.qualitative.Set2
             )
             fig_cmp.update_layout(
-                title_text=f"AQI Trends Comparison – {selected_month_name}, {year}",
+                title_text=f"AQI Trends Comparison – {{selected_month_name}}, {{year}}",
                 height=500, 
                 legend_title_text="City",
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
@@ -1364,9 +1364,9 @@ if len(selected_cities) > 1:
                     color = CATEGORY_COLORS_DARK["Severe"]
                     
                 st.markdown(f"""
-                <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1rem; margin-bottom:1rem; border:1px solid {BORDER_COLOR}">
-                    <div style="font-weight:600; font-size:1.1rem;">{row['city_label']}</div>
-                    <div style="font-size:1.8rem; font-weight:700; color:{color};">{aqi_val:.1f}</div>
+                <div style="background:{{CARD_BACKGROUND_COLOR}}; border-radius:12px; padding:1rem; margin-bottom:1rem; border:1px solid {{BORDER_COLOR}}">
+                    <div style="font-weight:600; font-size:1.1rem;">{{row['city_label']}}</div>
+                    <div style="font-size:1.8rem; font-weight:700; color:{{color}};">{{aqi_val:.1f}}</div>
                 </div>
                 """, unsafe_allow_html=True)
     else:
@@ -1401,8 +1401,8 @@ with poll_col1:
             x="year_label", 
             y="percentage", 
             color="pollutant",
-            title=f"Dominant Pollutants Over Years – {city_pollutant_A}",
-            labels={"percentage": "Percentage of Days (%)", "year_label": "Year", "pollutant": "Pollutant"},
+            title=f"Dominant Pollutants Over Years – {{city_pollutant_A}}",
+            labels={{"percentage": "Percentage of Days (%)", "year_label": "Year", "pollutant": "Pollutant"}},
             color_discrete_map=POLLUTANT_COLORS_DARK,
             barmode="stack"
         )
@@ -1414,13 +1414,13 @@ with poll_col1:
             plot_bgcolor=BACKGROUND_COLOR, 
             font_color=TEXT_COLOR_DARK_THEME
         )
-        fig_poll_A.update_traces(texttemplate="%{value:.1f}%", textposition="auto")
+        fig_poll_A.update_traces(texttemplate="%{{value:.1f}}%", textposition="auto")
         st.plotly_chart(fig_poll_A, use_container_width=True)
     else:
-        st.warning(f"No pollutant data for {city_pollutant_A} (Yearly Trend).")
+        st.warning(f"No pollutant data for {{city_pollutant_A}} (Yearly Trend).")
 
 with poll_col2:
-    st.markdown(f"#### ⛽ Dominant Pollutants ({selected_month_name}, {year})")
+    st.markdown(f"#### ⛽ Dominant Pollutants ({{selected_month_name}}, {{year}})")
     city_pollutant_B = st.selectbox(
         "Select City for Filtered Pollutant View:", unique_cities,
         key="pollutant_B_city_dark", 
@@ -1436,7 +1436,7 @@ with poll_col2:
             grouped_poll_B, 
             values="count", 
             names="pollutant",
-            title=f"Dominant Pollutants – {city_pollutant_B} ({selected_month_name}, {year})",
+            title=f"Dominant Pollutants – {{city_pollutant_B}} ({{selected_month_name}}, {{year}})",
             color="pollutant",
             color_discrete_map=POLLUTANT_COLORS_DARK,
             hole=0.4
@@ -1451,7 +1451,7 @@ with poll_col2:
         fig_poll_B.update_traces(textinfo="percent+label", textposition="inside")
         st.plotly_chart(fig_poll_B, use_container_width=True)
     else:
-        st.warning(f"No pollutant data for {city_pollutant_B} for the selected period.")
+        st.warning(f"No pollutant data for {{city_pollutant_B}} for the selected period.")
 
 # ========================================================
 # =======   AQI FORECAST (Enhanced)   ====================
@@ -1490,8 +1490,8 @@ with forecast_col1:
             min_date_forecast = forecast_df["date"].min()
             future_dates_list = [min_date_forecast + pd.Timedelta(days=int(i)) for i in future_X_range]
 
-            plot_df_obs = pd.DataFrame({"date": forecast_df["date"], "AQI": y})
-            plot_df_fcst = pd.DataFrame({"date": future_dates_list, "AQI": np.maximum(0, future_y_pred)})
+            plot_df_obs = pd.DataFrame({{"date": forecast_df["date"], "AQI": y}})
+            plot_df_fcst = pd.DataFrame({{"date": future_dates_list, "AQI": np.maximum(0, future_y_pred)}})
 
             fig_forecast = go.Figure()
             fig_forecast.add_trace(
@@ -1528,7 +1528,7 @@ with forecast_col1:
             )
 
             fig_forecast.update_layout(
-                title=f"AQI Forecast – {forecast_city_select}", 
+                title=f"AQI Forecast – {{forecast_city_select}}", 
                 yaxis_title="AQI Index", 
                 xaxis_title="Date", 
                 height=500,
@@ -1540,14 +1540,14 @@ with forecast_col1:
             )
             st.plotly_chart(fig_forecast, use_container_width=True)
         else:
-            st.warning(f"Not enough valid data points for {forecast_city_select} to forecast.")
+            st.warning(f"Not enough valid data points for {{forecast_city_select}} to forecast.")
     else:
-        st.warning(f"Need at least 15 data points for {forecast_city_select} for forecasting; found {len(forecast_src_data)}.")
+        st.warning(f"Need at least 15 data points for {{forecast_city_select}} for forecasting; found {{len(forecast_src_data)}}.")
 
 with forecast_col2:
     st.markdown("##### ℹ️ Forecast Info")
     st.markdown(f"""
-    <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
+    <div style="background:{{CARD_BACKGROUND_COLOR}}; border-radius:12px; padding:1.5rem; border:1px solid {{BORDER_COLOR}}; margin-top:1.5rem;">
         <p style="font-size:1.1rem; margin-bottom:1rem;"><b>Forecast Methodology</b></p>
         <p style="font-size:0.95rem; margin-bottom:1rem;">
             This forecast uses polynomial regression (degree=2) based on historical data to predict future AQI trends.
@@ -1558,7 +1558,7 @@ with forecast_col2:
             - Doesn't account for weather events<br>
             - Accuracy decreases beyond 15 days
         </p>
-        <p style="font-size:0.9rem; color:{SUBTLE_TEXT_COLOR_DARK_THEME}; margin-top:1.5rem;">
+        <p style="font-size:0.9rem; color:{{SUBTLE_TEXT_COLOR_DARK_THEME}}; margin-top:1.5rem;">
             For precise planning, consult official sources.
         </p>
     </div>
@@ -1573,7 +1573,7 @@ st.markdown('<div class="map-container">', unsafe_allow_html=True)
 map_col1, map_col2 = st.columns([3,1])
 
 with map_col1:
-    city_coords_data = {}
+    city_coords_data = {{}}
     coords_file_path = "lat_long.txt"  # Coordinates file
     scatter_map_rendered = False
 
@@ -1582,13 +1582,13 @@ with map_col1:
             with open(coords_file_path, "r", encoding="utf-8") as f:
                 file_content = f.read()
 
-            local_scope = {}
-            exec(file_content, {}, local_scope)
+            local_scope = {{}}
+            exec(file_content, {{}}, local_scope)
             if "city_coords" in local_scope and isinstance(local_scope["city_coords"], dict):
                 city_coords_data = local_scope["city_coords"]
     except Exception as e_exec:
-        st.error(f"Map Error: Error processing coordinates file '{coords_file_path}'. Scatter map cannot be displayed. Error: {e_exec}")
-        city_coords_data = {}
+        st.error(f"Map Error: Error processing coordinates file '{{coords_file_path}}'. Scatter map cannot be displayed. Error: {{e_exec}}")
+        city_coords_data = {{ }}
 
     if not df_period_filtered.empty:
         map_grouped_data = df_period_filtered.groupby("city").agg(
@@ -1607,7 +1607,7 @@ with map_col1:
                 if isinstance(coords_val, (list, tuple)) and len(coords_val) == 2:
                     try:
                         lat, lon = float(coords_val[0]), float(coords_val[1])
-                        latlong_map_df_list.append({'city': city_name_coord, 'lat': lat, 'lon': lon})
+                        latlong_map_df_list.append({{'city': city_name_coord, 'lat': lat, 'lon': lon}})
                     except (ValueError, TypeError):
                         pass
 
@@ -1618,17 +1618,17 @@ with map_col1:
                 if not map_merged_df.empty:
                     map_merged_df["AQI Category"] = map_merged_df["avg_aqi"].apply(
                         lambda val: next(
-                            (k for k, v_range in {
+                            (k for k, v_range in {{
                                 'Good': (0, 50), 'Satisfactory': (51, 100), 'Moderate': (101, 200),
                                 'Poor': (201, 300), 'Very Poor': (301, 400), 'Severe': (401, float('inf'))
-                            }.items() if v_range[0] <= val <= v_range[1]), "Unknown"
+                            }}.items() if v_range[0] <= val <= v_range[1]), "Unknown"
                         ) if pd.notna(val) else "Unknown"
                     )
                     
                     # Calculate scaled bubble size (smaller bubbles)
                     min_aqi = map_merged_df["avg_aqi"].min()
                     max_aqi = map_merged_df["avg_aqi"].max()
-                    size_range = 3, 9  # Smaller size range
+                    size_range = (3, 9)  # Smaller size range
                     
                     # Scale the size
                     map_merged_df["scaled_size"] = (
@@ -1648,34 +1648,30 @@ with map_col1:
                         custom_data=['city', 'avg_aqi', 'dominant_pollutant', 'AQI Category'],
                         text="city",
                         zoom=4.0, 
-                        center={"lat": 23.0, "lon": 82.5}
+                        center={{"lat": 23.0, "lon": 82.5}}
                     )
 
                     scatter_map_layout_args = get_custom_plotly_layout_args(
                         height=700,
-                        title_text=f"Average AQI Hotspots - {selected_month_name}, {year}"
+                        title_text=f"Average AQI Hotspots - {{selected_month_name}}, {{year}}"
                     )
                     scatter_map_layout_args['mapbox_style'] = "carto-darkmatter"
-                    scatter_map_layout_args['margin'] = {"r":10,"t":60,"l":10,"b":10}
+                    scatter_map_layout_args['margin'] = {{"r": 10, "t": 60, "l": 10, "b": 10}}
                     scatter_map_layout_args['legend']['y'] = 0.98
                     scatter_map_layout_args['legend']['x'] = 0.98
                     scatter_map_layout_args['legend']['xanchor'] = 'right'
 
-        fig_scatter_map.update_traces(
-            marker=dict(
-                sizemin=size_range[0],
-                opacity=0.85,
-                sizemode='diameter'
-            ),
-            hovertemplate=(
-                "<b style='font-size:1.1em;'>%{customdata[0]}</b><br>"
-                "Avg. AQI: %{customdata[1]:.1f} (%{customdata[3]})<br>"
-                "Dominant Pollutant: %{customdata[2]}<extra></extra>"
-            )
-        )
-        fig_scatter_map.update_layout(**scatter_map_layout_args)
-        st.plotly_chart(fig_scatter_map, use_container_width=True)
-        scatter_map_rendered = True
+                    fig_scatter_map.update_traces(
+                        marker=dict(sizemin=size_range[0], opacity=0.85, sizemode='diameter'),
+                        hovertemplate=(
+                            "<b style='font-size:1.1em;'>%{{customdata[0]}}</b><br>"
+                            "Avg. AQI: %{{customdata[1]:.1f}} (%{{customdata[3]}})<br>"
+                            "Dominant Pollutant: %{{customdata[2]}}<extra></extra>"
+                        )
+                    )
+                    fig_scatter_map.update_layout(**scatter_map_layout_args)
+                    st.plotly_chart(fig_scatter_map, use_container_width=True)
+                    scatter_map_rendered = True
 
         if not scatter_map_rendered:
             st.warning("Map data incomplete. Showing alternative visualization.")
@@ -1688,13 +1684,13 @@ with map_col1:
                     orientation='h',
                     color='avg_aqi', 
                     color_continuous_scale=px.colors.sequential.YlOrRd_r,
-                    labels={'avg_aqi': 'Average AQI', 'city': 'City'}
+                    labels={{'avg_aqi': 'Average AQI', 'city': 'City'}}
                 )
                 fallback_layout = get_custom_plotly_layout_args(
                     height=max(400, len(avg_aqi_cities_alt.tail(20)) * 25),
-                    title_text=f"Top Cities by Average AQI - {selected_month_name}, {year} (Map Fallback)"
+                    title_text=f"Top Cities by Average AQI - {{selected_month_name}}, {{year}} (Map Fallback)"
                 )
-                fallback_layout["yaxis"] = {'categoryorder':'total ascending'}
+                fallback_layout["yaxis"] = {{'categoryorder':'total ascending'}}
                 fig_alt_bar.update_layout(**fallback_layout)
                 st.plotly_chart(fig_alt_bar, use_container_width=True)
             else:
@@ -1705,7 +1701,7 @@ with map_col1:
 with map_col2:
     st.markdown("##### ℹ️ Map Guide")
     st.markdown(f"""
-    <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
+    <div style="background:{{CARD_BACKGROUND_COLOR}}; border-radius:12px; padding:1.5rem; border:1px solid {{BORDER_COLOR}}; margin-top:1.5rem;">
         <p style="font-size:1.1rem; margin-bottom:1rem;"><b>How to Use This Map</b></p>
         <ul style="padding-left:1.5rem; margin-bottom:1.5rem;">
             <li>Bubble size represents AQI severity</li>
@@ -1723,12 +1719,12 @@ with map_col2:
             st.markdown(f"""
             <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
                 <div style="width: 15px; height: 15px; background-color: {color}; border-radius: 3px; margin-right: 10px;"></div>
-                <span style="color: {TEXT_COLOR_DARK_THEME};">{category}</span>
+                <span>{category}</span>
             </div>
             """, unsafe_allow_html=True)
     
     st.markdown("</div>", unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)  # Close map-container
+st.markdown("</div>", unsafe_allow_html=True)  # close map-container
 
 # ========================================================
 # ========   DOWNLOAD FILTERED DATA (Enhanced)   =========
@@ -1742,196 +1738,212 @@ if export_data_list:
         combined_export_final.to_csv(csv_buffer_final, index=False)
         
         st.markdown(f"""
-        <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}">
-            <h3 style="color:{ACCENT_COLOR};">Export Filtered Data</h3>
+        <div style="background:{{CARD_BACKGROUND_COLOR}}; border-radius:12px; padding:1.5rem; border:1px solid {{BORDER_COLOR}}">
+            <h3 style="color:{{ACCENT_COLOR}};">Export Filtered Data</h3>
             <p style="margin-bottom:1.5rem;">Download the filtered dataset for further analysis</p>
         """, unsafe_allow_html=True)
         
         st.download_button(
             label="📤 Download Filtered City Data (CSV)",
             data=csv_buffer_final.getvalue(),
-            file_name=f"IITKGP_filtered_aqi_{year}_{selected_month_name.replace(' ', '')}.csv",
+            file_name=f"IITKGP_filtered_aqi_{{year}}_{{selected_month_name.replace(' ', '')}}.csv",
             mime="text/csv"
         )
         
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ======================
-# =====  FOOTER  =======
-# ======================
+# ========================================================
+# ====================== FOOTER ===========================
+# ========================================================
 st.markdown(f"""
 <style>
-@keyframes fadeIn {{
-  0%   {{ opacity: 0; }}
-  100% {{ opacity: 1; }}
-}}
+  /* ==============================
+     FOOTER: ANIMATIONS & STYLING
+     ============================== */
 
-@keyframes footerGradient {{
-  0%   {{ background-position: 0% 50%; }}
-  50%  {{ background-position: 100% 50%; }}
-  100% {{ background-position: 0% 50%; }}
-}}
+  @keyframes fadeIn {{
+    0%   {{ opacity: 0; }}
+    100% {{ opacity: 1; }}
+  }}
 
-@keyframes iconPulse {{
-  0%   {{ transform: scale(1); opacity: 1; }}
-  50%  {{ transform: scale(1.1); opacity: 0.8; }}
-  100% {{ transform: scale(1); opacity: 1; }}
-}}
+  @keyframes footerGradient {{
+    0%   {{ background-position: 0% 50%; }}
+    50%  {{ background-position: 100% 50%; }}
+    100% {{ background-position: 0% 50%; }}
+  }}
 
-.footer-container {{
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  margin-top: 4rem;
-  padding: 3rem 2rem;
-  border-radius: 16px;
-  background: linear-gradient(270deg, {BACKGROUND_COLOR}, #1a2a3a, {BACKGROUND_COLOR});
-  background-size: 300% 300%;
-  animation: footerGradient 8s ease infinite;
-  border: 1px solid #2a3a4a;
-}}
+  @keyframes iconPulse {{
+    0%   {{ transform: scale(1); opacity: 1; }}
+    50%  {{ transform: scale(1.1); opacity: 0.8; }}
+    100% {{ transform: scale(1); opacity: 1; }}
+  }}
 
-.footer-top-bar {{
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, {ACCENT_COLOR}, #00BFA5);
-  background-size: 200% 200%;
-  animation: footerGradient 5s ease infinite;
-}}
-
-.footer-container h3 {{
-  color: {ACCENT_COLOR};
-  font-size: 1.8rem;
-  margin-bottom: 1.2rem;
-  opacity: 0;
-  animation: fadeIn 1s ease forwards;
-}}
-
-.footer-info {{
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-  opacity: 0;
-  animation: fadeIn 1s ease 0.3s forwards;
-}}
-.footer-info p {{
-  margin: 0;
-}}
-.footer-info .label {{
-  font-size: 0.9rem;
-  color: #B0B0B0;
-}}
-.footer-info .value {{
-  font-weight: 500;
-  color: {TEXT_COLOR_DARK_THEME};
-}}
-
-.footer-links {{
-  text-align: center;
-  margin-bottom: 1.5rem;
-  opacity: 0;
-  animation: fadeIn 1s ease 0.6s forwards;
-}}
-.footer-links a {{
-  color: {ACCENT_COLOR};
-  text-decoration: none;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: color 0.3s ease;
-}}
-.footer-links a:hover {{
-  color: #00E5FF;
-}}
-.footer-links a:hover svg {{
-  animation: iconPulse 1.5s infinite;
-}}
-
-.footer-container .copyright {{
-  font-size: 0.85rem;
-  color: #707070;
-  text-align: center;
-  opacity: 0;
-  animation: fadeIn 1s ease 0.9s forwards;
-}}
-
-@media (max-width: 480px) {{
   .footer-container {{
-    padding: 2rem 1rem;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    margin-top: 4rem;
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    background: linear-gradient(270deg, {{BACKGROUND_COLOR}}, #1a2a3a, {{BACKGROUND_COLOR}});
+    background-size: 300% 300%;
+    animation: footerGradient 8s ease infinite;
+    border: 1px solid #2a3a4a;
   }}
+
+  .footer-top-bar {{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, {{ACCENT_COLOR}}, #00BFA5);
+    background-size: 200% 200%;
+    animation: footerGradient 5s ease infinite;
+  }}
+
   .footer-container h3 {{
-    font-size: 1.5rem;
+    color: {{ACCENT_COLOR}};
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
   }}
-}}
+
+  .footer-info {{
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.3s forwards;
+  }}
+  .footer-info p {{
+    margin: 0;
+  }}
+  .footer-info .label {{
+    font-size: 0.9rem;
+    color: #B0B0B0;
+  }}
+  .footer-info .value {{
+    font-weight: 500;
+    color: {{TEXT_COLOR_DARK_THEME}};
+  }}
+
+  .footer-links {{
+    text-align: center;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.6s forwards;
+  }}
+  .footer-links a {{
+    color: {{ACCENT_COLOR}};
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s ease;
+  }}
+  .footer-links a:hover {{
+    color: #00E5FF;
+  }}
+  .footer-links a:hover svg {{
+    animation: iconPulse 1.5s infinite;
+  }}
+
+  .footer-container .copyright {{
+    font-size: 0.85rem;
+    color: #707070;
+    text-align: center;
+    opacity: 0;
+    animation: fadeIn 1s ease 0.9s forwards;
+  }}
+
+  @media (max-width: 480px) {{
+    .footer-container {{
+      padding: 2rem 1rem;
+    }}
+    .footer-container h3 {{
+      font-size: 1.5rem;
+    }}
+  }}
 </style>
 
 <div class="footer-container">
-<div class="footer-top-bar"></div>
+  <!-- Animated top stripe -->
+  <div class="footer-top-bar"></div>
 
-<h3>IIT KGP Air Quality Dashboard</h3>
+  <!-- Footer Title -->
+  <h3>IIT KGP Air Quality Dashboard</h3>
 
-<div class="footer-info">
-  <div>
-    <p class="label">Data Source</p>
-    <p class="value">Central Pollution Control Board (CPCB)</p>
-  </div>
-  <div>
-    <p class="label">Principal Investigator</p>
-    <p class="value">
-      <a href="https://www.mustlab.in/faculty" target="_blank">
-        Prof. Arkopal Kishore Goswami
-      </a>,
-      Chairperson &amp; Associate Professor,<br>
-      RCGSIDM, IIT Kharagpur
-    </p>
-  </div>
-  <div>
-    <p class="label">Developed By</p>
-    <p class="value">
-      <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
-        Kapil Meena
-      </a>,
-      PhD Student,<br>
-      RCGSIDM, IIT Kharagpur
-    </p>
-  </div>
-  <div>
-    <p class="label">Last Updated</p>
-    <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
-  </div>
-</div>
+  <!-- Four-column info row -->
+  <div class="footer-info">
+    <!-- Data Source -->
+    <div>
+      <p class="label">Data Source</p>
+      <p class="value">Central Pollution Control Board (CPCB)</p>
+    </div>
 
-<div class="footer-links">
-  <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-         viewBox="0 0 24 24" fill="none" stroke="{ACCENT_COLOR}"
-         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 19c-5 1.5-5-2.5-7-3 
-               m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
-               c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
-               5.07 5.07 0 0 0 19.91 1 
-               S18.73.65 16 2.48 
-               a13.38 13.38 0 0 0-7 0 
-               C6.27.65 5.09 1 5.09 1 
-               A5.07 5.07 0 0 0 5 4.77 
-               a5.44 5.44 0 0 0-1.5 3.78 
-               c0 5.42 3.3 6.61 6.44 7 
-               A3.37 3.37 0 0 0 9 18.13V22">
-      </path>
-    </svg>
-    View on GitHub
-  </a>
-</div>
+    <!-- Principal Investigator -->
+    <div>
+      <p class="label">Principal Investigator</p>
+      <p class="value">
+        <a href="https://www.mustlab.in/faculty" target="_blank">
+          Prof. Arkopal Kishore Goswami
+        </a>,
+        Chairperson &amp; Associate Professor,<br>
+        RCGSIDM, IIT Kharagpur
+      </p>
+    </div>
 
-<p class="copyright">
-© {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
-</p>
+    <!-- Developed By -->
+    <div>
+      <p class="label">Developed By</p>
+      <p class="value">
+        <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
+          Kapil Meena
+        </a>,
+        PhD Student,<br>
+        RCGSIDM, IIT Kharagpur
+      </p>
+    </div>
+
+    <!-- Last Updated -->
+    <div>
+      <p class="label">Last Updated</p>
+      <p class="value">{{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}}</p>
+    </div>
+  </div>
+
+  <!-- “View on GitHub” link with pulsing icon -->
+  <div class="footer-links">
+    <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+           viewBox="0 0 24 24" fill="none" stroke="{{ACCENT_COLOR}}"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 19c-5 1.5-5-2.5-7-3 
+                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61 
+                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 
+                 5.07 5.07 0 0 0 19.91 1 
+                 S18.73.65 16 2.48 
+                 a13.38 13.38 0 0 0-7 0 
+                 C6.27.65 5.09 1 5.09 1 
+                 A5.07 5.07 0 0 0 5 4.77 
+                 a5.44 5.44 0 0 0-1.5 3.78 
+                 c0 5.42 3.3 6.61 6.44 7 
+                 A3.37 3.37 0 0 0 9 18.13V22">
+        </path>
+      </svg>
+      View on GitHub
+    </a>
+  </div>
+
+  <!-- Copyright line -->
+  <p class="copyright">
+    © {{pd.to_datetime("today").year}} IIT Kharagpur | For Research and Educational Purposes
+  </p>
 </div>
 """, unsafe_allow_html=True)
