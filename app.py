@@ -7,8 +7,8 @@ import plotly.graph_objects as go
 import plotly.io as pio
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
-from statsmodels.tsa.seasonal import seasonal_decompose
-#from io import StringIO
+#from statsmodels.tsa.seasonal import seasonal_decompose
+from io import StringIO
 
 # --- Global Theme & Style Setup ---
 pio.templates.default = "plotly_dark"
