@@ -45,10 +45,24 @@ HEALTH_RECOMMENDATIONS = {
 
 # ------------------- Page Config -------------------
 st.set_page_config(
-    layout="wide", 
-    page_title="IIT KGP AQI Dashboard", 
+    layout="wide",
+    page_title="IIT KGP AQI Dashboard",
     page_icon="🌬️",
     initial_sidebar_state="expanded"
+)
+
+# Force responsive viewport and dark mode
+st.markdown(
+    """
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html, body, #root, .block-container {
+            background-color: #121212 !important;
+            color: #EAEAEA !important;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 # ------------------- Custom CSS Styling (Dark Theme) -------------------
@@ -63,9 +77,14 @@ st.markdown(f"""
     
     body {{
         font-family: 'Inter', sans-serif;
-        background-color: {BACKGROUND_COLOR};
-        color: {TEXT_COLOR_DARK_THEME};
+        background-color: {BACKGROUND_COLOR} !important;
+        color: {TEXT_COLOR_DARK_THEME} !important;
         line-height: 1.6;
+    }}
+
+    /* Sidebar width increase */
+    section[data-testid="stSidebar"] {{
+        width: 300px !important;
     }}
 
     /* Main container styling */
@@ -340,6 +359,11 @@ st.markdown(f"""
         h2 {{
             font-size: 1.5rem;
         }}
+
+        /* Ensure dark background on mobile */
+        body, html {{
+            background-color: {BACKGROUND_COLOR} !important;
+        }}
     }}
     
     /* Custom badge styling */
@@ -521,9 +545,14 @@ with st.sidebar:
     st.info("Fetching real-time data from CPCB. Today's data available after 5:45 PM IST.", icon="ℹ️")
 
     unique_cities = sorted(df["city"].unique()) if "city" in df.columns else []
-    default_city_val = ["Delhi"] if "Delhi" in unique_cities else (unique_cities[0:1] if unique_cities else [])
+    # Default to Delhi
+    default_city_val = ["Delhi"] if "Delhi" in unique_cities else ([unique_cities[0]] if unique_cities else [])
     selected_cities = st.multiselect("🏙️ Select Cities", unique_cities, default=default_city_val,
                                     help="Select one or more cities for detailed analysis")
+
+    # If user clears selection, force Delhi
+    if not selected_cities:
+        selected_cities = ["Delhi"]
 
     years = sorted(df["date"].dt.year.unique())
     default_year_val = max(years) if years else None
@@ -693,369 +722,398 @@ st.markdown("---")
 # ========================================================
 export_data_list = []
 
+# Ensure Delhi is always shown if nothing else selected
 if not selected_cities:
-    st.info("✨ Select one or more cities from the sidebar to dive into detailed analysis.")
-else:
-    for city in selected_cities:
-        st.markdown(f"## 🏙️ {city.upper()} DEEP DIVE – {year}")
+    selected_cities = ["Delhi"]
+
+for city in selected_cities:
+    st.markdown(f"## 🏙️ {city.upper()} DEEP DIVE – {year}")
+    
+    # Health status card
+    city_data_full = df_period_filtered[df_period_filtered["city"] == city].copy()
+    
+    if city_data_full.empty:
+        with st.container():
+            st.warning(f"😔 No data available for {city} for {selected_month_name}, {year}. Try different filter settings.")
+        continue
         
-        # Health status card
-        city_data_full = df_period_filtered[df_period_filtered["city"] == city].copy()
+    # Calculate current AQI status
+    latest_data = city_data_full.sort_values("date", ascending=False).iloc[0]
+    current_aqi = latest_data["index"]
+    current_level = latest_data["level"]
+    current_pollutant = latest_data["pollutant"]
+    
+    # Health recommendation
+    health_msg = HEALTH_RECOMMENDATIONS.get(current_level, "No specific health recommendations available")
+    
+    # Status card
+    status_col1, status_col2, status_col3 = st.columns([1,2,1])
+    with status_col1:
+        st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}'>", unsafe_allow_html=True)
+        st.markdown("🔴 Live Status", unsafe_allow_html=True)
+        st.markdown(f"<div style='font-size:2.5rem; font-weight:700; color:{CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')};'>{current_aqi:.0f}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='font-size:1.1rem;'>{current_level}</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    with status_col2:
+        st.markdown(f"<div style='padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}; height:100%;'>", unsafe_allow_html=True)
+        st.markdown("#### Health Recommendations")
+        st.markdown(f"<div class='health-card' style='border-left-color: {CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')};'>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size:1.1rem;'>{health_msg}</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    with status_col3:
+        st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}; height:100%;'>", unsafe_allow_html=True)
+        st.markdown("#### Dominant Pollutant")
+        st.markdown(f"<div style='font-size:2rem; color:{POLLUTANT_COLORS_DARK.get(current_pollutant, '#FFFFFF')}; margin:1rem 0;'>{current_pollutant}</div>", unsafe_allow_html=True)
+        st.markdown(f"<p style='font-size:0.9rem;'>Primary air quality concern</p>", unsafe_allow_html=True)
+        st.markdown("</div>", unsafe_allow_html=True)
+    
+    city_data_full["day_of_year"] = city_data_full["date"].dt.dayofyear
+    city_data_full["month_name"] = city_data_full["date"].dt.month_name()
+    city_data_full["day_of_month"] = city_data_full["date"].dt.day
+    export_data_list.append(city_data_full)
+
+    tab_trend, tab_dist, tab_heatmap_detail, tab_health = st.tabs(["📊 TRENDS & CALENDAR", "📈 DISTRIBUTIONS", "🗓️ DETAILED HEATMAP", "❤️ HEALTH ANALYSIS"])
+
+    with tab_trend:
+        st.markdown("##### 📅 Daily AQI Calendar")
+        # FIXED CALENDAR HEATMAP (No duplicate months)
+        start_date = pd.to_datetime(f"{year}-01-01")
+        end_date = pd.to_datetime(f"{year}-12-31")
+        full_year_dates = pd.date_range(start_date, end_date, freq="D")
+
+        calendar_df = pd.DataFrame({"date": full_year_dates})
+        calendar_df["week"] = calendar_df["date"].dt.isocalendar().week
+        calendar_df["day_of_week"] = calendar_df["date"].dt.dayofweek
         
-        if city_data_full.empty:
-            with st.container():
-                st.warning(f"😔 No data available for {city} for {selected_month_name}, {year}. Try different filter settings.")
-            continue
-            
-        # Calculate current AQI status
-        latest_data = city_data_full.sort_values("date", ascending=False).iloc[0]
-        current_aqi = latest_data["index"]
-        current_level = latest_data["level"]
-        current_pollutant = latest_data["pollutant"]
+        # Handle year transition properly
+        calendar_df.loc[(calendar_df["date"].dt.month == 1) & (calendar_df["week"] > 50), "week"] = 0
+        calendar_df.loc[(calendar_df["date"].dt.month == 12) & (calendar_df["week"] == 1), "week"] = calendar_df["week"].max() + 1
+
+        merged_cal_df = pd.merge(
+            calendar_df,
+            city_data_full[["date", "index", "level"]],
+            on="date",
+            how="left"
+        )
+        merged_cal_df["level"] = merged_cal_df["level"].fillna("Unknown")
+        merged_cal_df["aqi_text"] = merged_cal_df["index"].apply(lambda x: f"{x:.1f}" if pd.notna(x) else "N/A")
+
+        day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         
-        # Health recommendation
-        health_msg = HEALTH_RECOMMENDATIONS.get(current_level, "No specific health recommendations available")
-        
-        # Status card
-        status_col1, status_col2, status_col3 = st.columns([1,2,1])
-        with status_col1:
-            st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}'>", unsafe_allow_html=True)
-            st.markdown("🔴 Live Status", unsafe_allow_html=True)
-            st.markdown(f"<div style='font-size:2.5rem; font-weight:700; color:{CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')};'>{current_aqi:.0f}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div style='font-size:1.1rem;'>{current_level}</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-        
-        with status_col2:
-            st.markdown(f"<div style='padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}; height:100%;'>", unsafe_allow_html=True)
-            st.markdown("#### Health Recommendations")
-            st.markdown(f"<div class='health-card' style='border-left-color: {CATEGORY_COLORS_DARK.get(current_level, '#FFFFFF')};'>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-size:1.1rem;'>{health_msg}</p>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-        
-        with status_col3:
-            st.markdown(f"<div style='text-align:center; padding:1rem; border-radius:12px; background:{CARD_BACKGROUND_COLOR}; border:1px solid {BORDER_COLOR}; height:100%;'>", unsafe_allow_html=True)
-            st.markdown("#### Dominant Pollutant")
-            st.markdown(f"<div style='font-size:2rem; color:{POLLUTANT_COLORS_DARK.get(current_pollutant, '#FFFFFF')}; margin:1rem 0;'>{current_pollutant}</div>", unsafe_allow_html=True)
-            st.markdown(f"<p style='font-size:0.9rem;'>Primary air quality concern</p>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-        
-        city_data_full["day_of_year"] = city_data_full["date"].dt.dayofyear
-        city_data_full["month_name"] = city_data_full["date"].dt.month_name()
-        city_data_full["day_of_month"] = city_data_full["date"].dt.day
-        export_data_list.append(city_data_full)
+        # Get unique weeks for month annotations (fixed)
+        week_start_dates = merged_cal_df.groupby("week")["date"].min().reset_index()
+        week_start_dates["month"] = week_start_dates["date"].dt.strftime("%b")
+        month_names = week_start_dates.drop_duplicates("month", keep="first").set_index("week")["month"]
 
-        tab_trend, tab_dist, tab_heatmap_detail, tab_health = st.tabs(["📊 TRENDS & CALENDAR", "📈 DISTRIBUTIONS", "🗓️ DETAILED HEATMAP", "❤️ HEALTH ANALYSIS"])
-
-        with tab_trend:
-            st.markdown("##### 📅 Daily AQI Calendar")
-            # FIXED CALENDAR HEATMAP (No duplicate months)
-            start_date = pd.to_datetime(f"{year}-01-01")
-            end_date = pd.to_datetime(f"{year}-12-31")
-            full_year_dates = pd.date_range(start_date, end_date, freq="D")
-
-            calendar_df = pd.DataFrame({"date": full_year_dates})
-            calendar_df["week"] = calendar_df["date"].dt.isocalendar().week
-            calendar_df["day_of_week"] = calendar_df["date"].dt.dayofweek
-            
-            # Handle year transition properly
-            calendar_df.loc[(calendar_df["date"].dt.month == 1) & (calendar_df["week"] > 50), "week"] = 0
-            calendar_df.loc[(calendar_df["date"].dt.month == 12) & (calendar_df["week"] == 1), "week"] = calendar_df["week"].max() + 1
-
-            merged_cal_df = pd.merge(
-                calendar_df,
-                city_data_full[["date", "index", "level"]],
-                on="date",
-                how="left"
-            )
-            merged_cal_df["level"] = merged_cal_df["level"].fillna("Unknown")
-            merged_cal_df["aqi_text"] = merged_cal_df["index"].apply(lambda x: f"{x:.1f}" if pd.notna(x) else "N/A")
-
-            day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-            
-            # Get unique weeks for month annotations (fixed)
-            week_start_dates = merged_cal_df.groupby("week")["date"].min().reset_index()
-            week_start_dates["month"] = week_start_dates["date"].dt.strftime("%b")
-            month_names = week_start_dates.drop_duplicates("month", keep="first").set_index("week")["month"]
-
-            fig_cal = go.Figure(
-                data=go.Heatmap(
-                    x=merged_cal_df["week"],
-                    y=merged_cal_df["day_of_week"],
-                    z=merged_cal_df["level"].map({k: i for i, k in enumerate(CATEGORY_COLORS_DARK.keys())}),
-                    customdata=pd.DataFrame(
-                        {
-                            "date": merged_cal_df["date"].dt.strftime("%Y-%m-%d"),
-                            "level": merged_cal_df["level"],
-                            "aqi": merged_cal_df["aqi_text"]
-                        }
-                    ),
-                    hovertemplate="<b>%{customdata[0]}</b><br>AQI: %{customdata[2]} (%{customdata[1]})<extra></extra>",
-                    colorscale=[[i / (len(CATEGORY_COLORS_DARK) - 1), color] for i, color in enumerate(CATEGORY_COLORS_DARK.values())],
-                    showscale=False,
-                    xgap=2, ygap=2
-                )
-            )
-
-            # Add month annotations
-            annotations = []
-            for week_num, month_name in month_names.items():
-                annotations.append(
-                    go.layout.Annotation(
-                        text=month_name,
-                        align="center",
-                        showarrow=False,
-                        xref="x", yref="y",
-                        x=week_num, y=7,
-                        font=dict(color=SUBTLE_TEXT_COLOR_DARK_THEME, size=12)
-                    )
-                )
-
-            # Add legend manually
-            for i, (level, color) in enumerate(CATEGORY_COLORS_DARK.items()):
-                annotations.append(
-                    go.layout.Annotation(
-                        text=f"█ <span style='color:{TEXT_COLOR_DARK_THEME};'>{level}</span>",
-                        align="left",
-                        showarrow=False,
-                        xref="paper", yref="paper",
-                        x=0.05 + 0.12 * (i % 7),
-                        y=-0.1 - 0.1 * (i // 7),
-                        xanchor="left", yanchor="top",
-                        font=dict(color=color, size=12)
-                    )
-                )
-
-            fig_cal.update_layout(
-                yaxis=dict(
-                    tickmode="array",
-                    tickvals=list(range(7)),
-                    ticktext=day_labels,
-                    showgrid=False, 
-                    zeroline=False
+        fig_cal = go.Figure(
+            data=go.Heatmap(
+                x=merged_cal_df["week"],
+                y=merged_cal_df["day_of_week"],
+                z=merged_cal_df["level"].map({k: i for i, k in enumerate(CATEGORY_COLORS_DARK.keys())}),
+                customdata=pd.DataFrame(
+                    {
+                        "date": merged_cal_df["date"].dt.strftime("%Y-%m-%d"),
+                        "level": merged_cal_df["level"],
+                        "aqi": merged_cal_df["aqi_text"]
+                    }
                 ),
-                xaxis=dict(showgrid=False, zeroline=False, tickmode="array", ticktext=[], tickvals=[]),
-                height=320,
-                margin=dict(t=50, b=100, l=40, r=40),
-                plot_bgcolor=CARD_BACKGROUND_COLOR,
-                paper_bgcolor=CARD_BACKGROUND_COLOR,
-                font_color=TEXT_COLOR_DARK_THEME,
-                annotations=annotations,
-                showlegend=False
+                hovertemplate="<b>%{customdata[0]}</b><br>AQI: %{customdata[2]} (%{customdata[1]})<extra></extra>",
+                colorscale=[[i / (len(CATEGORY_COLORS_DARK) - 1), color] for i, color in enumerate(CATEGORY_COLORS_DARK.values())],
+                showscale=False,
+                xgap=2, ygap=2
             )
-            st.plotly_chart(fig_cal, use_container_width=True)
+        )
 
-            st.markdown("##### 📈 AQI Trend & 7-Day Rolling Average")
-            city_data_trend = city_data_full.sort_values("date").copy()
-            city_data_trend["rolling_avg_7day"] = city_data_trend["index"].rolling(window=7, center=True, min_periods=1).mean().round(2)
-
-            fig_trend_roll = go.Figure()
-            fig_trend_roll.add_trace(
-                go.Scatter(
-                    x=city_data_trend["date"], y=city_data_trend["index"],
-                    mode="lines+markers", name="Daily AQI",
-                    marker=dict(size=4, opacity=0.7, color=SUBTLE_TEXT_COLOR_DARK_THEME),
-                    line=dict(width=1.5, color=SUBTLE_TEXT_COLOR_DARK_THEME),
-                    customdata=city_data_trend[["level"]],
-                    hovertemplate="<b>%{x|%Y-%m-%d}</b><br>AQI: %{y}<br>Category: %{customdata[0]}<extra></extra>"
+        # Add month annotations
+        annotations = []
+        for week_num, month_name in month_names.items():
+            annotations.append(
+                go.layout.Annotation(
+                    text=month_name,
+                    align="center",
+                    showarrow=False,
+                    xref="x", yref="y",
+                    x=week_num, y=7,
+                    font=dict(color=SUBTLE_TEXT_COLOR_DARK_THEME, size=12)
                 )
             )
-            fig_trend_roll.add_trace(
-                go.Scatter(
-                    x=city_data_trend["date"], y=city_data_trend["rolling_avg_7day"],
-                    mode="lines", name="7-Day Rolling Avg",
-                    line=dict(color=ACCENT_COLOR, width=2.5, dash="dash"),
-                    hovertemplate="<b>%{x|%Y-%m-%d}</b><br>7-Day Avg AQI: %{y}<extra></extra>"
+
+        # Add legend manually
+        for i, (level, color) in enumerate(CATEGORY_COLORS_DARK.items()):
+            annotations.append(
+                go.layout.Annotation(
+                    text=f"█ <span style='color:{TEXT_COLOR_DARK_THEME};'>{level}</span>",
+                    align="left",
+                    showarrow=False,
+                    xref="paper", yref="paper",
+                    x=0.05 + 0.12 * (i % 7),
+                    y=-0.1 - 0.1 * (i // 7),
+                    xanchor="left", yanchor="top",
+                    font=dict(color=color, size=12)
                 )
             )
-            fig_trend_roll.update_layout(
-                yaxis_title="AQI Index", 
-                xaxis_title="Date", 
-                height=400,
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                hovermode="x unified", 
+
+        fig_cal.update_layout(
+            yaxis=dict(
+                tickmode="array",
+                tickvals=list(range(7)),
+                ticktext=day_labels,
+                showgrid=False, 
+                zeroline=False
+            ),
+            xaxis=dict(showgrid=False, zeroline=False, tickmode="array", ticktext=[], tickvals=[]),
+            height=320,
+            margin=dict(t=50, b=100, l=40, r=40),
+            plot_bgcolor=CARD_BACKGROUND_COLOR,
+            paper_bgcolor=CARD_BACKGROUND_COLOR,
+            font_color=TEXT_COLOR_DARK_THEME,
+            annotations=annotations,
+            showlegend=False
+        )
+        st.plotly_chart(fig_cal, use_container_width=True)
+
+        st.markdown("##### 📈 AQI Trend & Rolling Forecast")
+        city_data_trend = city_data_full.sort_values("date").copy()
+        city_data_trend["rolling_avg_7day"] = city_data_trend["index"].rolling(window=7, center=True, min_periods=1).mean().round(2)
+
+        # Create rolling-mean-based flat forecast for next 7 days
+        if len(city_data_trend) >= 7:
+            last_7_avg = city_data_trend["rolling_avg_7day"].iloc[-1]
+            forecast_days = 7
+            last_date = city_data_trend["date"].max()
+            future_dates = [last_date + pd.Timedelta(days=i) for i in range(1, forecast_days + 1)]
+            forecast_values = [last_7_avg] * forecast_days
+        else:
+            future_dates = []
+            forecast_values = []
+
+        fig_trend_roll = go.Figure()
+        fig_trend_roll.add_trace(
+            go.Scatter(
+                x=city_data_trend["date"], y=city_data_trend["index"],
+                mode="lines+markers", name="Daily AQI",
+                marker=dict(size=4, opacity=0.7, color=SUBTLE_TEXT_COLOR_DARK_THEME),
+                line=dict(width=1.5, color=SUBTLE_TEXT_COLOR_DARK_THEME),
+                customdata=city_data_trend[["level"]],
+                hovertemplate="<b>%{x|%Y-%m-%d}</b><br>AQI: %{y}<br>Category: %{customdata[0]}<extra></extra>"
+            )
+        )
+        fig_trend_roll.add_trace(
+            go.Scatter(
+                x=city_data_trend["date"], y=city_data_trend["rolling_avg_7day"],
+                mode="lines", name="7-Day Rolling Avg",
+                line=dict(color=ACCENT_COLOR, width=2.5, dash="dash"),
+                hovertemplate="<b>%{x|%Y-%m-%d}</b><br>7-Day Avg AQI: %{y}<extra></extra>"
+            )
+        )
+        if future_dates:
+            fig_trend_roll.add_trace(
+                go.Scatter(
+                    x=future_dates, y=forecast_values,
+                    mode="lines", name="7-Day Forecast",
+                    line=dict(color=HIGHLIGHT_COLOR, width=2, dash="dot"),
+                    hovertemplate="<b>%{x|%Y-%m-%d}</b><br>Forecast AQI: %{y}<extra></extra>"
+                )
+            )
+        fig_trend_roll.update_layout(
+            yaxis_title="AQI Index",
+            xaxis_title="Date",
+            height=400,
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            hovermode="x unified",
+            paper_bgcolor=CARD_BACKGROUND_COLOR,
+            plot_bgcolor=BACKGROUND_COLOR,
+            font_color=TEXT_COLOR_DARK_THEME
+        )
+        st.plotly_chart(fig_trend_roll, use_container_width=True)
+
+    with tab_dist:
+        col_bar_dist, col_sun_dist = st.columns([2, 1])
+        with col_bar_dist:
+            st.markdown("##### 📊 AQI Category Distribution")
+            category_counts_df = (
+                city_data_full["level"]
+                .value_counts()
+                .reindex(CATEGORY_COLORS_DARK.keys(), fill_value=0)
+                .reset_index()
+            )
+            category_counts_df.columns = ["AQI Category", "Number of Days"]
+            
+            fig_dist_bar = px.bar(
+                category_counts_df, 
+                x="AQI Category", 
+                y="Number of Days", 
+                color="AQI Category",
+                color_discrete_map=CATEGORY_COLORS_DARK, 
+                text_auto=True
+            )
+            fig_dist_bar.update_layout(
+                height=450, 
+                xaxis_title=None, 
+                yaxis_title="Number of Days",
                 paper_bgcolor=CARD_BACKGROUND_COLOR, 
-                plot_bgcolor=BACKGROUND_COLOR,
+                plot_bgcolor=BACKGROUND_COLOR, 
                 font_color=TEXT_COLOR_DARK_THEME
             )
-            st.plotly_chart(fig_trend_roll, use_container_width=True)
+            fig_dist_bar.update_traces(
+                textfont_size=12, 
+                textangle=0, 
+                textposition="outside", 
+                cliponaxis=False,
+                marker_line_width=0
+            )
+            st.plotly_chart(fig_dist_bar, use_container_width=True)
 
-        with tab_dist:
-            col_bar_dist, col_sun_dist = st.columns([2, 1])
-            with col_bar_dist:
-                st.markdown("##### 📊 AQI Category Distribution")
-                category_counts_df = (
-                    city_data_full["level"]
-                    .value_counts()
-                    .reindex(CATEGORY_COLORS_DARK.keys(), fill_value=0)
-                    .reset_index()
-                )
-                category_counts_df.columns = ["AQI Category", "Number of Days"]
-                
-                fig_dist_bar = px.bar(
+        with col_sun_dist:
+            st.markdown("##### ☀️ Category Proportions")
+            if category_counts_df["Number of Days"].sum() > 0:
+                fig_sunburst = px.sunburst(
                     category_counts_df, 
-                    x="AQI Category", 
-                    y="Number of Days", 
-                    color="AQI Category",
-                    color_discrete_map=CATEGORY_COLORS_DARK, 
-                    text_auto=True
+                    path=["AQI Category"], 
+                    values="Number of Days",
+                    color="AQI Category", 
+                    color_discrete_map=CATEGORY_COLORS_DARK,
                 )
-                fig_dist_bar.update_layout(
+                fig_sunburst.update_layout(
                     height=450, 
-                    xaxis_title=None, 
-                    yaxis_title="Number of Days",
+                    margin=dict(t=20, l=20, r=20, b=20),
                     paper_bgcolor=CARD_BACKGROUND_COLOR, 
                     plot_bgcolor=BACKGROUND_COLOR, 
                     font_color=TEXT_COLOR_DARK_THEME
                 )
-                fig_dist_bar.update_traces(
-                    textfont_size=12, 
-                    textangle=0, 
-                    textposition="outside", 
-                    cliponaxis=False,
-                    marker_line_width=0
-                )
-                st.plotly_chart(fig_dist_bar, use_container_width=True)
+                st.plotly_chart(fig_sunburst, use_container_width=True)
+            else:
+                st.caption("No data for sunburst chart.")
 
-            with col_sun_dist:
-                st.markdown("##### ☀️ Category Proportions")
-                if category_counts_df["Number of Days"].sum() > 0:
-                    fig_sunburst = px.sunburst(
-                        category_counts_df, 
-                        path=["AQI Category"], 
-                        values="Number of Days",
-                        color="AQI Category", 
-                        color_discrete_map=CATEGORY_COLORS_DARK,
-                    )
-                    fig_sunburst.update_layout(
-                        height=450, 
-                        margin=dict(t=20, l=20, r=20, b=20),
-                        paper_bgcolor=CARD_BACKGROUND_COLOR, 
-                        plot_bgcolor=BACKGROUND_COLOR, 
-                        font_color=TEXT_COLOR_DARK_THEME
-                    )
-                    st.plotly_chart(fig_sunburst, use_container_width=True)
+        st.markdown("##### 🎻 Monthly AQI Distribution")
+        month_order_cat = list(months_map_dict.values())
+        city_data_full["month_name"] = pd.Categorical(city_data_full["month_name"], categories=month_order_cat, ordered=True)
+
+        fig_violin = px.violin(
+            city_data_full.sort_values("month_name"),
+            x="month_name", 
+            y="index", 
+            color="month_name", 
+            color_discrete_sequence=px.colors.qualitative.Vivid,
+            box=True, 
+            points="outliers",
+            labels={"index": "AQI Index", "month_name": "Month"},
+            hover_data=["date", "level"]
+        )
+        fig_violin.update_layout(
+            height=500, 
+            xaxis_title=None, 
+            showlegend=False,
+            paper_bgcolor=CARD_BACKGROUND_COLOR, 
+            plot_bgcolor=BACKGROUND_COLOR, 
+            font_color=TEXT_COLOR_DARK_THEME
+        )
+        fig_violin.update_traces(meanline_visible=True)
+        st.plotly_chart(fig_violin, use_container_width=True)
+
+    with tab_heatmap_detail:
+        st.markdown("##### 🔥 AQI Heatmap (Month vs. Day)")
+        heatmap_pivot = city_data_full.pivot_table(index="month_name", columns="day_of_month", values="index", observed=False)
+        heatmap_pivot = heatmap_pivot.reindex(month_order_cat)
+
+        fig_heat_detail = px.imshow(
+            heatmap_pivot, 
+            labels=dict(x="Day of Month", y="Month", color="AQI"),
+            aspect="auto", 
+            color_continuous_scale="Inferno",
+            text_auto=".0f"
+        )
+        fig_heat_detail.update_layout(
+            height=550, 
+            xaxis_side="top",
+            paper_bgcolor=CARD_BACKGROUND_COLOR, 
+            plot_bgcolor=BACKGROUND_COLOR, 
+            font_color=TEXT_COLOR_DARK_THEME
+        )
+        fig_heat_detail.update_traces(hovertemplate="<b>Month:</b> %{y}<br><b>Day:</b> %{x}<br><b>AQI:</b> %{z}<extra></extra>")
+        st.plotly_chart(fig_heat_detail, use_container_width=True)
+        
+    with tab_health:
+        st.markdown("##### ❤️ Health Impact Analysis")
+        
+        # Health impact by AQI category
+        health_col1, health_col2 = st.columns(2)
+        
+        with health_col1:
+            st.markdown("###### 🚶‍♂️ Activity Recommendations")
+            st.markdown(f"""
+            <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}">
+                <p style="font-size:1.1rem; margin-bottom:1rem;"><b>Current AQI: {current_aqi:.0f} ({current_level})</b></p>
+                <p style="font-size:1.05rem; margin-bottom:1rem;">{health_msg}</p>
+                <p style="font-size:0.95rem; color:{SUBTLE_TEXT_COLOR_DARK_THEME};">
+                    Based on latest data from {latest_data['date'].strftime('%Y-%m-%d')}
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("###### 📖 General Guidelines")
+            st.markdown(f"""
+            <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
+                <ul style="padding-left:1.5rem;">
+                    <li>Sensitive groups include children, elderly, and people with respiratory issues</li>
+                    <li>Consider wearing N95 masks when AQI &gt; 200</li>
+                    <li>Keep windows closed during high pollution periods</li>
+                    <li>Use air purifiers indoors when AQI &gt; 150</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with health_col2:
+            st.markdown("###### 📊 Pollution Health Effects")
+            health_effects = {
+                "Good": "No health impacts expected",
+                "Satisfactory": "Minor discomfort to sensitive individuals",
+                "Moderate": "Breathing discomfort to people with lung disease",
+                "Poor": "Breathing discomfort to most people on prolonged exposure",
+                "Very Poor": "Respiratory illness on prolonged exposure",
+                "Severe": "Health impacts even on light physical activity"
+            }
+            
+            category_counts_df = (
+                city_data_full["level"]
+                .value_counts()
+                .reindex(CATEGORY_COLORS_DARK.keys(), fill_value=0)
+                .reset_index()
+            )
+            category_counts_df.columns = ["AQI Category", "Number of Days"]
+
+            fig_health = go.Figure()
+            for level, effect in health_effects.items():
+                if level in category_counts_df["AQI Category"].values:
+                    days = category_counts_df[category_counts_df["AQI Category"] == level]["Number of Days"].values[0]
                 else:
-                    st.caption("No data for sunburst chart.")
-
-            st.markdown("##### 🎻 Monthly AQI Distribution")
-            month_order_cat = list(months_map_dict.values())
-            city_data_full["month_name"] = pd.Categorical(city_data_full["month_name"], categories=month_order_cat, ordered=True)
-
-            fig_violin = px.violin(
-                city_data_full.sort_values("month_name"),
-                x="month_name", 
-                y="index", 
-                color="month_name", 
-                color_discrete_sequence=px.colors.qualitative.Vivid,
-                box=True, 
-                points="outliers",
-                labels={"index": "AQI Index", "month_name": "Month"},
-                hover_data=["date", "level"]
-            )
-            fig_violin.update_layout(
-                height=500, 
-                xaxis_title=None, 
-                showlegend=False,
-                paper_bgcolor=CARD_BACKGROUND_COLOR, 
-                plot_bgcolor=BACKGROUND_COLOR, 
-                font_color=TEXT_COLOR_DARK_THEME
-            )
-            fig_violin.update_traces(meanline_visible=True)
-            st.plotly_chart(fig_violin, use_container_width=True)
-
-        with tab_heatmap_detail:
-            st.markdown("##### 🔥 AQI Heatmap (Month vs. Day)")
-            heatmap_pivot = city_data_full.pivot_table(index="month_name", columns="day_of_month", values="index", observed=False)
-            heatmap_pivot = heatmap_pivot.reindex(month_order_cat)
-
-            fig_heat_detail = px.imshow(
-                heatmap_pivot, 
-                labels=dict(x="Day of Month", y="Month", color="AQI"),
-                aspect="auto", 
-                color_continuous_scale="Inferno",
-                text_auto=".0f"
-            )
-            fig_heat_detail.update_layout(
-                height=550, 
-                xaxis_side="top",
-                paper_bgcolor=CARD_BACKGROUND_COLOR, 
-                plot_bgcolor=BACKGROUND_COLOR, 
-                font_color=TEXT_COLOR_DARK_THEME
-            )
-            fig_heat_detail.update_traces(hovertemplate="<b>Month:</b> %{y}<br><b>Day:</b> %{x}<br><b>AQI:</b> %{z}<extra></extra>")
-            st.plotly_chart(fig_heat_detail, use_container_width=True)
+                    days = 0
+                    
+                fig_health.add_trace(go.Bar(
+                    y=[level],
+                    x=[days],
+                    name=level,
+                    orientation='h',
+                    marker_color=CATEGORY_COLORS_DARK.get(level),
+                    hoverinfo="text",
+                    hovertext=f"<b>{level}</b><br>{effect}<br>{days} days in {year}"
+                ))
             
-        with tab_health:
-            st.markdown("##### ❤️ Health Impact Analysis")
-            
-            # Health impact by AQI category
-            health_col1, health_col2 = st.columns(2)
-            
-            with health_col1:
-                st.markdown("###### 🚶‍♂️ Activity Recommendations")
-                st.markdown(f"""
-                <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}">
-                    <p style="font-size:1.1rem; margin-bottom:1rem;"><b>Current AQI: {current_aqi:.0f} ({current_level})</b></p>
-                    <p style="font-size:1.05rem; margin-bottom:1rem;">{health_msg}</p>
-                    <p style="font-size:0.95rem; color:{SUBTLE_TEXT_COLOR_DARK_THEME};">
-                        Based on latest data from {latest_data['date'].strftime('%Y-%m-%d')}
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                st.markdown("###### 📖 General Guidelines")
-                st.markdown(f"""
-                <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
-                    <ul style="padding-left:1.5rem;">
-                        <li>Sensitive groups include children, elderly, and people with respiratory issues</li>
-                        <li>Consider wearing N95 masks when AQI &gt; 200</li>
-                        <li>Keep windows closed during high pollution periods</li>
-                        <li>Use air purifiers indoors when AQI &gt; 150</li>
-                    </ul>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with health_col2:
-                st.markdown("###### 📊 Pollution Health Effects")
-                health_effects = {
-                    "Good": "No health impacts expected",
-                    "Satisfactory": "Minor discomfort to sensitive individuals",
-                    "Moderate": "Breathing discomfort to people with lung disease",
-                    "Poor": "Breathing discomfort to most people on prolonged exposure",
-                    "Very Poor": "Respiratory illness on prolonged exposure",
-                    "Severe": "Health impacts even on light physical activity"
-                }
-                
-                fig_health = go.Figure()
-                for level, effect in health_effects.items():
-                    if level in category_counts_df["AQI Category"].values:
-                        days = category_counts_df[category_counts_df["AQI Category"] == level]["Number of Days"].values[0]
-                    else:
-                        days = 0
-                        
-                    fig_health.add_trace(go.Bar(
-                        y=[level],
-                        x=[days],
-                        name=level,
-                        orientation='h',
-                        marker_color=CATEGORY_COLORS_DARK.get(level),
-                        hoverinfo="text",
-                        hovertext=f"<b>{level}</b><br>{effect}<br>{days} days in {year}"
-                    ))
-                
-                fig_health.update_layout(
-                    title="Health Impact by AQI Category",
-                    barmode="stack",
-                    height=450,
-                    xaxis_title="Number of Days",
-                    yaxis_title="AQI Category",
-                    paper_bgcolor=CARD_BACKGROUND_COLOR,
-                    plot_bgcolor=BACKGROUND_COLOR,
-                    font_color=TEXT_COLOR_DARK_THEME,
-                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-                )
-                st.plotly_chart(fig_health, use_container_width=True)
+            fig_health.update_layout(
+                title="Health Impact by AQI Category",
+                barmode="stack",
+                height=450,
+                xaxis_title="Number of Days",
+                yaxis_title="AQI Category",
+                paper_bgcolor=CARD_BACKGROUND_COLOR,
+                plot_bgcolor=BACKGROUND_COLOR,
+                font_color=TEXT_COLOR_DARK_THEME,
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+            )
+            st.plotly_chart(fig_health, use_container_width=True)
 
 # ========================================================
 # =======   CITY-WISE AQI COMPARISON (Enhanced)  =========
@@ -1209,105 +1267,10 @@ with poll_col2:
         st.warning(f"No pollutant data for {city_pollutant_B} for the selected period.")
 
 # ========================================================
-# =======   AQI FORECAST (Enhanced)   ====================
+# =======   AQI FORECAST (Modified)   ====================
 # ========================================================
-st.markdown("## 🔮 AQI FORECAST (LINEAR TREND)")
-
-forecast_col1, forecast_col2 = st.columns([3,1])
-
-with forecast_col1:
-    forecast_city_select = st.selectbox(
-        "Select City for AQI Forecast:", unique_cities,
-        key="forecast_city_select_dark", 
-        index=unique_cities.index(default_city_val[0]) if default_city_val and default_city_val[0] in unique_cities else 0
-    )
-    forecast_src_data = df_period_filtered[df_period_filtered["city"] == forecast_city_select].copy()
-    if len(forecast_src_data) >= 15:
-        forecast_df = forecast_src_data.sort_values("date")[["date", "index"]].dropna()
-        if len(forecast_df) >= 2:
-            forecast_df["days_since_start"] = (forecast_df["date"] - forecast_df["date"].min()).dt.days
-            X_train, y_train = forecast_df[["days_since_start"]], forecast_df["index"]
-            from sklearn.linear_model import LinearRegression
-            model = LinearRegression().fit(X_train, y_train)
-            last_day_num = forecast_df["days_since_start"].max()
-            future_X_range = np.arange(0, last_day_num + 15 + 1)
-            future_y_pred = model.predict(pd.DataFrame({"days_since_start": future_X_range}))
-            min_date_forecast = forecast_df["date"].min()
-            future_dates_list = [min_date_forecast + pd.Timedelta(days=int(i)) for i in future_X_range]
-
-            plot_df_obs = pd.DataFrame({"date": forecast_df["date"], "AQI": y_train})
-            plot_df_fcst = pd.DataFrame({"date": future_dates_list, "AQI": np.maximum(0, future_y_pred)})
-
-            fig_forecast = go.Figure()
-            fig_forecast.add_trace(
-                go.Scatter(
-                    x=plot_df_obs["date"], 
-                    y=plot_df_obs["AQI"], 
-                    mode="lines+markers", 
-                    name="Observed AQI", 
-                    line=dict(color=ACCENT_COLOR),
-                    marker=dict(size=5)
-                )
-            )
-            fig_forecast.add_trace(
-                go.Scatter(
-                    x=plot_df_fcst["date"], 
-                    y=plot_df_fcst["AQI"], 
-                    mode="lines", 
-                    name="Forecast",
-                    line=dict(dash="dash", color=HIGHLIGHT_COLOR, width=3)
-                )
-            )
-            
-            # Add forecast period shading
-            forecast_start = forecast_df["date"].max() + pd.Timedelta(days=1)
-            forecast_end = future_dates_list[-1]
-            
-            fig_forecast.add_vrect(
-                x0=forecast_start, x1=forecast_end,
-                fillcolor="rgba(255, 107, 107, 0.1)",
-                layer="below", line_width=0,
-                annotation_text="Forecast Period", 
-                annotation_position="top left",
-                annotation_font_color=HIGHLIGHT_COLOR
-            )
-
-            fig_forecast.update_layout(
-                title=f"AQI Forecast – {forecast_city_select}", 
-                yaxis_title="AQI Index", 
-                xaxis_title="Date", 
-                height=500,
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-                paper_bgcolor=CARD_BACKGROUND_COLOR, 
-                plot_bgcolor=BACKGROUND_COLOR, 
-                font_color=TEXT_COLOR_DARK_THEME,
-                hovermode="x unified"
-            )
-            st.plotly_chart(fig_forecast, use_container_width=True)
-        else:
-            st.warning(f"Not enough valid data points for {forecast_city_select} to forecast.")
-    else:
-        st.warning(f"Need at least 15 data points for {forecast_city_select} for forecasting; found {len(forecast_src_data)}.")
-
-with forecast_col2:
-    st.markdown("##### ℹ️ Forecast Info")
-    st.markdown(f"""
-    <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
-        <p style="font-size:1.1rem; margin-bottom:1rem;"><b>Forecast Methodology</b></p>
-        <p style="font-size:0.95rem; margin-bottom:1rem;">
-            This forecast uses linear regression based on historical data to predict future AQI trends.
-        </p>
-        <p style="font-size:0.95rem; margin-bottom:1rem;">
-            <b>Limitations:</b><br>
-            - Short-term forecasts only<br>
-            - Doesn't account for weather events<br>
-            - Accuracy decreases beyond 15 days
-        </p>
-        <p style="font-size:0.9rem; color:{SUBTLE_TEXT_COLOR_DARK_THEME}; margin-top:1.5rem;">
-            For precise planning, consult official sources.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+# (Removed linear regression; using 7-day flat forecast)
+# No additional code here—handled inside CITY-SPECIFIC “Trends” tab.
 
 # ========================================================
 # =========  City AQI Hotspots (Enhanced)  ==============
@@ -1369,18 +1332,21 @@ with map_col1:
                         ) if pd.notna(val) else "Unknown"
                     )
 
+                    # Scale bubble sizes smaller by dividing avg_aqi by 10
+                    map_merged_df["size"] = np.maximum(map_merged_df["avg_aqi"] / 10, 1)
+
                     fig_scatter_map = px.scatter_mapbox(
-                        map_merged_df, 
-                        lat="lat", 
+                        map_merged_df,
+                        lat="lat",
                         lon="lon",
-                        size=np.maximum(map_merged_df["avg_aqi"], 1),
-                        size_max=25,
+                        size="size",
+                        size_max=15,
                         color="AQI Category",
                         color_discrete_map=CATEGORY_COLORS_DARK,
                         hover_name="city",
                         custom_data=['city', 'avg_aqi', 'dominant_pollutant', 'AQI Category'],
                         text="city",
-                        zoom=4.0, 
+                        zoom=4.0,
                         center={"lat": 23.0, "lon": 82.5}
                     )
 
@@ -1395,7 +1361,7 @@ with map_col1:
                     scatter_map_layout_args['legend']['xanchor'] = 'right'
 
                     fig_scatter_map.update_traces(
-                        marker=dict(sizemin=5, opacity=0.85, sizemode='diameter'),
+                        marker=dict(sizemin=3, opacity=0.85, sizemode='diameter'),
                         hovertemplate="<b style='font-size:1.1em;'>%{customdata[0]}</b><br>" +
                                       "Avg. AQI: %{customdata[1]:.1f} (%{customdata[3]})<br>" +
                                       "Dominant Pollutant: %{customdata[2]}" +
@@ -1411,10 +1377,10 @@ with map_col1:
                 avg_aqi_cities_alt = map_grouped_data.sort_values(by='avg_aqi', ascending=True)
                 fig_alt_bar = px.bar(
                     avg_aqi_cities_alt.tail(20),
-                    x='avg_aqi', 
-                    y='city', 
+                    x='avg_aqi',
+                    y='city',
                     orientation='h',
-                    color='avg_aqi', 
+                    color='avg_aqi',
                     color_continuous_scale=px.colors.sequential.YlOrRd_r,
                     labels={'avg_aqi': 'Average AQI', 'city': 'City'}
                 )
@@ -1436,7 +1402,7 @@ with map_col2:
     <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
         <p style="font-size:1.1rem; margin-bottom:1rem;"><b>How to Use This Map</b></p>
         <ul style="padding-left:1.5rem; margin-bottom:1.5rem;">
-            <li>Bubble size represents AQI severity</li>
+            <li>Bubble size (scaled down) represents AQI severity</li>
             <li>Color indicates AQI category</li>
             <li>Hover for detailed information</li>
             <li>Click and drag to pan</li>
@@ -1457,6 +1423,7 @@ with map_col2:
     
     st.markdown("</div>", unsafe_allow_html=True)
 
+st.markdown("---")
 
 # ========================================================
 # ========   DOWNLOAD FILTERED DATA (Enhanced)   =========
