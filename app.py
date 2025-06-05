@@ -1334,16 +1334,16 @@ with map_col1:
         st.error(f"Map Error: Error processing coordinates file '{coords_file_path}'. Scatter map cannot be displayed. Error: {e_exec}")
         city_coords_data = {}
 
-   if not df_period_filtered.empty:
-    map_grouped_data = df_period_filtered.groupby("city").agg(
-        avg_aqi=('index', 'mean'),
-        dominant_pollutant=('pollutant', lambda x:
-            x.mode().iloc[0]
-            if not x.mode().empty and x.mode().iloc[0] not in ['Other', 'nan']
-            else (x[~x.isin(['Other', 'nan'])].mode().iloc[0]
-                  if not x[~x.isin(['Other', 'nan'])].mode().empty else 'N/A')
-        )  # <-- close the tuple for dominant_pollutant
-    ).reset_index().dropna(subset=['avg_aqi'])
+    if not df_period_filtered.empty:
+        map_grouped_data = df_period_filtered.groupby("city").agg(
+            avg_aqi=('index', 'mean'),
+            dominant_pollutant=('pollutant', lambda x:
+                x.mode().iloc[0]
+                if not x.mode().empty and x.mode().iloc[0] not in ['Other', 'nan']
+                else (x[~x.isin(['Other', 'nan'])].mode().iloc[0]
+                      if not x[~x.isin(['Other', 'nan'])].mode().empty else 'N/A')
+            )
+        ).reset_index().dropna(subset=['avg_aqi'])
 
         if city_coords_data and not map_grouped_data.empty:
             latlong_map_df_list = []
@@ -1457,7 +1457,6 @@ with map_col2:
     
     st.markdown("</div>", unsafe_allow_html=True)
 
-st.markdown("---")
 
 # ========================================================
 # ========   DOWNLOAD FILTERED DATA (Enhanced)   =========
