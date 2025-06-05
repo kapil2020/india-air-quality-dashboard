@@ -1752,140 +1752,52 @@ st.markdown(f"""
     gap: 2rem;
     flex-wrap: wrap;
     margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.3s forwards;
-  }}
-  .footer-info p {{
-    margin: 0;
   }}
   .footer-info .label {{
     font-size: 0.9rem;
     color: #B0B0B0;
+    margin: 0;
   }}
   .footer-info .value {{
     font-weight: 500;
     color: {TEXT_COLOR_DARK_THEME};
+    margin: 0;
   }}
 
-  /* Centered GitHub link */
-  .footer-links {{
-    text-align: center;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.6s forwards;
-  }}
-  .footer-links a {{
+  a.footer-link {{
     color: {ACCENT_COLOR};
     text-decoration: none;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: color 0.3s ease;
   }}
-  .footer-links a:hover {{
-    color: #00E5FF;
-  }}
-  .footer-links a:hover svg {{
-    animation: iconPulse 1.5s infinite;
-  }}
-
-  /* Copyright text */
-  .footer-container .copyright {{
-    font-size: 0.85rem;
-    color: #707070;
-    text-align: center;
-    opacity: 0;
-    animation: fadeIn 1s ease 0.9s forwards;
-  }}
-
-  /* Responsiveness */
-  @media (max-width: 480px) {{
-    .footer-container {{
-      padding: 2rem 1rem;
-    }}
-    .footer-container h3 {{
-      font-size: 1.5rem;
-    }}
+  a.footer-link:hover {{
+    text-decoration: underline;
   }}
 </style>
 
-<div class="footer-container">
-  <!-- Top animated bar -->
-  <div class="footer-top-bar"></div>
-
-  <!-- Footer Title -->
-  <h3>IIT KGP Air Quality Dashboard</h3>
-
-  <!-- Four columns: Data Source, PI, Developed By, Last Updated -->
-  <div class="footer-info">
-    <!-- Data Source -->
-    <div>
-      <p class="label">Data Source</p>
-      <p class="value">Central Pollution Control Board (CPCB)</p>
-    </div>
-
-    <!-- Principal Investigator -->
-    <div>
-      <p class="label">Principal Investigator</p>
-      <p class="value">
-        <a href="https://www.mustlab.in/faculty" target="_blank">
-          Prof. Arkopal Kishore Goswami
-        </a>,
-        Chairperson & Associate Professor, RCGSIDM, IIT Kharagpur
-      </p>
-    </div>
-
-    <!-- Developed By -->
-    <div>
-      <p class="label">Developed By</p>
-      <p class="value">
-        <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
-          Kapil Meena
-        </a>,
-        PhD Student, RCGSIDM, IIT Kharagpur
-      </p>
-    </div>
-
-    <!-- Last Updated -->
-    <div>
-      <p class="label">Last Updated</p>
-      <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
-    </div>
+<div class="footer-info">
+  <div>
+    <p class="label">Principal Investigator</p>
+    <p class="value">
+      <a href="https://www.mustlab.in/faculty" target="_blank" class="footer-link">
+        Prof. Arkopal Kishore Goswami
+      </a>,
+      Chairperson &amp; Associate Professor,
+      RCGSIDM, IIT Kharagpur
+    </p>
   </div>
 
-  <!-- “View on GitHub” Link -->
-  <div class="footer-links">
-    <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
-      <!-- GitHub Icon SVG -->
-      <svg xmlns="http://www.w3.org/2000/svg"
-           width="20" height="20"
-           viewBox="0 0 24 24"
-           fill="none"
-           stroke="{ACCENT_COLOR}"
-           stroke-width="2"
-           stroke-linecap="round"
-           stroke-linejoin="round">
-        <path d="M9 19c-5 1.5-5-2.5-7-3
-                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61
-                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77
-                 5.07 5.07 0 0 0 19.91 1
-                 S18.73.65 16 2.48
-                 a13.38 13.38 0 0 0-7 0
-                 C6.27.65 5.09 1 5.09 1
-                 A5.07 5.07 0 0 0 5 4.77
-                 a5.44 5.44 0 0 0-1.5 3.78
-                 c0 5.42 3.3 6.61 6.44 7
-                 A3.37 3.37 0 0 0 9 18.13V22">
-        </path>
-      </svg>
-      View on GitHub
-    </a>
+  <div>
+    <p class="label">Developed By</p>
+    <p class="value">
+      <a href="https://sites.google.com/view/kapil-lab/home" target="_blank" class="footer-link">
+        Kapil Meena
+      </a>,
+      PhD Student, RCGSIDM, IIT Kharagpur
+    </p>
   </div>
 
-  <!-- Copyright -->
-  <p class="copyright">
-    © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
-  </p>
+  <div>
+    <p class="label">Last Updated</p>
+    <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M')}</p>
+  </div>
 </div>
 """, unsafe_allow_html=True)
