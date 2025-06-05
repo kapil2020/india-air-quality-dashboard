@@ -1822,23 +1822,44 @@ st.markdown(f"""
   <!-- Main Title -->
   <h3>IIT KGP Air Quality Dashboard</h3>
 
-  <!-- Data Source / Developed By / Last Updated -->
+  <!-- Data Source / Principal Investigator / Developed By / Last Updated -->
   <div class="footer-info">
+    <!-- Data Source (unchanged) -->
     <div>
       <p class="label">Data Source</p>
       <p class="value">Central Pollution Control Board (CPCB)</p>
     </div>
+
+    <!-- Principal Investigator (NEW) -->
+    <div>
+      <p class="label">Principal Investigator</p>
+      <p class="value">
+        <a href="https://www.mustlab.in/faculty" target="_blank">
+          Prof. Arkopal Kishore Goswami
+        </a>,
+        Chairperson and Associate Professor, RCGSIDM, IIT Kharagpur
+      </p>
+    </div>
+
+    <!-- Developed By (UPDATED) -->
     <div>
       <p class="label">Developed By</p>
-      <p class="value">IIT Kharagpur Research Team</p>
+      <p class="value">
+        <a href="https://sites.google.com/view/kapil-lab/home" target="_blank">
+          Kapil Meena
+        </a>,
+        PhD Student, RCGSIDM, IIT Kharagpur
+      </p>
     </div>
+
+    <!-- Last Updated (unchanged) -->
     <div>
       <p class="label">Last Updated</p>
       <p class="value">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
     </div>
   </div>
 
-  <!-- “View on GitHub” Link -->
+  <!-- “View on GitHub” Link (unchanged) -->
   <div class="footer-links">
     <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank">
       <!-- GitHub Icon -->
