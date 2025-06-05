@@ -92,7 +92,7 @@ st.markdown(f"""
     .stPlotlyChart:hover, .stDataFrame:hover, .stMetric:hover,
     div[data-testid="stExpander"]:hover {{
         transform: translateY(-5px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 188, 212, 0.3);
         border-color: #555555;
     }}
     
@@ -1005,16 +1005,16 @@ else:
                 """, unsafe_allow_html=True)
                 
                 st.markdown("###### 📖 General Guidelines")
-                st.markdown("""
+                st.markdown(f"""
                 <div style="background:{CARD_BACKGROUND_COLOR}; border-radius:12px; padding:1.5rem; border:1px solid {BORDER_COLOR}; margin-top:1.5rem;">
                     <ul style="padding-left:1.5rem;">
                         <li>Sensitive groups include children, elderly, and people with respiratory issues</li>
-                        <li>Consider wearing N95 masks when AQI > 200</li>
+                        <li>Consider wearing N95 masks when AQI &gt; 200</li>
                         <li>Keep windows closed during high pollution periods</li>
-                        <li>Use air purifiers indoors when AQI > 150</li>
+                        <li>Use air purifiers indoors when AQI &gt; 150</li>
                     </ul>
                 </div>
-                """.format(BG=CARD_BACKGROUND_COLOR, BD=BORDER_COLOR), unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
             
             with health_col2:
                 st.markdown("###### 📊 Pollution Health Effects")
@@ -1247,6 +1247,7 @@ with forecast_col1:
                     name="Observed AQI", 
                     line=dict(color=ACCENT_COLOR),
                     marker=dict(size=5)
+                )
             )
             fig_forecast.add_trace(
                 go.Scatter(
@@ -1255,6 +1256,7 @@ with forecast_col1:
                     mode="lines", 
                     name="Forecast",
                     line=dict(dash="dash", color=HIGHLIGHT_COLOR, width=3)
+                )
             )
             
             # Add forecast period shading
@@ -1308,7 +1310,7 @@ with forecast_col2:
     """, unsafe_allow_html=True)
 
 # ========================================================
-# ==========  City AQI Hotspots (Enhanced)  ==============
+# =========  City AQI Hotspots (Enhanced)  ==============
 # ========================================================
 st.markdown("## 📍 AIR QUALITY HOTSPOTS MAP")
 
@@ -1483,7 +1485,7 @@ if export_data_list:
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ------------------- Footer -------------------
-st.markdown("""
+st.markdown(f"""
 <div style="text-align: center; margin-top: 4rem; padding: 2.5rem; background: linear-gradient(90deg, #121212, #1a2a3a, #121212); border-radius: 16px; border: 1px solid #2a3a4a; position: relative; overflow: hidden;">
     <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00BCD4, #00BFA5);"></div>
     
@@ -1502,7 +1504,7 @@ st.markdown("""
         
         <div>
             <p style="font-size: 0.9rem; color: #B0B0B0;">Last Updated</p>
-            <p style="font-weight: 500;">{}</p>
+            <p style="font-weight: 500;">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
         </div>
     </div>
     
@@ -1516,7 +1518,7 @@ st.markdown("""
     </div>
     
     <p style="margin-top: 2rem; font-size: 0.85rem; color: #707070;">
-        © {year} IIT Kharagpur | For Research and Educational Purposes
+        © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
     </p>
 </div>
-""".format(data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A", year=pd.to_datetime("today").year), unsafe_allow_html=True)
+""", unsafe_allow_html=True)
