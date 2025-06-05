@@ -463,82 +463,75 @@ st.markdown(f"""
        SIDEBAR SELECTBOX IMPROVEMENTS
        ============================ */
 
-   /* ============================
-     SIDEBAR SELECTBOX IMPROVEMENTS
-     ============================ */
+    /* 1) Closed‐state “button” background & text (BaseWeb) */
+    div[data-baseweb="select"] > div:first-child {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;   /* Dark card */
+      color: {TEXT_COLOR_DARK_THEME} !important;              /* Light text */
+      border: 1px solid #555555 !important;
+      border-radius: 10px !important;
+      padding: 0.4rem 0.8rem !important;
+    }}
 
-  /* 1) Closed-state “button” background & text (BaseWeb’s wrapping DIV) */
-  div[data-baseweb="select"] > div:first-child {
-    background-color: #1E1E1E !important;    /* CARD_BACKGROUND_COLOR */
-    color: #EAEAEA !important;               /* TEXT_COLOR_DARK_THEME */
-    border: 1px solid #555555 !important;
-    border-radius: 10px !important;
-    padding: 0.4rem 0.8rem !important;
-  }
+    /* 2) Placeholder text color inside the select */
+    div[data-baseweb="select"] > div:first-child span {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      opacity: 0.7;  /* Slightly translucent placeholder */
+    }}
 
-  /* 2) Placeholder text inside the select (when nothing is chosen) */
-  div[data-baseweb="select"] > div:first-child span {
-    color: #EAEAEA !important;
-    opacity: 0.7; /* a little less opaque so that it's obviously a placeholder */
-  }
+    /* 3) Opened dropdown menu container */
+    div[data-baseweb="select"] [role="menu"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      border: 1px solid #555555 !important;
+      border-radius: 8px !important;
+    }}
 
-  /* 3) Dropdown menu container (when you click to open) */
-  div[data-baseweb="select"] [role="menu"] {
-    background-color: #1E1E1E !important;
-    border: 1px solid #555555 !important;
-    border-radius: 8px !important;
-  }
+    /* 4) Each option in the opened dropdown menu */
+    div[data-baseweb="select"] [role="option"] {{
+      background-color: {CARD_BACKGROUND_COLOR} !important;
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      padding: 0.6rem 1rem !important;
+    }}
 
-  /* 4) Each option in the open menu */
-  div[data-baseweb="select"] [role="option"] {
-    background-color: #1E1E1E !important;
-    color: #EAEAEA !important;
-    padding: 0.6rem 1rem !important;
-  }
+    /* 5) Hover highlight for each option */
+    div[data-baseweb="select"] [role="option"]:hover {{
+      background-color: #333333 !important;
+      color: #FFFFFF !important;
+    }}
 
-  /* 5) Hover highlight for each option */
-  div[data-baseweb="select"] [role="option"]:hover {
-    background-color: #333333 !important;
-    color: #FFFFFF !important;
-  }
+    /* 6) Arrow icon’s color inside the select */
+    div[data-baseweb="select"] svg {{
+      stroke: {TEXT_COLOR_DARK_THEME} !important;
+    }}
 
-  /* 6) Arrow icon’s color inside the select */
-  div[data-baseweb="select"] svg {
-    stroke: #EAEAEA !important;
-  }
+    /* 
+       === React‐Select Internals (Streamlit uses react-select classes) ===
+       The “singleValue” span that appears once you pick something must be light.
+    */
 
-  /* 
-     === React-Select Internals (Streamlit’s st.selectbox/st.multiselect) ===
-     The “singleValue” that appears once you pick something has its own CSS class.
-     We force it to be light so you can read “Delhi” or “Mumbai” instead of it blending 
-     into the CARD_BACKGROUND_COLOR.
-  */
+    /* 7) The chosen text itself (react-select’s “singleValue”) */
+    div[data-baseweb="select"] .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+      opacity: 1 !important;
+    }}
 
-  /* 7) The chosen text itself (react-select’s “singleValue”) */
-  div[data-baseweb="select"] .css-1uccc91-singleValue {
-    color: #EAEAEA !important;
-    opacity: 1 !important;
-  }
+    /* 8) In case of a multi‐select, style the “pill” tokens */
+    div[data-baseweb="select"] .css-1rhbuit-multiValue {{
+      background-color: #333333 !important;
+    }}
+    div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {{
+      color: {TEXT_COLOR_DARK_THEME} !important;
+    }}
 
-  /* 8) If you ever have a multi-select (the little “pill” tokens inside), style those too */
-  div[data-baseweb="select"] .css-1rhbuit-multiValue {
-    background-color: #333333 !important;
-  }
-  div[data-baseweb="select"] .css-1rhbuit-multiValue .css-1uccc91-singleValue {
-    color: #EAEAEA !important;
-  }
+    /* 9) The placeholder inside React-Select (before selecting) */
+    div[data-baseweb="select"] .css-1wa3eu0-placeholder {{
+      color: #B0B0B0 !important;
+      opacity: 1 !important;
+    }}
 
-  /* 9) The placeholder inside React-Select (prior to selecting anything) */
-  div[data-baseweb="select"] .css-1wa3eu0-placeholder {
-    color: #B0B0B0 !important;  /* slightly subtler gray for placeholder text */
-    opacity: 1 !important;
-  }
-
-  /* 10) The border on focus (when you click the control) */
-  div[data-baseweb="select"] .css-1pahdxg-control {
-    border-color: #00BCD4 !important; /* Use ACCENT_COLOR on focus if you like */
-  }
-</style>
+    /* 10) Blue accent border on focus (if desired) */
+    div[data-baseweb="select"] .css-1pahdxg-control {{
+      border-color: {ACCENT_COLOR} !important;
+    }}
 
     /* ================
        SIDEBAR HEADER UPDATE
@@ -1198,6 +1191,15 @@ else:
                     "Very Poor": "Respiratory illness on prolonged exposure",
                     "Severe": "Health impacts even on light physical activity"
                 }
+                
+                # Re-use category_counts_df from above in this city-specific scope
+                category_counts_df = (
+                    city_data_full["level"]
+                    .value_counts()
+                    .reindex(CATEGORY_COLORS_DARK.keys(), fill_value=0)
+                    .reset_index()
+                )
+                category_counts_df.columns = ["AQI Category", "Number of Days"]
                 
                 fig_health = go.Figure()
                 for level, effect in health_effects.items():
@@ -1861,7 +1863,7 @@ st.markdown(f"""
   </div>
 
   <!-- Copyright -->
-  <p class "copyright">
+  <p class="copyright">
     © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
   </p>
 </div>
