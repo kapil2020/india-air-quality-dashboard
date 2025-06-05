@@ -238,7 +238,6 @@ def get_custom_plotly_layout_args(height: int = None, title_text: str = None) ->
     if title_text:
         layout_args["title_text"] = title_text
         layout_args["title_font"] = {"color": ACCENT_COLOR, "size": 16, "family": "Inter"}
-    # Preserve xaxis/yaxis styling if needed; minimal here
     return layout_args
 
 
@@ -316,17 +315,12 @@ if df.empty:
     st.error("Dashboard cannot operate without data. Please check data sources.")
     st.stop()
 
+# ONLY show “Last data update: …” (no “Displaying archive data …”)
 if data_last_updated:
     st.caption(
         f"<p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 0.85rem;'>"
-        f"{load_message} | Last data update: {data_last_updated.strftime('%Y-%m-%d %H:%M:%S')}"
+        f"Last data update: {data_last_updated.strftime('%Y-%m-%d %H:%M:%S')}"
         "</p>",
-        unsafe_allow_html=True
-    )
-else:
-    st.caption(
-        f"<p style='text-align: center; color: {SUBTLE_TEXT_COLOR_DARK_THEME}; font-size: 0.85rem;'>"
-        f"{load_message}</p>",
         unsafe_allow_html=True
     )
 
