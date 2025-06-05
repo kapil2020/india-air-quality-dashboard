@@ -1576,41 +1576,90 @@ if export_data_list:
         
         st.markdown("</div>", unsafe_allow_html=True)
 
-# ------------------- Footer -------------------
+# ------------------- Footer (UPDATED) -------------------
 st.markdown(f"""
-<div style="text-align: center; margin-top: 4rem; padding: 2.5rem; background: linear-gradient(90deg, #121212, #1a2a3a, #121212); border-radius: 16px; border: 1px solid #2a3a4a; position: relative; overflow: hidden;">
-    <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00BCD4, #00BFA5);"></div>
-    
-    <h3 style="color: #00BCD4; margin-bottom: 1.5rem;">IIT KGP Air Quality Dashboard</h3>
-    
-    <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
-        <div>
-            <p style="font-size: 0.9rem; color: #B0B0B0;">Data Source</p>
-            <p style="font-weight: 500;">Central Pollution Control Board (CPCB)</p>
-        </div>
-        
-        <div>
-            <p style="font-size: 0.9rem; color: #B0B0B0;">Developed By</p>
-            <p style="font-weight: 500;">IIT Kharagpur Research Team</p>
-        </div>
-        
-        <div>
-            <p style="font-size: 0.9rem; color: #B0B0B0;">Last Updated</p>
-            <p style="font-weight: 500;">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
-        </div>
+<div style="
+     position: relative;
+     width: 100%;
+     box-sizing: border-box;
+     overflow-x: hidden;
+     margin-top: 4rem;
+     padding: 2.5rem;
+     background: linear-gradient(90deg, #121212, #1a2a3a, #121212);
+     border-radius: 16px;
+     border: 1px solid #2a3a4a;
+">
+  <!-- Gradient bar at the top of the footer -->
+  <div style="
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 4px;
+       background: linear-gradient(90deg, #00BCD4, #00BFA5);
+  "></div>
+
+  <h3 style="color: #00BCD4; margin-bottom: 1.5rem;">IIT KGP Air Quality Dashboard</h3>
+
+  <div style="
+       display: flex;
+       justify-content: center;
+       gap: 2rem;
+       margin-bottom: 1.5rem;
+       flex-wrap: wrap;
+  ">
+    <div>
+      <p style="font-size: 0.9rem; color: #B0B0B0;">Data Source</p>
+      <p style="font-weight: 500;">Central Pollution Control Board (CPCB)</p>
     </div>
-    
-    <div style="margin-top: 1.5rem;">
-        <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank" style="color: #00BCD4; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00BCD4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
-            </svg>
-            View on GitHub
-        </a>
+    <div>
+      <p style="font-size: 0.9rem; color: #B0B0B0;">Developed By</p>
+      <p style="font-weight: 500;">IIT Kharagpur Research Team</p>
     </div>
-    
-    <p style="margin-top: 2rem; font-size: 0.85rem; color: #707070;">
-        © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
-    </p>
+    <div>
+      <p style="font-size: 0.9rem; color: #B0B0B0;">Last Updated</p>
+      <p style="font-weight: 500;">{data_last_updated.strftime('%Y-%m-%d %H:%M') if data_last_updated else "N/A"}</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 1.5rem;">
+    <a href="https://github.com/kapil2020/india-air-quality-dashboard"
+       target="_blank"
+       style="
+         color: #00BCD4;
+         text-decoration: none;
+         font-weight: 600;
+         display: inline-flex;
+         align-items: center;
+         gap: 0.5rem;
+       ">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           width="20" height="20"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="#00BCD4"
+           stroke-width="2"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <path d="M9 19c-5 1.5-5-2.5-7-3
+                 m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61
+                 c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77
+                 5.07 5.07 0 0 0 19.91 1
+                 S18.73.65 16 2.48
+                 a13.38 13.38 0 0 0-7 0
+                 C6.27.65 5.09 1 5.09 1
+                 A5.07 5.07 0 0 0 5 4.77
+                 a5.44 5.44 0 0 0-1.5 3.78
+                 c0 5.42 3.3 6.61 6.44 7
+                 A3.37 3.37 0 0 0 9 18.13V22">
+        </path>
+      </svg>
+      View on GitHub
+    </a>
+  </div>
+
+  <p style="margin-top: 2rem; font-size: 0.85rem; color: #707070;">
+    © {pd.to_datetime("today").year} IIT Kharagpur | For Research and Educational Purposes
+  </p>
 </div>
 """, unsafe_allow_html=True)
