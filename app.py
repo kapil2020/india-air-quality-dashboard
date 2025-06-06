@@ -219,7 +219,7 @@ st.markdown(f"""
       background-color: {ACCENT_COLOR};
     }}
     
-    .stSidebar .stSelectbox label, .stSidebar .stMultiselect label, .stSidebar .stNumberInput label {{
+    .stSidebar .stSelectbox label, .stSidebar .stMultiselect label, .stSidebar .stNumberInput label, .stSidebar .stSlider label {{
         color: {ACCENT_COLOR} !important;
         font-weight: 600;
         font-size: 1.05rem;
@@ -485,7 +485,7 @@ st.markdown("""
 @st.cache_data(ttl=3600)
 def load_data_and_metadata():
     """
-    Tries to load today's CSV (named YYYY-MM-DD.csv). If not found, falls back to 'combined_air_quality.txt'.
+    Tries to load today's CSV (named YY-MM-DD.csv). If not found, falls back to 'combined_air_quality.txt'.
     Returns: (df_loaded, load_msg, last_update_time)
     """
     today = pd.to_datetime("today").date()
@@ -645,7 +645,7 @@ with col3:
         st.markdown("</div>", unsafe_allow_html=True)
 
 # ========================================================
-# ====== REPLACEMENT: TOP & BOTTOM CITIES VISUALIZATION ======
+# ====== TOP & BOTTOM CITIES VISUALIZATION ======
 # ========================================================
 st.markdown(f"## 🏆 City Rankings for {year}")
 
@@ -765,11 +765,14 @@ else:
         city_data_full["day_of_month"] = city_data_full["date"].dt.day
         export_data_list.append(city_data_full)
 
-        tab_trend, tab_dist, tab_heatmap_detail, tab_health, tab_forecast = st.tabs(["📊 TRENDS & CALENDAR", "📈 DISTRIBUTIONS", "🗓️ DETAILED HEATMAP", "❤️ HEALTH ANALYSIS", "🔮 HEALTH FORECAST"])
+        # *** NEW FEATURE: Added "Weekday Analysis" tab ***
+        tab_trend, tab_dist, tab_heatmap_detail, tab_weekday, tab_health, tab_forecast = st.tabs([
+            "📊 TRENDS & CALENDAR", "📈 DISTRIBUTIONS", "🗓️ DETAILED HEATMAP", 
+            "📅 WEEKDAY ANALYSIS", "❤️ HEALTH ANALYSIS", "🔮 HEALTH FORECAST"
+        ])
 
         with tab_trend:
             st.markdown("<h5>📅 Daily AQI Calendar</h5>", unsafe_allow_html=True)
-            # Build calendar for full year, but only plot if data exists
             if city_data_full["index"].notna().any():
                 start_date = pd.to_datetime(f"{year}-01-01")
                 end_date = pd.to_datetime(f"{year}-12-31")
@@ -779,7 +782,6 @@ else:
                 calendar_df["week"] = calendar_df["date"].dt.isocalendar().week
                 calendar_df["day_of_week"] = calendar_df["date"].dt.dayofweek
 
-                # Adjust for Jan/Dec year boundary
                 calendar_df.loc[(calendar_df["date"].dt.month == 1) & (calendar_df["week"] > 50), "week"] = 0
                 calendar_df.loc[(calendar_df["date"].dt.month == 12) & (calendar_df["week"] == 1), "week"] = calendar_df["week"].max() + 1
 
@@ -792,13 +794,11 @@ else:
                 merged_cal_df["level"] = merged_cal_df["level"].fillna("Unknown")
                 merged_cal_df["aqi_text"] = merged_cal_df["index"].apply(lambda x: f"{x:.1f}" if pd.notna(x) else "N/A")
 
-                # Build z-values as numeric codes
                 level_to_code = {level: idx for idx, level in enumerate(CATEGORY_COLORS_DARK.keys())}
                 z_values = merged_cal_df["level"].map(level_to_code)
 
                 day_labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-                # Determine month annotation positions
                 week_start_dates = merged_cal_df.groupby("week")["date"].min().reset_index()
                 week_start_dates["month"] = week_start_dates["date"].dt.strftime("%b")
                 month_names = week_start_dates.drop_duplicates("month", keep="first").set_index("week")["month"]
@@ -852,9 +852,17 @@ else:
             else:
                 st.info("No AQI data available for calendar plot.")
 
-            st.markdown("<h5>📈 AQI Trend & 7-Day Rolling Average</h5>", unsafe_allow_html=True)
+            st.markdown("<h5>📈 AQI Trend with Anomaly Detection</h5>", unsafe_allow_html=True)
             if len(city_data_full) >= 2:
                 city_data_trend = city_data_full.sort_values("date").copy()
+                
+                # *** NEW FEATURE: Anomaly Detection Logic ***
+                city_data_trend['rolling_avg_30day'] = city_data_trend['index'].rolling(window=30, min_periods=1, center=True).mean()
+                city_data_trend['rolling_std_30day'] = city_data_trend['index'].rolling(window=30, min_periods=1, center=True).std()
+                city_data_trend['anomaly_threshold'] = city_data_trend['rolling_avg_30day'] + (2 * city_data_trend['rolling_std_30day'])
+                city_data_trend['is_anomaly'] = city_data_trend['index'] > city_data_trend['anomaly_threshold']
+                anomalies = city_data_trend[city_data_trend['is_anomaly']]
+
                 city_data_trend["rolling_avg_7day"] = city_data_trend["index"].rolling(window=7, center=True, min_periods=1).mean().round(2)
 
                 fig_trend_roll = go.Figure()
@@ -870,6 +878,15 @@ else:
                     line=dict(color=ACCENT_COLOR, width=2.5, dash="dash"),
                     hovertemplate="<b>%{x|%Y-%m-%d}</b><br>7-Day Avg AQI: %{y}<extra></extra>"
                 ))
+
+                # *** NEW FEATURE: Add anomaly markers to the plot ***
+                if not anomalies.empty:
+                    fig_trend_roll.add_trace(go.Scatter(
+                        x=anomalies["date"], y=anomalies["index"], mode="markers", name="High Pollution Anomaly",
+                        marker=dict(color=HIGHLIGHT_COLOR, size=10, symbol='circle', line=dict(width=1.5, color=BACKGROUND_COLOR)),
+                        hovertemplate="<b>Anomaly Detected!</b><br>Date: %{x|%Y-%m-%d}<br>AQI: %{y}<extra></extra>"
+                    ))
+
                 fig_trend_roll.update_layout(
                     yaxis_title="AQI Index", xaxis_title="Date", height=400,
                     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
@@ -877,13 +894,21 @@ else:
                     plot_bgcolor=BACKGROUND_COLOR, font_color=TEXT_COLOR_DARK_THEME
                 )
                 st.plotly_chart(fig_trend_roll, use_container_width=True)
+
+                # *** NEW FEATURE: Display anomaly details in an expander ***
+                if not anomalies.empty:
+                    with st.expander(f"🚨 View {len(anomalies)} Detected High-Pollution Events"):
+                        st.markdown("These are days where the AQI was significantly higher than the 30-day rolling average, indicating a potential pollution event.")
+                        st.dataframe(anomalies[['date', 'index', 'level']].rename(columns={'index':'AQI', 'level':'Category'}), use_container_width=True)
+                else:
+                    st.success("✅ No significant high-pollution anomalies detected in this period.")
+
             else:
                 st.info("Not enough data points to display trend.")
 
         with tab_dist:
             col_bar_dist, col_sun_dist = st.columns([2, 1], gap="large")
 
-            # Build distribution data only if there are rows
             if not city_data_full.empty:
                 category_counts_df = city_data_full["level"].value_counts().reindex(CATEGORY_COLORS_DARK.keys(), fill_value=0).reset_index()
                 category_counts_df.columns = ["AQI Category", "Number of Days"]
@@ -917,7 +942,6 @@ else:
                         st.caption("No data for sunburst chart.")
 
                 st.markdown("<h5>🎻 Monthly AQI Distribution</h5>", unsafe_allow_html=True)
-                # Determine only months present in data, in correct order
                 months_map_number = {v: k for k, v in months_map_dict.items()}
                 present_months = sorted(
                     city_data_full["month_name"].dropna().unique(),
@@ -968,6 +992,38 @@ else:
                     st.info("No monthly data available for heatmap.")
             else:
                 st.info("No data available for heatmap.")
+        
+        # *** NEW FEATURE: Weekday Analysis Tab ***
+        with tab_weekday:
+            st.markdown("<h5>📅 AQI by Day of the Week</h5>", unsafe_allow_html=True)
+            st.info("This chart shows the distribution of AQI values for each day of the week. It can help identify weekly patterns, like differences between weekdays and weekends.")
+            
+            if not city_data_full.empty:
+                weekday_df = city_data_full.copy()
+                weekday_df['weekday'] = weekday_df['date'].dt.day_name()
+                weekday_order = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+                weekday_df['weekday'] = pd.Categorical(weekday_df['weekday'], categories=weekday_order, ordered=True)
+                
+                fig_weekday = px.box(
+                    weekday_df.sort_values('weekday'),
+                    x='weekday',
+                    y='index',
+                    color='weekday',
+                    color_discrete_sequence=px.colors.qualitative.Plotly,
+                    labels={'index': 'AQI Index', 'weekday': 'Day of the Week'},
+                )
+                fig_weekday.update_layout(
+                    height=500,
+                    showlegend=False,
+                    paper_bgcolor=CARD_BACKGROUND_COLOR,
+                    plot_bgcolor=BACKGROUND_COLOR,
+                    font_color=TEXT_COLOR_DARK_THEME,
+                    xaxis_title=None
+                )
+                st.plotly_chart(fig_weekday, use_container_width=True)
+            else:
+                st.warning("No data available for weekday analysis.")
+
 
         with tab_health:
             st.markdown("<h5>❤️ Health Impact Analysis</h5>", unsafe_allow_html=True)
@@ -1001,7 +1057,6 @@ else:
             with health_col2:
                 st.markdown("<h6>📊 Health Risk Levels</h6>", unsafe_allow_html=True)
                 
-                # Create gauge chart for health risk
                 fig_gauge = go.Figure(go.Indicator(
                     mode = "gauge+number",
                     value = current_aqi,
@@ -1027,7 +1082,6 @@ else:
                 )
                 st.plotly_chart(fig_gauge, use_container_width=True)
                 
-                # Health risk summary
                 risk_levels = {
                     "Good": "Low risk",
                     "Satisfactory": "Low to moderate risk",
@@ -1075,7 +1129,6 @@ else:
                     plot_df_obs = pd.DataFrame({"date": forecast_df["date"], "AQI": y})
                     plot_df_fcst = pd.DataFrame({"date": future_dates_list, "AQI": np.maximum(0, future_y_pred)})
                     
-                    # Add health impact levels
                     def get_health_impact(aqi):
                         if aqi <= 50: return "Good", CATEGORY_COLORS_DARK["Good"]
                         elif aqi <= 100: return "Satisfactory", CATEGORY_COLORS_DARK["Satisfactory"]
@@ -1101,7 +1154,6 @@ else:
                         hovertemplate="<b>%{x|%Y-%m-%d}</b><br>Forecast AQI: %{y:.0f}<extra></extra>"
                     ))
                     
-                    # Add health impact markers
                     for date, aqi, impact, color in zip(
                         plot_df_fcst["date"], 
                         plot_df_fcst["AQI"], 
@@ -1133,7 +1185,6 @@ else:
                     fig_forecast.update_layout(**layout_args_fcst)
                     st.plotly_chart(fig_forecast, use_container_width=True)
                     
-                    # Health impact summary
                     st.markdown("<h6>📋 Forecasted Health Impact</h6>", unsafe_allow_html=True)
                     forecast_summary = plot_df_fcst[plot_df_fcst["date"] > forecast_df["date"].max()].copy()
                     if not forecast_summary.empty:
