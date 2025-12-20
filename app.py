@@ -63,7 +63,7 @@ HEALTH_RECS = {
 }
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        CUSTOM CSS (GLASSMORPHISM + NEON EFFECTS)
+#                        CUSTOM CSS
 # ───────────────────────────────────────────────────────────────────────────────
 
 st.markdown(f"""
@@ -200,7 +200,7 @@ def load_data():
 df, load_msg, last_update = load_data()
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        SIDEBAR - ADVANCED FILTERS
+#                        SIDEBAR
 # ───────────────────────────────────────────────────────────────────────────────
 
 with st.sidebar:
@@ -255,7 +255,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        NATIONAL OVERVIEW
+#                        NATIONAL OVERVIEW - FIXED!
 # ───────────────────────────────────────────────────────────────────────────────
 
 st.markdown("<h2>🇮🇳 NATIONAL OVERVIEW</h2>", unsafe_allow_html=True)
@@ -283,11 +283,14 @@ with col1:
 with col2:
     avg_aqi = filtered_df["index"].mean()
     cat = get_category(avg_aqi)
+    aqi_display = f"{avg_aqi:.1f}" if not pd.isna(avg_aqi) else "N/A"
+    color = CATEGORY_COLORS.get(cat, '#FFFFFF')
+
     st.markdown(f"""
     <div class="glass-card">
         <div class="metric-label">National Average AQI</div>
-        <div class="metric-value" style="color:{CATEGORY_COLORS.get(cat, '#FFFFFF')}">{avg_aqi:.1f if not pd.isna(avg_aqi) else "N/A"}</div>
-        <p style="text-align:center; color:{CATEGORY_COLORS.get(cat, '#FFFFFF')}; font-weight:700;">{cat}</p>
+        <div class="metric-value" style="color:{color}">{aqi_display}</div>
+        <p style="text-align:center; color:{color}; font-weight:700;">{cat}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -348,10 +351,11 @@ if selected_cities:
 
         cols = st.columns([1, 2, 1])
         with cols[0]:
+            aqi_display = int(aqi) if not pd.isna(aqi) else "N/A"
             st.markdown(f"""
             <div class="glass-card" style="text-align:center;">
                 <div style="font-size:1.2rem;">Current AQI</div>
-                <div class="metric-value" style="color:{CATEGORY_COLORS.get(level)}">{int(aqi) if not pd.isna(aqi) else "N/A"}</div>
+                <div class="metric-value" style="color:{CATEGORY_COLORS.get(level)}">{aqi_display}</div>
                 <div style="color:{CATEGORY_COLORS.get(level)};">{level}</div>
             </div>
             """, unsafe_allow_html=True)
@@ -398,48 +402,27 @@ if selected_cities:
             fig_week = px.box(weekday, x="weekday", y="index", color="weekday", points="all")
             st.plotly_chart(fig_week, use_container_width=True)
 
-        with tabs[4]:  # Forecast Tab - FIXED!
+        with tabs[4]:
             st.markdown("### 🔮 AQI Forecast (Next 30 Days)")
-
-            # Clean data: remove NaN values
             city_df_clean = city_df.dropna(subset=["index"]).copy()
             if len(city_df_clean) < 20:
-                st.warning(f"Not enough valid (non-NaN) data points for {city} to forecast. Need at least 20 days.")
-                st.info(f"Found only {len(city_df_clean)} valid days.")
+                st.warning(f"Not enough valid data for {city} to forecast. Need at least 20 days.")
             else:
                 try:
                     X = np.arange(len(city_df_clean)).reshape(-1, 1)
                     y = city_df_clean["index"].values
-
                     poly = PolynomialFeatures(degree=2)
                     model = LinearRegression().fit(poly.fit_transform(X), y)
-
                     future_days = 30
                     future = np.arange(len(city_df_clean), len(city_df_clean) + future_days).reshape(-1, 1)
                     pred = model.predict(poly.transform(future))
-
                     fig_fc = go.Figure()
-                    fig_fc.add_trace(go.Scatter(
-                        x=city_df_clean["date"],
-                        y=y,
-                        mode="lines+markers",
-                        name="Observed AQI",
-                        line=dict(color=ACCENT)
-                    ))
+                    fig_fc.add_trace(go.Scatter(x=city_df_clean["date"], y=y, mode="lines+markers", name="Observed AQI", line=dict(color=ACCENT)))
                     fig_fc.add_trace(go.Scatter(
                         x=[city_df_clean["date"].max() + timedelta(days=i+1) for i in range(future_days)],
-                        y=pred,
-                        mode="lines",
-                        name="Forecast",
-                        line=dict(dash="dash", color=ACCENT2)
+                        y=pred, mode="lines", name="Forecast", line=dict(dash="dash", color=ACCENT2)
                     ))
-
-                    fig_fc.update_layout(
-                        title=f"{city} AQI Forecast",
-                        paper_bgcolor="rgba(0,0,0,0)",
-                        plot_bgcolor="rgba(0,0,0,0)",
-                        height=500
-                    )
+                    fig_fc.update_layout(title=f"{city} AQI Forecast", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", height=500)
                     st.plotly_chart(fig_fc, use_container_width=True)
                 except Exception as e:
                     st.error(f"Forecast error: {e}")
