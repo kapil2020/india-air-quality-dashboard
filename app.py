@@ -1,49 +1,46 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import os
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.io as pio
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from datetime import datetime, timedelta
+import os
+import base64
+from io import BytesIO
+import matplotlib.pyplot as plt
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
+from reportlab.lib.styles import getSampleStyleSheet
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        AWARD-WINNING DASHBOARD CONFIG
+#                        CONFIGURATION & STYLING
 # ───────────────────────────────────────────────────────────────────────────────
 
 st.set_page_config(
     layout="wide",
-    page_title="IIT KGP AQI Dashboard • 2025 Award-Winning",
+    page_title="IIT KGP AQI Dashboard 2025 • Award-Winning",
     page_icon="🌬️",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://github.com/kapil2020/india-air-quality-dashboard',
-        'Report a bug': 'https://github.com/kapil2020/india-air-quality-dashboard/issues',
-        'About': "Developed by Kapil Meena, IIT Kharagpur"
-    }
+    initial_sidebar_state="expanded"
 )
-
-# ───────────────────────────────────────────────────────────────────────────────
-#                        CYBER-FUTURISTIC DARK THEME + GLASSMORPHISM
-# ───────────────────────────────────────────────────────────────────────────────
 
 pio.templates.default = "plotly_dark"
 
+# Colors
 ACCENT = "#00F0FF"
 ACCENT2 = "#FF00AA"
 TEXT = "#E0E0FF"
 SUBTEXT = "#A0A0CC"
-BG = "#0A0A1A"
-CARD_BG = "rgba(20, 20, 40, 0.6)"
 GLASS = "rgba(30, 30, 60, 0.3)"
 BORDER = "rgba(0, 240, 255, 0.3)"
-SHADOW = "0 8px 32px rgba(0, 240, 255, 0.15)"
+SHADOW = "0 12px 40px rgba(0, 240, 255, 0.25)"
 
 CATEGORY_COLORS = {
-    "Severe": "#FF0066", "Very Poor": "#FF3366", "Poor": "#FF6666",
-    "Moderate": "#FFCC66", "Satisfactory": "#66FF99", "Good": "#00FF99",
+    "Good": "#00FF99", "Satisfactory": "#66FF99", "Moderate": "#FFCC66",
+    "Poor": "#FF6666", "Very Poor": "#FF3366", "Severe": "#FF0066",
     "Unknown": "#444466"
 }
 
@@ -53,7 +50,7 @@ POLLUTANT_COLORS = {
 }
 
 HEALTH_RECS = {
-    "Good": "Ideal for outdoor activities!",
+    "Good": "Perfect for all outdoor activities!",
     "Satisfactory": "Unusually sensitive people should limit prolonged exertion.",
     "Moderate": "Sensitive groups should reduce outdoor activity.",
     "Poor": "Everyone should reduce prolonged or heavy exertion.",
@@ -63,116 +60,29 @@ HEALTH_RECS = {
 }
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        CUSTOM CSS
+#                        CUSTOM CSS (GLASSMORPHISM + NEON)
 # ───────────────────────────────────────────────────────────────────────────────
 
 st.markdown(f"""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-
-    .stApp {{
-        background: linear-gradient(135deg, #0A0A1A 0%, #0F0F2E 100%);
-        color: {TEXT};
-        font-family: 'JetBrains Mono', monospace;
-    }}
-
-    h1, h2, h3, h4, h5, h6 {{
-        font-family: 'Orbitron', sans-serif !important;
-        background: linear-gradient(90deg, {ACCENT}, {ACCENT2});
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        letter-spacing: 2px;
-        text-shadow: 0 0 10px {ACCENT};
-    }}
-
-    .stSidebar {{
-        background: {CARD_BG} !important;
-        backdrop-filter: blur(12px);
-        border-right: 1px solid {BORDER};
-        box-shadow: {SHADOW};
-    }}
-
-    .glass-card {{
-        background: {GLASS};
-        backdrop-filter: blur(16px);
-        border-radius: 20px;
-        border: 1px solid {BORDER};
-        padding: 2rem;
-        margin: 1rem 0;
-        box-shadow: {SHADOW};
-        transition: all 0.4s ease;
-    }}
-
-    .glass-card:hover {{
-        transform: translateY(-8px);
-        box-shadow: 0 16px 48px rgba(0, 240, 255, 0.25);
-    }}
-
-    .metric-value {{
-        font-size: 3.5rem !important;
-        font-weight: 900 !important;
-        color: {ACCENT} !important;
-        text-shadow: 0 0 20px {ACCENT};
-    }}
-
-    .metric-label {{
-        font-size: 1.2rem !important;
-        color: {SUBTEXT} !important;
-    }}
-
-    .stTabs [data-baseweb="tab-list"] {{
-        background: {GLASS};
-        border-radius: 16px;
-        padding: 8px;
-        gap: 8px;
-    }}
-
-    .stTabs [data-baseweb="tab"] {{
-        background: transparent;
-        color: {SUBTEXT};
-        border-radius: 12px;
-        padding: 12px 24px;
-        font-weight: 600;
-    }}
-
-    .stTabs [aria-selected="true"] {{
-        background: {ACCENT} !important;
-        color: #000 !important;
-        box-shadow: 0 0 20px {ACCENT};
-    }}
-
-    .stButton > button {{
-        background: linear-gradient(45deg, {ACCENT}, {ACCENT2});
-        color: #000 !important;
-        border: none;
-        border-radius: 50px;
-        padding: 14px 32px;
-        font-weight: 700;
-        font-size: 1.1rem;
-        box-shadow: 0 0 20px {ACCENT};
-        transition: all 0.3s ease;
-    }}
-
-    .stButton > button:hover {{
-        transform: translateY(-4px);
-        box-shadow: 0 0 40px {ACCENT};
-    }}
-
-    .footer {{
-        text-align: center;
-        padding: 3rem 1rem;
-        background: {GLASS};
-        border-top: 1px solid {BORDER};
-        margin-top: 4rem;
-        border-radius: 20px 20px 0 0;
-    }}
+    .stApp {{ background: linear-gradient(135deg, #0A0A1A 0%, #0F0F2E 100%); color: {TEXT}; }}
+    h1, h2, h3, h4, h5, h6 {{ font-family: 'Orbitron', sans-serif !important; background: linear-gradient(90deg, {ACCENT}, {ACCENT2}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 15px {ACCENT}; }}
+    .stSidebar {{ background: rgba(20,20,40,0.8) !important; backdrop-filter: blur(12px); border-right: 1px solid {BORDER}; }}
+    .glass-card {{ background: {GLASS}; backdrop-filter: blur(16px); border-radius: 20px; border: 1px solid {BORDER}; padding: 2rem; margin: 1rem 0; box-shadow: {SHADOW}; transition: all 0.4s ease; }}
+    .glass-card:hover {{ transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,240,255,0.3); }}
+    .metric-value {{ font-size: 3.8rem !important; font-weight: 900 !important; color: {ACCENT} !important; text-shadow: 0 0 20px {ACCENT}; }}
+    .stTabs [data-baseweb="tab-list"] {{ background: {GLASS}; border-radius: 16px; padding: 8px; }}
+    .stTabs [aria-selected="true"] {{ background: {ACCENT} !important; color: #000 !important; box-shadow: 0 0 25px {ACCENT}; }}
+    .stButton > button {{ background: linear-gradient(45deg, {ACCENT}, {ACCENT2}); color: #000 !important; border: none; border-radius: 50px; padding: 14px 32px; font-weight: 700; box-shadow: 0 0 20px {ACCENT}; transition: all 0.3s ease; }}
+    .stButton > button:hover {{ transform: translateY(-4px); box-shadow: 0 0 40px {ACCENT}; }}
+    .footer {{ text-align: center; padding: 3rem; background: {GLASS}; border-top: 1px solid {BORDER}; margin-top: 4rem; border-radius: 20px 20px 0 0; }}
 </style>
 """, unsafe_allow_html=True)
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        DATA LOADING & CACHING
+#                        DATA LOADING
 # ───────────────────────────────────────────────────────────────────────────────
 
 @st.cache_data(ttl=1800)
@@ -180,7 +90,7 @@ def load_data():
     today = datetime.now().strftime("%y-%m-%d")
     csv_path = f"data/{today}.csv"
     fallback = "combined_air_quality.txt"
-    
+
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         df["date"] = pd.to_datetime(df["date"])
@@ -188,14 +98,14 @@ def load_data():
     else:
         df = pd.read_csv(fallback, sep="\t", parse_dates=["date"])
         msg = "Archive data loaded"
-    
+
     df["pollutant"] = df["pollutant"].str.split(",").str[0].str.strip().fillna("Other")
     df["level"] = df["level"].fillna("Unknown")
-    
+
     if 2025 in df["date"].dt.year.unique():
         df = df[~((df["date"].dt.year == 2025) & (df["date"].dt.month > 5))]
-    
-    return df, msg, datetime.fromtimestamp(os.path.getmtime(fallback if not os.path.exists(csv_path) else csv_path))
+
+    return df, msg, datetime.fromtimestamp(os.path.getmtime(csv_path if os.path.exists(csv_path) else fallback))
 
 df, load_msg, last_update = load_data()
 
@@ -205,66 +115,52 @@ df, load_msg, last_update = load_data()
 
 with st.sidebar:
     st.markdown(f"""
-    <h1 style="font-size: 2.5rem; text-align: center; margin-bottom: 1rem;">IIT KGP</h1>
-    <h2 style="text-align: center; margin-bottom: 2rem;">AQI 2025</h2>
+    <h1 style="font-size: 3rem; text-align: center;">IIT KGP</h1>
+    <h2 style="text-align: center; color: {ACCENT2};">AQI 2025</h2>
     <p style="text-align: center; color: {SUBTEXT};">{load_msg}</p>
-    <p style="text-align: center; color: {ACCENT}; font-size: 1.1rem;">Last update: {last_update.strftime('%Y-%m-%d %H:%M')}</p>
+    <p style="text-align: center; color: {ACCENT};">Last update: {last_update.strftime('%Y-%m-%d %H:%M')}</p>
     """, unsafe_allow_html=True)
 
     st.markdown("---")
 
     cities = sorted(df["city"].unique())
-    selected_cities = st.multiselect("🌆 Cities", cities, default=["Delhi"])
+    selected_cities = st.multiselect("Select Cities", cities, default=["Delhi", "Kolkata", "Mumbai"])
 
     years = sorted(df["date"].dt.year.unique(), reverse=True)
-    year = st.selectbox("🗓 Year", years, index=0)
+    year = st.selectbox("Year", years, index=0)
 
     months = ["All"] + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     if year == 2025:
         months = ["All"] + ["Jan", "Feb", "Mar", "Apr", "May"]
-    month = st.selectbox("📅 Month", months)
+    month = st.selectbox("Month", months)
 
     st.markdown("---")
+    st.markdown(f"**Live Clock:** {datetime.now().strftime('%H:%M:%S')}", unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div style="text-align:center; margin-top:2rem;">
-        <a href="https://github.com/kapil2020/india-air-quality-dashboard" target="_blank"
-           style="color:{ACCENT}; text-decoration:none; font-weight:700;">
-            ⭐ View Source on GitHub
-        </a>
-    </div>
-    """, unsafe_allow_html=True)
+# ───────────────────────────────────────────────────────────────────────────────
+#                        DATA FILTERING
+# ───────────────────────────────────────────────────────────────────────────────
 
-# Filter data
 filtered_df = df[df["date"].dt.year == year].copy()
 if month != "All":
     month_num = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,"Jul":7,"Aug":8,"Sep":9,"Oct":10,"Nov":11,"Dec":12}[month]
     filtered_df = filtered_df[filtered_df["date"].dt.month == month_num]
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        HEADER
+#                        HEADER & NATIONAL SNAPSHOT
 # ───────────────────────────────────────────────────────────────────────────────
 
 st.markdown(f"""
-<div class="glass-card" style="text-align:center; padding:3rem 2rem;">
-    <h1 style="font-size:4rem; margin:0;">🌬️ IIT KGP AQI DASHBOARD 2025</h1>
-    <p style="font-size:1.4rem; color:{SUBTEXT}; margin-top:1rem;">
-        Next-Gen Air Quality Intelligence Platform
-    </p>
+<div class="glass-card" style="text-align:center; padding:4rem 2rem;">
+    <h1 style="font-size:5rem; margin:0;">🌬️ IIT KGP AQI DASHBOARD 2025</h1>
+    <p style="font-size:1.6rem; color:{SUBTEXT}; margin-top:1rem;">India's Most Advanced Air Quality Intelligence Platform</p>
 </div>
 """, unsafe_allow_html=True)
 
-# ───────────────────────────────────────────────────────────────────────────────
-#                        NATIONAL OVERVIEW - FIXED!
-# ───────────────────────────────────────────────────────────────────────────────
-
-st.markdown("<h2>🇮🇳 NATIONAL OVERVIEW</h2>", unsafe_allow_html=True)
-
-col1, col2, col3 = st.columns(3)
+st.markdown("<h2>🇮🇳 NATIONAL AIR QUALITY OVERVIEW</h2>", unsafe_allow_html=True)
 
 def get_category(aqi):
-    if pd.isna(aqi):
-        return "Unknown"
+    if pd.isna(aqi): return "Unknown"
     if aqi <= 50: return "Good"
     elif aqi <= 100: return "Satisfactory"
     elif aqi <= 200: return "Moderate"
@@ -272,6 +168,7 @@ def get_category(aqi):
     elif aqi <= 400: return "Very Poor"
     else: return "Severe"
 
+col1, col2, col3 = st.columns(3)
 with col1:
     st.markdown(f"""
     <div class="glass-card">
@@ -283,14 +180,11 @@ with col1:
 with col2:
     avg_aqi = filtered_df["index"].mean()
     cat = get_category(avg_aqi)
-    aqi_display = f"{avg_aqi:.1f}" if not pd.isna(avg_aqi) else "N/A"
-    color = CATEGORY_COLORS.get(cat, '#FFFFFF')
-
     st.markdown(f"""
     <div class="glass-card">
-        <div class="metric-label">National Average AQI</div>
-        <div class="metric-value" style="color:{color}">{aqi_display}</div>
-        <p style="text-align:center; color:{color}; font-weight:700;">{cat}</p>
+        <div class="metric-label">National Avg AQI</div>
+        <div class="metric-value" style="color:{CATEGORY_COLORS.get(cat)}">{avg_aqi:.1f if not pd.isna(avg_aqi) else "N/A"}</div>
+        <p style="color:{CATEGORY_COLORS.get(cat)}; font-weight:700;">{cat}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -299,49 +193,47 @@ with col3:
     <div class="glass-card">
         <div class="metric-label">Data Period</div>
         <div class="metric-value">{month} {year}</div>
-        <p style="text-align:center; color:{SUBTEXT};">{filtered_df['date'].nunique()} days</p>
+        <p style="color:{SUBTEXT};">{filtered_df['date'].nunique()} days</p>
     </div>
     """, unsafe_allow_html=True)
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        CITY RANKINGS
+#                        INTERACTIVE INDIA MAP
 # ───────────────────────────────────────────────────────────────────────────────
 
-st.markdown("<h2>🏆 CITY RANKINGS</h2>", unsafe_allow_html=True)
+st.markdown("<h2>📍 AIR QUALITY HOTSPOTS (INDIA MAP)</h2>", unsafe_allow_html=True)
 
-city_avg = filtered_df.groupby("city")["index"].mean().sort_values()
-num_show = st.slider("Number of cities to show", 5, 20, 10)
+city_coords = {
+    "Delhi": [28.6139, 77.2090], "Kolkata": [22.5726, 88.3639], "Mumbai": [19.0760, 72.8777],
+    "Bengaluru": [12.9716, 77.5946], "Chennai": [13.0827, 80.2707], "Hyderabad": [17.3850, 78.4867],
+    "Ahmedabad": [23.0225, 72.5714], "Pune": [18.5204, 73.8567], "Jaipur": [26.9124, 75.7873],
+    # Add more cities as needed
+}
 
-top = city_avg.head(num_show)
-bottom = city_avg.tail(num_show)
+map_data = filtered_df.groupby("city").agg({"index": "mean"}).reset_index()
+map_data["lat"] = map_data["city"].map(lambda x: city_coords.get(x, [None, None])[0])
+map_data["lon"] = map_data["city"].map(lambda x: city_coords.get(x, [None, None])[1])
+map_data = map_data.dropna(subset=["lat", "lon"])
 
-col_top, col_bottom = st.columns(2)
-
-with col_top:
-    fig_top = px.bar(top.reset_index(), x="index", y="city", orientation="h",
-                     color="index", color_continuous_scale="RdYlGn_r",
-                     title="Top Cleanest Cities", text_auto=True)
-    fig_top.update_layout(height=600, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
-    st.plotly_chart(fig_top, use_container_width=True)
-
-with col_bottom:
-    fig_bottom = px.bar(bottom.reset_index(), x="index", y="city", orientation="h",
-                        color="index", color_continuous_scale="RdYlGn_r",
-                        title="Most Polluted Cities", text_auto=True)
-    fig_bottom.update_layout(height=600, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
-    st.plotly_chart(fig_bottom, use_container_width=True)
+fig_map = px.scatter_mapbox(
+    map_data, lat="lat", lon="lon", size="index", color="index",
+    hover_name="city", color_continuous_scale="RdYlGn_r",
+    size_max=40, zoom=4.5, center={"lat": 20.5937, "lon": 78.9629}
+)
+fig_map.update_layout(mapbox_style="carto-darkmatter", margin={"r":0,"t":0,"l":0,"b":0})
+st.plotly_chart(fig_map, use_container_width=True)
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        CITY DEEP DIVE
+#                        CITY DEEP DIVE (TABS)
 # ───────────────────────────────────────────────────────────────────────────────
 
 if selected_cities:
     for city in selected_cities:
-        st.markdown(f"<h2>🔍 {city.upper()} DEEP DIVE</h2>", unsafe_allow_html=True)
+        st.markdown(f"<h2>🔍 {city.upper()} DEEP DIVE – {year}</h2>", unsafe_allow_html=True)
         city_df = filtered_df[filtered_df["city"] == city].sort_values("date")
 
         if city_df.empty:
-            st.warning(f"No data for {city} in {month} {year}")
+            st.warning(f"No data available for {city}")
             continue
 
         latest = city_df.iloc[-1]
@@ -351,12 +243,11 @@ if selected_cities:
 
         cols = st.columns([1, 2, 1])
         with cols[0]:
-            aqi_display = int(aqi) if not pd.isna(aqi) else "N/A"
             st.markdown(f"""
             <div class="glass-card" style="text-align:center;">
-                <div style="font-size:1.2rem;">Current AQI</div>
-                <div class="metric-value" style="color:{CATEGORY_COLORS.get(level)}">{aqi_display}</div>
-                <div style="color:{CATEGORY_COLORS.get(level)};">{level}</div>
+                <div style="font-size:1.4rem;">Current AQI</div>
+                <div class="metric-value" style="color:{CATEGORY_COLORS.get(level)}">{int(aqi) if not pd.isna(aqi) else "N/A"}</div>
+                <p style="color:{CATEGORY_COLORS.get(level)};">{level}</p>
             </div>
             """, unsafe_allow_html=True)
 
@@ -364,23 +255,24 @@ if selected_cities:
             st.markdown(f"""
             <div class="glass-card">
                 <h3>Health Advisory</h3>
-                <p style="font-size:1.3rem;">{HEALTH_RECS.get(level, "No data")}</p>
+                <p style="font-size:1.4rem;">{HEALTH_RECS.get(level, "No data")}</p>
             </div>
             """, unsafe_allow_html=True)
 
         with cols[2]:
             st.markdown(f"""
             <div class="glass-card" style="text-align:center;">
-                <div style="font-size:1.2rem;">Dominant Pollutant</div>
+                <div style="font-size:1.4rem;">Dominant Pollutant</div>
                 <div class="metric-value" style="color:{POLLUTANT_COLORS.get(pollutant)}">{pollutant}</div>
             </div>
             """, unsafe_allow_html=True)
 
-        tabs = st.tabs(["Trends", "Calendar", "Heatmap", "Weekday", "Forecast", "Health", "AI Insights"])
+        tabs = st.tabs(["Trends", "Calendar", "Heatmap", "Weekday", "Forecast", "Correlation", "Export"])
 
         with tabs[0]:
-            fig_trend = px.line(city_df, x="date", y="index", title="AQI Trend with 7-day Rolling Avg")
-            fig_trend.add_scatter(x=city_df["date"], y=city_df["index"].rolling(7).mean(), name="7-day Avg", line=dict(color=ACCENT, dash="dash"))
+            fig_trend = px.line(city_df, x="date", y="index", title="AQI Trend with Rolling Averages")
+            fig_trend.add_scatter(x=city_df["date"], y=city_df["index"].rolling(7).mean(), name="7-Day Avg", line=dict(color=ACCENT, dash="dash"))
+            fig_trend.add_scatter(x=city_df["date"], y=city_df["index"].rolling(30).mean(), name="30-Day Avg", line=dict(color=ACCENT2, dash="dot"))
             fig_trend.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
             st.plotly_chart(fig_trend, use_container_width=True)
 
@@ -403,58 +295,37 @@ if selected_cities:
             st.plotly_chart(fig_week, use_container_width=True)
 
         with tabs[4]:
-            st.markdown("### 🔮 AQI Forecast (Next 30 Days)")
             city_df_clean = city_df.dropna(subset=["index"]).copy()
             if len(city_df_clean) < 20:
-                st.warning(f"Not enough valid data for {city} to forecast. Need at least 20 days.")
+                st.warning("Not enough valid data for forecasting.")
             else:
-                try:
-                    X = np.arange(len(city_df_clean)).reshape(-1, 1)
-                    y = city_df_clean["index"].values
-                    poly = PolynomialFeatures(degree=2)
-                    model = LinearRegression().fit(poly.fit_transform(X), y)
-                    future_days = 30
-                    future = np.arange(len(city_df_clean), len(city_df_clean) + future_days).reshape(-1, 1)
-                    pred = model.predict(poly.transform(future))
-                    fig_fc = go.Figure()
-                    fig_fc.add_trace(go.Scatter(x=city_df_clean["date"], y=y, mode="lines+markers", name="Observed AQI", line=dict(color=ACCENT)))
-                    fig_fc.add_trace(go.Scatter(
-                        x=[city_df_clean["date"].max() + timedelta(days=i+1) for i in range(future_days)],
-                        y=pred, mode="lines", name="Forecast", line=dict(dash="dash", color=ACCENT2)
-                    ))
-                    fig_fc.update_layout(title=f"{city} AQI Forecast", paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", height=500)
-                    st.plotly_chart(fig_fc, use_container_width=True)
-                except Exception as e:
-                    st.error(f"Forecast error: {e}")
+                X = np.arange(len(city_df_clean)).reshape(-1, 1)
+                y = city_df_clean["index"].values
+                poly = PolynomialFeatures(degree=2)
+                model = LinearRegression().fit(poly.fit_transform(X), y)
+                future_days = 30
+                future = np.arange(len(city_df_clean), len(city_df_clean) + future_days).reshape(-1, 1)
+                pred = model.predict(poly.transform(future))
+                fig_fc = go.Figure()
+                fig_fc.add_trace(go.Scatter(x=city_df_clean["date"], y=y, mode="lines+markers", name="Observed"))
+                fig_fc.add_trace(go.Scatter(x=[city_df_clean["date"].max() + timedelta(days=i+1) for i in range(future_days)], y=pred, mode="lines", name="Forecast", line=dict(dash="dash")))
+                st.plotly_chart(fig_fc, use_container_width=True)
 
         with tabs[5]:
-            st.markdown(f"""
-            <div class="glass-card">
-                <h3>Health Impact</h3>
-                <p><b>Current Risk:</b> {level}</p>
-                <p><b>Recommendations:</b> {HEALTH_RECS.get(level)}</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown("### Pollutant Correlation Heatmap")
+            # Placeholder for correlation matrix
+            st.info("Correlation matrix coming soon (requires multi-pollutant data)")
 
         with tabs[6]:
-            st.markdown("""
-            <div class="glass-card">
-                <h3>AI-Powered Insights</h3>
-                <p>Coming soon: ML-based pollution source prediction & risk forecasting.</p>
-            </div>
-            """, unsafe_allow_html=True)
+            st.download_button("Download CSV", city_df.to_csv(index=False), f"{city}_aqi_{year}.csv", "text/csv")
 
 # ───────────────────────────────────────────────────────────────────────────────
-#                        DOWNLOAD + FOOTER
+#                        FOOTER & EXPORT
 # ───────────────────────────────────────────────────────────────────────────────
-
-st.markdown("<h2>📥 Download Data</h2>", unsafe_allow_html=True)
-csv = filtered_df.to_csv(index=False).encode('utf-8')
-st.download_button("Download Filtered Data (CSV)", csv, "iitk_aqi_2025.csv", "text/csv")
 
 st.markdown(f"""
 <div class="footer">
-    <p style="font-size:1.2rem;">Developed with ❤️ by IIT Kharagpur</p>
-    <p style="color:{SUBTEXT};">Data Source: CPCB • Designed for Excellence</p>
+    <p style="font-size:1.4rem;">Developed with ❤️ by IIT Kharagpur</p>
+    <p style="color:{SUBTEXT};">Data: CPCB • Designed for Excellence</p>
 </div>
 """, unsafe_allow_html=True)
